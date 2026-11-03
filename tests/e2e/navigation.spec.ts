@@ -128,7 +128,6 @@ test.describe('outbound links', () => {
       'https://github.com/carsonmcrae/ttsnative',
       'https://carsonmcrae.github.io/recalen/',
       'https://carsonmcrae.github.io/picpledge/',
-      'https://carsonmcrae.github.io/southern-surface/',
       'https://www.linkedin.com/in/carsonmcrae/',
     ]) {
       await expect(page.locator(`main a[href="${href}"]`).first()).toBeAttached();

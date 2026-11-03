@@ -71,18 +71,4 @@ export const projects: Project[] = [
       { label: 'the case study', href: 'https://carsonmcrae.github.io/picpledge/' },
     ],
   },
-  {
-    id: 'southern-surface',
-    name: 'Southern Surface Company',
-    icon: 'southern-surface',
-    status: 'Operating business',
-    tagline: 'The software side of a Nashville flooring, painting, and cleaning business.',
-    description:
-      'I helped establish the business and built its digital side: a public website for finding services and requesting quotes, plus tools for finding and following up with potential commercial customers.',
-    stack: ['Next.js', 'TypeScript', 'React', 'PostgreSQL / Prisma'],
-    links: [
-      { label: 'southernsurfacecompany.com', href: 'https://www.southernsurfacecompany.com/' },
-      { label: 'the case study', href: 'https://carsonmcrae.github.io/southern-surface/' },
-    ],
-  },
 ];

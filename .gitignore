@@ -30,3 +30,6 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 dist-subpath/
+
+# Photos dropped here are imported by npm run images:import; the originals never enter git
+photos-incoming/

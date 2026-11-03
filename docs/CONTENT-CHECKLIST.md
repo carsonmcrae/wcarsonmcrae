@@ -29,10 +29,9 @@ the matching file in `src/data/`.
       greeting, and the colophon line "That felt right for someone who builds a text-to-speech app."
 - [ ] **Reused project assets.** The four app icons were copied from your public `carsonmcrae`
       repository. Confirm they can be used here.
-- [ ] **Project facts.** Status, stack, and links for TTSNative, Recalen, PicPledge, and Southern Surface
-      Company come from your GitHub profile README. Metrics (testers, guests, leads) are deliberately
-      left to the portfolio. Confirm `recalen.com`, `picpledge.com`, and `southernsurfacecompany.com`
-      should be linked.
+- [x] **Project facts.** Status, stack, and links for TTSNative, Recalen, and PicPledge come from your
+      GitHub profile README; metrics stay in the portfolio. Southern Surface Company is kept off the site
+      for now (your call, 2026-11-03).
 - [x] **License.** All rights reserved (2026-11-03). The repository is public only so GitHub Pages can
       host it for free; no reuse is granted, and no `LICENSE` file is added.
 - [x] **Domain.** Confirmed: `wcarsonmcrae.com`, with `www` redirecting to it (2026-11-03).

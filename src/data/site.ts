@@ -89,7 +89,7 @@ export const contact = {
   topics: [
     'Software delivery and technical program management',
     'Product ideas, side projects, and how they get built',
-    'TTSNative, Recalen, PicPledge, or Southern Surface',
+    'TTSNative, Recalen, or PicPledge',
     'Vanderbilt, Nashville, golf, or your latest PC build',
   ],
 };

@@ -37,7 +37,8 @@
     "validate": "npm run validate:static && npm run test:coverage && npm run build && npm run test:build && npm run test:build:subpath",
     "validate:full": "npm run validate && npm run test:e2e && npm run security:audit",
     "images:brand": "node scripts/generate-brand-images.mjs",
-    "images:strip": "node scripts/strip-image-metadata.ts"
+    "images:strip": "node scripts/strip-image-metadata.ts",
+    "images:import": "node scripts/import-photos.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",
