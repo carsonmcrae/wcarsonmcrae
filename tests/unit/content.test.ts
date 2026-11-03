@@ -203,7 +203,11 @@ describe('privacy guardrails', () => {
 
   const PATTERNS: [string, RegExp][] = [
     ['phone number', /\(?\b\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}\b/],
-    ['email address', /\b[\w.%+-]+@(?!example\.(?:com|org)\b)[a-z\d.-]+\.[a-z]{2,}\b/i],
+    // GitHub noreply addresses are public by design (they are on every commit), so they are allowed.
+    [
+      'email address',
+      /\b[\w.%+-]+@(?!example\.(?:com|org)\b|users\.noreply\.github\.com\b)[a-z\d.-]+\.[a-z]{2,}\b/i,
+    ],
     [
       'street address',
       /\b\d{2,6}\s+[A-Z][a-z]+(?:\s[A-Z][a-z]+)*\s(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Court|Ct|Pike|Boulevard|Blvd)\b/,
