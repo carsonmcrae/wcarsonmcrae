@@ -1,0 +1,71 @@
+---
+/**
+ * Purpose: The site footer.
+ * Scope: The sign-off, a single line of links (pages, accessibility, source), the copyright, and
+ *   the date this build was made.
+ * Does NOT belong: Primary navigation (Header.astro) or contact options (src/pages/contact.astro).
+ */
+import { footer, navigation, site } from '../data/site';
+import { withBase } from '../lib/paths';
+import { formatDate } from '../lib/text';
+
+const built = new Date();
+const links = [
+  { label: 'Home', href: '/' },
+  ...navigation,
+  { label: 'Accessibility', href: '/accessibility/' },
+];
+---
+
+<footer class="site-footer page">
+  <p class="site-footer__sign">{footer.signature}</p>
+  <nav aria-label="Footer">
+    <ul role="list">
+      {links.map((link) => (
+        <li>
+          <a href={withBase(link.href)} tabindex="0">
+            {link.label}
+          </a>
+        </li>
+      ))}
+      <li>
+        <a href={site.repositoryUrl} tabindex="0">
+          Source<span class="visually-hidden"> on GitHub (external site)</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <p class="small muted">
+    © {built.getFullYear()} Carson McRae. {footer.disclaimer}
+    {' Updated '}
+    <time datetime={built.toISOString().slice(0, 10)}>{formatDate(built)}</time>.
+  </p>
+</footer>
+
+<style>
+  .site-footer {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: var(--section);
+    padding-block: 1.75rem 2.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .site-footer ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.25rem;
+    margin-inline: -0.5rem;
+  }
+
+  .site-footer li + li {
+    margin-top: 0;
+  }
+
+  .site-footer a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-inline: 0.5rem;
+  }
+</style>

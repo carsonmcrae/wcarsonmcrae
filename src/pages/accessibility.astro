@@ -1,0 +1,54 @@
+---
+/**
+ * Purpose: The public accessibility statement and the site's colophon.
+ * Scope: The standard the site targets, what is in place, how it is tested, known limitations, how
+ *   to report a problem, and how the site is made.
+ * Constraints: Must stay honest; see docs/governance/accessibility.md.
+ * Does NOT belong: The statement's copy (src/data/accessibility.ts).
+ */
+import Markdown from '../components/Markdown.astro';
+import PageIntro from '../components/PageIntro.astro';
+import Section from '../components/Section.astro';
+import { accessibility } from '../data/accessibility';
+import { pages } from '../data/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout page={pages.accessibility}>
+  <PageIntro title={accessibility.title} lede={accessibility.lede}>
+    <p>{accessibility.standard}</p>
+    <p class="small muted">Last reviewed {accessibility.reviewed}.</p>
+  </PageIntro>
+
+  <Section title="What’s in place" id="practices">
+    <ul>
+      {accessibility.practices.map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section title="How it’s tested" id="testing">
+    <p>{accessibility.testing}</p>
+  </Section>
+
+  <Section title="Known limitations" id="limitations">
+    <ul>
+      {accessibility.limitations.map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section title="Feedback" id="feedback">
+    <Markdown text={accessibility.feedback} />
+  </Section>
+
+  <Section title={accessibility.colophonTitle} id="colophon">
+    <div class="flow">
+      {accessibility.colophon.map((paragraph) => (
+        <Markdown text={paragraph} />
+      ))}
+    </div>
+  </Section>
+</BaseLayout>

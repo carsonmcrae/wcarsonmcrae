@@ -1,0 +1,20 @@
+---
+/**
+ * Purpose: Renders one content string with the site's inline markdown.
+ * Scope: Links (base-path aware), emphasis, and strong text, inside the element of the caller's
+ *   choosing; everything else is escaped by src/lib/inline-markdown.ts.
+ * Does NOT belong: Block-level content or the formatter itself (src/lib/inline-markdown.ts).
+ */
+import { renderInline } from '../lib/inline-markdown';
+
+interface Props {
+  text: string;
+  as?: 'p' | 'span' | 'li' | 'dd' | 'div';
+  class?: string;
+}
+
+const { text, as: Tag = 'p', class: className } = Astro.props;
+const html = renderInline(text, import.meta.env.BASE_URL);
+---
+
+<Tag class={className} set:html={html} />

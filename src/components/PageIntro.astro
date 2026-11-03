@@ -1,0 +1,33 @@
+---
+/**
+ * Purpose: The opening of every page: one full-sentence h1 and an optional lede.
+ * Scope: Renders the title and lede (inline markdown allowed in the lede), an optional element
+ *   before the title (the `before` slot, used for a portrait), and extra content in the default slot.
+ * Does NOT belong: Page sections (Section.astro) or metadata (src/components/SiteHead.astro).
+ */
+import Markdown from './Markdown.astro';
+
+interface Props {
+  title: string;
+  lede?: string;
+}
+
+const { title, lede } = Astro.props;
+---
+
+<div class="page-intro column flow">
+  <slot name="before" />
+  <h1 id="page-title">{title}</h1>
+  {lede && <Markdown text={lede} class="lede" />}
+  <slot />
+</div>
+
+<style>
+  .page-intro {
+    padding-top: clamp(1.5rem, 1rem + 3vw, 3.5rem);
+  }
+
+  .page-intro > h1 + * {
+    margin-top: 1.25rem;
+  }
+</style>

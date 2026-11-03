@@ -1,0 +1,59 @@
+---
+/**
+ * Purpose: The homepage: who Carson is, in the order a visitor needs it.
+ * Scope: A full-sentence introduction, what he does (in two registers), what he is building, life
+ *   outside work, and how to get in touch. Prints as a one-page résumé.
+ * Does NOT belong: The copy (src/data) or the detailed work history (src/pages/work.astro).
+ */
+import ExplainToggle from '../components/ExplainToggle.astro';
+import Markdown from '../components/Markdown.astro';
+import PageIntro from '../components/PageIntro.astro';
+import Photo from '../components/Photo.astro';
+import ProjectList from '../components/ProjectList.astro';
+import Section from '../components/Section.astro';
+import { homeTeaser } from '../data/life';
+import { hero, intro, profile } from '../data/profile';
+import { projectsIntro } from '../data/projects';
+import { homeContact, pages } from '../data/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout page={pages.home}>
+  <PageIntro title={hero.title} lede={hero.lede}>
+    <Fragment slot="before">
+      <Photo name={profile.portrait} alt={profile.portraitAlt} size="avatar" />
+    </Fragment>
+    <Markdown text={hero.next} class="no-print" />
+  </PageIntro>
+
+  <Section title={intro.title} id="what-i-do">
+    <ExplainToggle />
+  </Section>
+
+  <Section title={projectsIntro.title} id="building" lede={projectsIntro.body}>
+    <ProjectList />
+    <p class="small after-list">
+      The case studies, with product decisions, walkthroughs, and engineering details, are in my{' '}
+      <a href="https://carsonmcrae.github.io/">product portfolio</a>. The code I can share is on{' '}
+      <a href="https://github.com/carsonmcrae">GitHub</a>.
+    </p>
+  </Section>
+
+  <Section title={homeTeaser.title} id="off-the-clock">
+    <div class="flow">
+      {homeTeaser.body.map((paragraph) => (
+        <Markdown text={paragraph} />
+      ))}
+    </div>
+  </Section>
+
+  <Section title={homeContact.title} id="contact">
+    <Markdown text={homeContact.body} />
+  </Section>
+</BaseLayout>
+
+<style>
+  .after-list {
+    margin-top: 2rem;
+  }
+</style>

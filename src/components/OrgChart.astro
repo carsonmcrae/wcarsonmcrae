@@ -1,0 +1,61 @@
+---
+/**
+ * Purpose: The household org chart, drawn in ASCII.
+ * Scope: A monospaced diagram (hidden from assistive technology) with the same structure as a
+ *   real list for screen readers: management above, staff and their duties below.
+ * Does NOT belong: The names and duties (src/data/life.ts).
+ */
+import { orgChart } from '../data/life';
+
+const [lead1 = '', lead2 = ''] = orgChart.management;
+const [staff1 = '', staff2 = ''] = orgChart.staff;
+const box = (name: string) => `| ${name.padEnd(6)} |`;
+const diagram = [
+  '+--------+   +--------+',
+  `${box(lead1)}   ${box(lead2)}`,
+  '+---+----+   +----+---+',
+  '    |             |',
+  '    +------+------+',
+  '           |',
+  '    +------+------+',
+  '    |             |',
+  '+---+----+   +----+---+',
+  `${box(staff1)}   ${box(staff2)}`,
+  '+--------+   +--------+',
+].join('\n');
+---
+
+<figure class="org">
+  <pre aria-hidden="true">{diagram}</pre>
+  <ul class="visually-hidden">
+    <li>Management: {orgChart.management.join(' and ')}</li>
+    <li>
+      Staff: {orgChart.staff.join(' and ')}, responsible for {orgChart.staffDuties}
+    </li>
+  </ul>
+  <figcaption class="small muted">
+    {orgChart.title}. Staff duties: {orgChart.staffDuties}.
+  </figcaption>
+</figure>
+
+<style>
+  .org {
+    margin-top: 1.5rem;
+  }
+
+  pre {
+    display: inline-block;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 1rem 1.25rem;
+    border-radius: 4px;
+    background: var(--wash);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+
+  figcaption {
+    margin-top: 0.5rem;
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+/**
+ * Purpose: An optional, approved photo.
+ * Scope: Renders a responsive, optimized picture when src/assets/photos/<name>.* exists, and
+ *   nothing at all when it does not, so pages read naturally before photos are added. If the image
+ *   fails in the browser, its frame collapses rather than showing a broken image.
+ * Does NOT belong: Choosing or approving photos (docs/CONTENT.md) or stripping metadata
+ *   (scripts/strip-image-metadata.ts).
+ */
+import { Picture } from 'astro:assets';
+import { getPhoto } from '../lib/images';
+
+interface Props {
+  name: string;
+  alt: string;
+  caption?: string;
+  size?: 'avatar' | 'medium';
+}
+
+const { name, alt, caption, size = 'medium' } = Astro.props;
+const photo = getPhoto(name);
+const sizes = size === 'avatar' ? '6rem' : '(min-width: 40rem) 24rem, 90vw';
+---
+
+{photo && (
+  <figure class:list={['photo', `photo--${size}`]} data-image-frame>
+    <Picture
+      src={photo}
+      alt={alt}
+      widths={size === 'avatar' ? [96, 192, 288] : [384, 576, 768]}
+      sizes={sizes}
+      formats={['avif', 'webp']}
+      data-fallback
+    />
+    {caption && <figcaption class="small muted">{caption}</figcaption>}
+  </figure>
+)}
+
+<style>
+  .photo :global(img) {
+    border-radius: 4px;
+  }
+
+  .photo--avatar :global(img) {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .photo--medium {
+    max-width: 24rem;
+  }
+
+  .photo figcaption {
+    margin-top: 0.5rem;
+  }
+
+  :global([data-image-failed]).photo {
+    display: none;
+  }
+</style>

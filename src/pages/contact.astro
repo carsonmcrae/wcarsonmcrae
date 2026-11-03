@@ -1,0 +1,66 @@
+---
+/**
+ * Purpose: The Contact page: the public ways to reach Carson.
+ * Scope: LinkedIn, GitHub, the product portfolio, and an email address only once one is approved
+ *   (profile.email), plus good things to talk about and where he is based.
+ * Does NOT belong: The copy (src/data/site.ts and src/data/profile.ts).
+ */
+import PageIntro from '../components/PageIntro.astro';
+import Section from '../components/Section.astro';
+import { profile, socialLinks } from '../data/profile';
+import { contact, pages } from '../data/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const channels = profile.email
+  ? [
+      ...socialLinks,
+      { id: 'email', label: profile.email, href: `mailto:${profile.email}`, description: 'Email.' },
+    ]
+  : socialLinks;
+---
+
+<BaseLayout page={pages.contact}>
+  <PageIntro title={contact.title} lede={contact.lede} />
+
+  <Section title="Where to find me" id="channels">
+    <dl class="channels">
+      {channels.map((channel) => (
+        <div>
+          <dt>
+            <a href={channel.href} rel="noopener">
+              {channel.label}
+              <span class="visually-hidden"> (external site)</span>
+            </a>
+          </dt>
+          <dd>{channel.description}</dd>
+        </div>
+      ))}
+    </dl>
+  </Section>
+
+  <Section title={contact.topicsTitle} id="topics">
+    <ul>
+      {contact.topics.map((topic) => (
+        <li>{topic}</li>
+      ))}
+    </ul>
+    <p class="based">I’m based in the Nashville area.</p>
+  </Section>
+</BaseLayout>
+
+<style>
+  .channels {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .channels a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .based {
+    margin-top: 1.5rem;
+  }
+</style>

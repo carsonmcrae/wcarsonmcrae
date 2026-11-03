@@ -1,0 +1,27 @@
+---
+/**
+ * Purpose: The page GitHub Pages serves for any address that does not exist.
+ * Scope: Says so plainly (with a little humor), and links home and to every main section.
+ * Does NOT belong: The copy (src/data/site.ts).
+ */
+import Markdown from '../components/Markdown.astro';
+import PageIntro from '../components/PageIntro.astro';
+import { navigation, notFound } from '../data/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { joinList } from '../lib/text';
+
+const page = {
+  id: '404' as const,
+  path: '/404.html',
+  title: 'Page not found',
+  description:
+    'This page does not exist. Try the homepage, or one of the main sections of the site instead.',
+};
+const sections = joinList(navigation.map((item) => `[${item.label}](${item.href})`));
+---
+
+<BaseLayout page={page} noindex>
+  <PageIntro title={notFound.title} lede={notFound.body}>
+    <Markdown text={`[Take me home](/), or try ${sections}.`} />
+  </PageIntro>
+</BaseLayout>

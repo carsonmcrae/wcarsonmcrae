@@ -1,0 +1,95 @@
+---
+/**
+ * Purpose: The Life page: Carson outside of work.
+ * Scope: Nicole, Margot and Quinn (field-guide entries and the household org chart), interests with
+ *   stable anchors the homepage links to, and the dated "Right now" list.
+ * Constraints: Approved details only; family photos appear only once approved and added.
+ * Does NOT belong: The copy (src/data/life.ts).
+ */
+import DogEntry from '../components/DogEntry.astro';
+import Markdown from '../components/Markdown.astro';
+import OrgChart from '../components/OrgChart.astro';
+import PageIntro from '../components/PageIntro.astro';
+import Photo from '../components/Photo.astro';
+import Section from '../components/Section.astro';
+import { dogs, dogsIntro, interests, interestsIntro, lifeIntro, nicole, now } from '../data/life';
+import { pages } from '../data/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout page={pages.life}>
+  <PageIntro title={lifeIntro.title} lede={lifeIntro.lede} />
+
+  <Section title={nicole.title} id="nicole">
+    <div class="flow">
+      <Photo name={nicole.photo} alt={nicole.photoAlt} caption="October 2026" />
+      {nicole.body.map((paragraph) => (
+        <Markdown text={paragraph} />
+      ))}
+    </div>
+  </Section>
+
+  <Section title={dogsIntro.title} id="dogs" lede={dogsIntro.lede}>
+    <div class="dogs">
+      {dogs.map((dog) => (
+        <DogEntry dog={dog} />
+      ))}
+    </div>
+    <OrgChart />
+  </Section>
+
+  <Section title={interestsIntro.title} id="interests" lede={interestsIntro.lede}>
+    <dl class="interests">
+      {interests.map((interest) => (
+        <div id={interest.id}>
+          <dt>{interest.name}</dt>
+          <Markdown text={interest.detail} as="dd" />
+        </div>
+      ))}
+    </dl>
+  </Section>
+
+  <Section title={now.title} id="now" lede={`Updated ${now.updated}.`}>
+    <dl class="now">
+      {now.items.map((item) => (
+        <>
+          <dt>{item.label}</dt>
+          <Markdown text={item.value} as="dd" />
+        </>
+      ))}
+    </dl>
+  </Section>
+</BaseLayout>
+
+<style>
+  .dogs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+
+  .interests {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .interests > div {
+    scroll-margin-top: 1.5rem;
+  }
+
+  .now {
+    display: grid;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .now dt {
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  @media (min-width: 40rem) {
+    .now {
+      grid-template-columns: max-content minmax(0, 1fr);
+    }
+  }
+</style>

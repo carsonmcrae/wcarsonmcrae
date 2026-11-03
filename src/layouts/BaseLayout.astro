@@ -1,0 +1,53 @@
+---
+/**
+ * Purpose: The page shell every route renders inside.
+ * Scope: The document, <head>, skip link, header, main landmark, footer, achievement notice, the
+ *   client script, and the page id the achievement tracker reads.
+ * Does NOT belong: Page content (src/pages) or metadata details (SiteHead.astro).
+ */
+import '../styles/global.css';
+import AchievementToast from '../components/AchievementToast.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import SiteHead from '../components/SiteHead.astro';
+import { pages, site, type PageMeta } from '../data/site';
+
+interface Props {
+  page: Pick<PageMeta, 'title' | 'description' | 'path'> & { id: PageMeta['id'] | '404' };
+  noindex?: boolean;
+}
+
+const { page, noindex = false } = Astro.props;
+const trackedPages = Object.keys(pages).join(',');
+---
+
+<!doctype html>
+<html lang={site.language} id="top">
+  <head>
+    <SiteHead page={page} noindex={noindex} includePerson={page.id === 'home'} />
+  </head>
+  <body data-page-id={page.id} data-all-pages={trackedPages}>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <Header />
+    <main id="main" class="page" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <AchievementToast />
+    <script>
+      import '../scripts/site.ts';
+    </script>
+  </body>
+</html>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+
+  main {
+    padding-bottom: 1rem;
+  }
+</style>

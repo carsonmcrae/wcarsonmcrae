@@ -1,0 +1,51 @@
+---
+/**
+ * Purpose: The one-time "achievement unlocked" notice for visitors who explore every page.
+ * Scope: A polite live region containing the hidden notice and its Dismiss button. Showing,
+ *   timing (eight seconds, paused on hover or focus), and dismissal live in src/lib/achievements.ts.
+ * Does NOT belong: Visit tracking (src/lib/achievements.ts) or the copy (src/data/site.ts).
+ */
+import { achievement } from '../data/site';
+---
+
+<div class="achievement-region no-print" role="status" aria-live="polite">
+  <div class="achievement" data-achievement hidden>
+    <p>
+      <strong>{achievement.title}</strong>
+    </p>
+    <p>{achievement.body}</p>
+    <button type="button" class="control" data-achievement-close>
+      Dismiss
+    </button>
+  </div>
+</div>
+
+<style>
+  .achievement-region {
+    position: fixed;
+    right: var(--gutter);
+    bottom: var(--gutter);
+    left: var(--gutter);
+    z-index: 20;
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: none;
+  }
+
+  .achievement {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: start;
+    max-width: 24rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--text);
+    border-radius: 4px;
+    background: var(--bg);
+    font-size: var(--size-small);
+    pointer-events: auto;
+  }
+
+  .achievement[hidden] {
+    display: none;
+  }
+</style>

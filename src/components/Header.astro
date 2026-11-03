@@ -1,0 +1,156 @@
+---
+/**
+ * Purpose: The site header: Carson's name, the main navigation, and the theme switch.
+ * Scope: Marks the current page with aria-current, and on small screens folds the navigation and
+ *   theme switch into a disclosure menu (behavior in src/lib/menu.ts). Without JavaScript the
+ *   navigation simply stays visible.
+ * Does NOT belong: Footer links (Footer.astro) or theme logic (src/lib/theme.ts).
+ */
+import { navigation } from '../data/site';
+import { isActivePath, withBase } from '../lib/paths';
+import ThemeToggle from './ThemeToggle.astro';
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header page">
+  <a class="site-header__name" href={withBase('/')}>
+    Carson McRae
+  </a>
+  <button
+    type="button"
+    class="control site-header__menu"
+    data-menu-toggle
+    aria-controls="site-menu"
+    aria-expanded="false"
+  >
+    Menu
+  </button>
+  <div class="site-header__menu-panel" id="site-menu">
+    <nav aria-label="Main">
+      <ul role="list">
+        {navigation.map((item) => (
+          <li>
+            <a
+              href={withBase(item.href)}
+              tabindex="0"
+              aria-current={isActivePath(currentPath, item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <ThemeToggle />
+  </div>
+</header>
+
+<style>
+  .site-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding-block: 1.25rem;
+  }
+
+  .site-header__name {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--text);
+    font-weight: 750;
+    text-decoration: none;
+  }
+
+  .site-header__name:visited {
+    color: var(--text);
+  }
+
+  .site-header__menu-panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.5rem;
+  }
+
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.25rem;
+    margin: 0 -0.5rem;
+  }
+
+  nav li + li {
+    margin-top: 0;
+  }
+
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-inline: 0.5rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  nav a:visited {
+    color: var(--text);
+  }
+
+  nav a[aria-current='page'],
+  nav a:focus-visible {
+    text-decoration: underline;
+    text-decoration-thickness: 0.14em;
+    text-underline-offset: 0.3em;
+  }
+
+  @media (hover: hover) {
+    nav a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 0.07em;
+      text-underline-offset: 0.3em;
+    }
+  }
+
+  .site-header__menu {
+    display: none;
+  }
+
+  @media (max-width: 39.99rem) {
+    :global(html.js) .site-header__menu {
+      display: inline-flex;
+    }
+
+    :global(html.js) .site-header__menu-panel:not([data-open='true']) {
+      display: none;
+    }
+
+    :global(html.js) .site-header__menu-panel {
+      flex-basis: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+      padding: 0.5rem 0 1rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    :global(html.js) nav ul {
+      flex-direction: column;
+    }
+
+    :global(html.js) nav ul {
+      margin: 0;
+    }
+
+    :global(html.js) nav a {
+      padding-inline: 0;
+    }
+
+    :global(html.js) .site-header__menu-panel .control {
+      align-self: flex-start;
+    }
+  }
+</style>

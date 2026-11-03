@@ -1,0 +1,81 @@
+---
+/**
+ * Purpose: A field-guide entry for one of the dogs.
+ * Scope: Name with a coat-color swatch, an approved photo when one exists, and a short definition
+ *   list (breed, coat, title) followed by a one-line note.
+ * Constraints: Only the details Carson provided; no invented traits.
+ * Does NOT belong: The dogs' details (src/data/life.ts) or the org chart (OrgChart.astro).
+ */
+import type { Dog } from '../data/types';
+import Markdown from './Markdown.astro';
+import Photo from './Photo.astro';
+
+interface Props {
+  dog: Dog;
+}
+
+const { dog } = Astro.props;
+---
+
+<article class="dog" aria-labelledby={`dog-${dog.swatch}`}>
+  <h3 id={`dog-${dog.swatch}`}>
+    <span class:list={['swatch', `swatch--${dog.swatch}`]} aria-hidden="true"></span>
+    {dog.name}
+  </h3>
+  <Photo name={dog.photo} alt={dog.photoAlt} />
+  <dl>
+    <dt>Breed</dt>
+    <dd>{dog.breed}</dd>
+    <dt>Coat</dt>
+    <dd>{dog.coat}</dd>
+    <dt>Title</dt>
+    <dd>{dog.title}</dd>
+  </dl>
+  <Markdown text={dog.detail} />
+</article>
+
+<style>
+  .dog {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .swatch {
+    flex: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    border: 1px solid var(--text);
+    border-radius: 2px;
+  }
+
+  .swatch--margot {
+    background: #d99a5c;
+  }
+
+  .swatch--quinn {
+    background: linear-gradient(135deg, #22201e 62%, #f3efe7 62%);
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.15rem 1rem;
+  }
+
+  dt {
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  @media (forced-colors: active) {
+    .swatch {
+      forced-color-adjust: none;
+    }
+  }
+</style>

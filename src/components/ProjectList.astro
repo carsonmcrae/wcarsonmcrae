@@ -1,0 +1,76 @@
+---
+/**
+ * Purpose: Carson's software projects as a plain list.
+ * Scope: Each project's app icon, name, tagline, description, and links written as a sentence; with
+ *   `detailed`, also the personal note, status, and stack, and an id for in-page links.
+ * Does NOT belong: Project facts (src/data/projects.ts) or link formatting (LinkSentence.astro).
+ */
+import { Image } from 'astro:assets';
+import { projects } from '../data/projects';
+import { getProjectImage } from '../lib/images';
+import { joinList } from '../lib/text';
+import LinkSentence from './LinkSentence.astro';
+import Markdown from './Markdown.astro';
+
+interface Props {
+  detailed?: boolean;
+}
+
+const { detailed = false } = Astro.props;
+---
+
+<ul role="list" class="projects">
+  {projects.map((project) => {
+    const icon = getProjectImage(project.icon);
+    return (
+      <li class="project" id={detailed ? project.id : undefined}>
+        <h3 class="project__name">
+          {icon && <Image src={icon} alt="" width={32} height={32} class="project__icon" />}
+          {project.name}
+        </h3>
+        <p>
+          <strong>{project.tagline}</strong> <Markdown text={project.description} as="span" />
+        </p>
+        {detailed && project.note && <Markdown text={project.note} />}
+        {detailed && (
+          <p class="small muted">
+            {project.status}. Built with {joinList(project.stack)}.
+          </p>
+        )}
+        <p class="small">
+          See <LinkSentence links={project.links} />.
+        </p>
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .projects {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+
+  .project {
+    display: grid;
+    gap: 0.4rem;
+    scroll-margin-top: 1.5rem;
+  }
+
+  .project + .project {
+    margin-top: 0;
+  }
+
+  .project__name {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .project__icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.45rem;
+  }
+</style>

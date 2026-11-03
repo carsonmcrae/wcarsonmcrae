@@ -1,0 +1,35 @@
+---
+/**
+ * Purpose: The labelled light/dark theme switch.
+ * Scope: A button with a visible "Dark mode" label and a check box that fills when dark mode is
+ *   on; aria-pressed announces the state. Behavior lives in src/lib/theme.ts.
+ * Constraints: Hidden without JavaScript, when the system theme still applies.
+ * Does NOT belong: Theme colors (src/styles/global.css) or persistence (src/lib/theme.ts).
+ */
+---
+
+<button type="button" class="control theme-toggle" data-theme-toggle aria-pressed="false">
+  <span class="theme-toggle__box" aria-hidden="true"></span>
+  Dark mode
+</button>
+
+<style>
+  .theme-toggle__box {
+    position: relative;
+    width: 0.95rem;
+    height: 0.95rem;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
+  }
+
+  .theme-toggle[aria-pressed='true'] .theme-toggle__box::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: currentColor;
+  }
+
+  :global(html:not(.js)) .theme-toggle {
+    display: none;
+  }
+</style>

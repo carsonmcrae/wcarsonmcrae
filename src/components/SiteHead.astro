@@ -1,0 +1,94 @@
+---
+/**
+ * Purpose: Everything inside <head> for every page.
+ * Scope: Title, description, canonical and social tags, theme colors, icons, the inline theme
+ *   bootstrap (with its hash added to the Content-Security-Policy), self-hosted fonts, and
+ *   schema.org Person data on the homepage.
+ * Does NOT belong: Building the metadata (src/lib/seo.ts) or page content.
+ */
+import { createHash } from 'node:crypto';
+import { Font } from 'astro:assets';
+import { profile, socialLinks } from '../data/profile';
+import { site, type PageMeta } from '../data/site';
+import { education } from '../data/career';
+import { absoluteUrl, withBase } from '../lib/paths';
+import { buildPersonJsonLd, buildSeo, serializeJsonLd } from '../lib/seo';
+import { THEME_BOOTSTRAP_SCRIPT } from '../lib/theme';
+
+interface Props {
+  page: Pick<PageMeta, 'title' | 'description' | 'path'>;
+  noindex?: boolean;
+  includePerson?: boolean;
+}
+
+const { page, noindex = false, includePerson = false } = Astro.props;
+const siteUrl = Astro.site?.origin ?? 'https://wcarsonmcrae.com';
+const base = import.meta.env.BASE_URL;
+
+const seo = buildSeo({
+  title: page.title,
+  description: page.description,
+  path: page.path,
+  siteName: site.name,
+  defaultTitle: site.defaultTitle,
+  site: siteUrl,
+  base,
+  image: site.ogImage,
+  imageAlt: site.ogImageAlt,
+  locale: site.locale,
+});
+
+// The theme bootstrap runs inline (before paint), so its hash is added to
+// the page's Content-Security-Policy alongside Astro's bundled assets.
+const bootstrapHash: `sha256-${string}` = `sha256-${createHash('sha256').update(THEME_BOOTSTRAP_SCRIPT).digest('base64')}`;
+// Defined whenever security.csp is enabled (astro.config.mjs); tests/build verifies the hash lands.
+Astro.csp?.insertScriptHash(bootstrapHash);
+
+const person = includePerson
+  ? serializeJsonLd(
+      buildPersonJsonLd({
+        name: profile.name,
+        fullName: profile.fullName,
+        headline: profile.headline,
+        employer: profile.employer,
+        locality: 'Nashville',
+        region: 'TN',
+        school: education.school,
+        url: absoluteUrl('/', siteUrl, base),
+        image: seo.image,
+        sameAs: socialLinks.map((link) => link.href),
+      }),
+    )
+  : null;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{seo.title}</title>
+<meta name="description" content={seo.description} />
+<link rel="canonical" href={seo.canonical} />
+{noindex && <meta name="robots" content="noindex" />}
+<meta name="author" content={profile.name} />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" media="(prefers-color-scheme: light)" content={site.themeColor.light} />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content={site.themeColor.dark} />
+
+{Object.entries(seo.openGraph).map(([property, content]) => (
+  <meta property={property} content={content} />
+))}
+{Object.entries(seo.twitter).map(([name, content]) => (
+  <meta name={name} content={content} />
+))}
+
+<link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+<link rel="icon" href={withBase('/favicon-32.png')} type="image/png" sizes="32x32" />
+<link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+<link rel="manifest" href={withBase('/site.webmanifest')} />
+<link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+
+<script is:inline set:html={THEME_BOOTSTRAP_SCRIPT} />
+<Font cssVariable="--font-sans" preload={[{ style: 'normal' }]} />
+<Font cssVariable="--font-mono" />
+
+{person && <script type="application/ld+json" set:html={person} />}

@@ -1,0 +1,87 @@
+---
+/**
+ * Purpose: "What I actually do", explained in plain English or engineer-speak.
+ * Scope: Native radio buttons with a visible legend switch between the two versions using CSS
+ *   :has(), so it needs no JavaScript and works with a keyboard by default. Browsers without :has()
+ *   show both. Printing shows the engineer-speak version.
+ * Does NOT belong: The copy (src/data/profile.ts).
+ */
+import { intro } from '../data/profile';
+import Markdown from './Markdown.astro';
+---
+
+<div class="explain">
+  <fieldset class="explain__switch no-print">
+    <legend>Explain it in</legend>
+    <label>
+      <input type="radio" name="explain" value="plain" checked /> Plain English
+    </label>
+    <label>
+      <input type="radio" name="explain" value="technical" /> Engineer-speak
+    </label>
+  </fieldset>
+  <div class="flow" data-variant="plain">
+    {intro.plain.map((paragraph) => (
+      <Markdown text={paragraph} />
+    ))}
+  </div>
+  <div class="flow" data-variant="technical">
+    {intro.technical.map((paragraph) => (
+      <Markdown text={paragraph} />
+    ))}
+  </div>
+  <p class="small muted">{intro.note}</p>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .explain__switch {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 1.5rem;
+    padding: 0;
+    border: 0;
+  }
+
+  legend {
+    margin-bottom: 0.1rem;
+    font-weight: 700;
+  }
+
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    cursor: pointer;
+  }
+
+  input {
+    width: 1.125rem;
+    height: 1.125rem;
+    margin: 0;
+    accent-color: var(--link);
+  }
+
+  @supports selector(:has(*)) {
+    .explain:has([value='plain']:checked) [data-variant='technical'],
+    .explain:has([value='technical']:checked) [data-variant='plain'] {
+      display: none;
+    }
+  }
+
+  @media print {
+    [data-variant='plain'] {
+      display: none !important;
+    }
+
+    [data-variant='technical'] {
+      display: block !important;
+    }
+  }
+</style>

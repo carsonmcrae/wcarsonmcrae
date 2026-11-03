@@ -1,0 +1,369 @@
+/**
+ * Purpose: Design tokens and global styles for the whole site.
+ * Scope: Light and dark palettes (system preference, or a saved choice on <html data-theme>), type,
+ *   the reading column, links (with a distinct visited color), lists, focus, forced-colors, reduced
+ *   motion, and the print stylesheet that turns the homepage into a one-page résumé.
+ * Constraints: Plain web, set for reading: white paper, underlined links, prose and lists instead of
+ *   cards. Body text and links meet 4.5:1 and focus indicators 3:1 in both themes. Hover styles live
+ *   inside @media (hover: hover). See docs/governance/design.md.
+ * Does NOT belong: Component layout (each component's own <style>) or the font files
+ *   (astro.config.mjs).
+ */
+
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --text: #1b1d20;
+  --muted: #555b63;
+  --link: #1a55c0;
+  --visited: #6b3e8c;
+  --rule: #dfe3e8;
+  --control: #8a929c;
+  --wash: #f3f5f7;
+  --selection: #d6e4ff;
+
+  --measure: 37rem;
+  --page: 64rem;
+  --gutter: clamp(1rem, 0.5rem + 3vw, 3rem);
+  --space: 1.5rem;
+  --section: clamp(3rem, 2.25rem + 3vw, 5rem);
+
+  --size-small: 0.9375rem;
+  --size-body: 1.125rem;
+  --size-lede: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);
+  --size-h1: clamp(1.75rem, 1.3rem + 2vw, 2.625rem);
+  --size-h2: clamp(1.375rem, 1.25rem + 0.6vw, 1.625rem);
+  --size-h3: 1.1875rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #1d2126;
+    --text: #e6e8eb;
+    --muted: #a9b0b8;
+    --link: #8db8ff;
+    --visited: #cda8ee;
+    --rule: #3a414a;
+    --control: #7d8692;
+    --wash: #252a31;
+    --selection: #2c4470;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #1d2126;
+  --text: #e6e8eb;
+  --muted: #a9b0b8;
+  --link: #8db8ff;
+  --visited: #cda8ee;
+  --rule: #3a414a;
+  --control: #7d8692;
+  --wash: #252a31;
+  --selection: #2c4470;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--size-body);
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  /* Long words and addresses wrap rather than pushing the page wider at large text sizes. */
+  overflow-wrap: anywhere;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--selection);
+  color: var(--text);
+}
+
+/* ---------- Type ---------- */
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--size-h1);
+  font-weight: 720;
+  letter-spacing: -0.005em;
+  max-width: 24em;
+}
+
+h2 {
+  font-size: var(--size-h2);
+  font-weight: 700;
+}
+
+h3 {
+  font-size: var(--size-h3);
+  font-weight: 700;
+}
+
+p,
+li,
+dd {
+  text-wrap: pretty;
+}
+
+strong,
+dt {
+  font-weight: 700;
+}
+
+.lede {
+  font-size: var(--size-lede);
+  line-height: 1.55;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: var(--size-small);
+}
+
+/* ---------- Links ---------- */
+
+a {
+  color: var(--link);
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.18em;
+}
+
+a:visited {
+  color: var(--visited);
+}
+
+@media (hover: hover) {
+  a:hover {
+    text-decoration-thickness: 0.14em;
+  }
+}
+
+/* ---------- Focus ---------- */
+
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+a:focus-visible {
+  text-decoration-thickness: 0.14em;
+}
+
+/* ---------- Layout ---------- */
+
+.page {
+  width: min(100% - 2 * var(--gutter), var(--page));
+  margin-inline: auto;
+}
+
+.column {
+  max-width: var(--measure);
+}
+
+.flow > * + * {
+  margin-top: 1em;
+}
+
+.section {
+  margin-top: var(--section);
+}
+
+.section > h2 {
+  margin-bottom: 0.75em;
+}
+
+ul,
+ol {
+  padding-left: 1.25em;
+}
+
+li + li {
+  margin-top: 0.35em;
+}
+
+[role='list'] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: var(--gutter);
+  z-index: 10;
+  padding: 0.75rem 1rem;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
+  transform: translateY(-200%);
+}
+
+.skip-link:visited {
+  color: var(--bg);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* Plain, rectangular controls: the theme switch, the menu button, and dismiss buttons. */
+.control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--control);
+  border-radius: 4px;
+  background: var(--bg);
+  font-size: var(--size-small);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+@media (hover: hover) {
+  .control:hover {
+    border-color: var(--text);
+  }
+}
+
+/* ---------- Preferences ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  a {
+    color: LinkText;
+  }
+
+  a:visited {
+    color: VisitedText;
+  }
+
+  :focus-visible {
+    outline-color: Highlight;
+  }
+
+  .control {
+    border-color: ButtonText;
+  }
+}
+
+/* ---------- Print: the homepage becomes a one-page résumé ---------- */
+
+@media print {
+  :root {
+    --bg: #ffffff;
+    --text: #000000;
+    --muted: #333333;
+    --link: #000000;
+    --visited: #000000;
+    --size-body: 10.5pt;
+    --size-lede: 11.5pt;
+    --size-h1: 18pt;
+    --size-h2: 13pt;
+    --section: 1.25rem;
+  }
+
+  .page {
+    width: 100%;
+  }
+
+  .no-print,
+  .site-header nav,
+  .site-header .control,
+  .site-footer nav {
+    display: none !important;
+  }
+
+  main a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: #333333;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  li,
+  dd {
+    break-inside: avoid;
+  }
+}

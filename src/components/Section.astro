@@ -1,0 +1,31 @@
+---
+/**
+ * Purpose: A titled section of a page, in the reading column.
+ * Scope: Wraps content in a <section> labelled by its h2, with an optional id for in-page links
+ *   and an optional lede. `wide` lets lists and tables use the full page width.
+ * Does NOT belong: Page openings (PageIntro.astro) or section content.
+ */
+import Markdown from './Markdown.astro';
+
+interface Props {
+  title: string;
+  id: string;
+  lede?: string;
+  wide?: boolean;
+}
+
+const { title, id, lede, wide = false } = Astro.props;
+---
+
+<section class:list={['section', { column: !wide }]} id={id} aria-labelledby={`${id}-title`}>
+  <h2 id={`${id}-title`}>{title}</h2>
+  {lede && <Markdown text={lede} class="section__lede muted" />}
+  <slot />
+</section>
+
+<style>
+  /* The lede is rendered by Markdown.astro, so the selector must reach into that component. */
+  .section :global(.section__lede) {
+    margin: -0.25rem 0 1.5rem;
+  }
+</style>

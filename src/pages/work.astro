@@ -1,0 +1,106 @@
+---
+/**
+ * Purpose: The Work page: what Carson does, where he has done it, and what he builds.
+ * Scope: The current role with its responsibilities, earlier experience and education, skills,
+ *   tools, every project in detail, and where to find the formal version.
+ * Constraints: General, public-safe descriptions only; no client details or unconfirmed titles.
+ * Does NOT belong: The copy (src/data/career.ts and src/data/projects.ts).
+ */
+import Markdown from '../components/Markdown.astro';
+import PageIntro from '../components/PageIntro.astro';
+import ProjectList from '../components/ProjectList.astro';
+import Section from '../components/Section.astro';
+import { capabilities, education, roles, tools, workIntro } from '../data/career';
+import { projectsIntro } from '../data/projects';
+import { pages } from '../data/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { joinList } from '../lib/text';
+
+const [current, ...earlier] = roles;
+---
+
+<BaseLayout page={pages.work}>
+  <PageIntro title={workIntro.title} lede={workIntro.lede}>
+    <Markdown
+      class="small"
+      text="On this page: [current role](#current-role), [background](#background), [skills](#skills), and [projects](#projects)."
+    />
+  </PageIntro>
+
+  {current && (
+    <Section title={current.organization} id="current-role">
+      <p class="role-title">{current.title}</p>
+      <Markdown text={current.summary} />
+      {current.groups.map((group) => (
+        <>
+          <h3 class="group-title">{group.title}</h3>
+          <ul>
+            {group.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </>
+      ))}
+      <p class="small muted note">
+        I describe this work in general terms on purpose; the specifics of client projects stay at
+        work. Views on this site are my own.
+      </p>
+    </Section>
+  )}
+
+  <Section title="Before that" id="background">
+    {earlier.map((role) => (
+      <>
+        <h3>{role.organization}</h3>
+        <p class="role-title">{role.title}</p>
+        <Markdown text={role.summary} />
+      </>
+    ))}
+    <h3 class="group-title">{education.school}</h3>
+    <p class="role-title">Class of {education.year}</p>
+    <p>{education.detail}.</p>
+  </Section>
+
+  <Section title="What I’m good at" id="skills">
+    {capabilities.map((group) => (
+      <>
+        <h3 class="group-title">{group.title}</h3>
+        <ul>
+          {group.items.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </>
+    ))}
+    <p class="tools">On my own projects I mostly use {joinList(tools)}.</p>
+  </Section>
+
+  <Section title="Things I build on my own time" id="projects" lede={projectsIntro.body}>
+    <ProjectList detailed />
+    <p class="small after-list">
+      {projectsIntro.portfolioNote} <a href="https://carsonmcrae.github.io/">Visit the portfolio</a>
+      .
+    </p>
+  </Section>
+
+  <Section title="The formal version" id="formal">
+    <Markdown text="My full work history is on [LinkedIn](https://www.linkedin.com/in/carsonmcrae/). If you’d like a résumé, [ask me](/contact/)." />
+  </Section>
+</BaseLayout>
+
+<style>
+  .role-title {
+    color: var(--muted);
+    margin: -0.4rem 0 0.75rem;
+  }
+
+  .group-title {
+    margin: 1.5rem 0 0.4rem;
+  }
+
+  .note,
+  .tools,
+  .after-list {
+    margin-top: 1.5rem;
+  }
+</style>
