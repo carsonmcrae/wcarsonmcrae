@@ -1,0 +1,151 @@
+/**
+ * Purpose: Unit tests for src/lib/theme.ts.
+ * Scope: Theme helpers, the inline bootstrap script, and the toggle buttons' state, persistence,
+ *   and system-change behavior.
+ * Does NOT belong: Browser checks of the real page (tests/e2e).
+ * @vitest-environment happy-dom
+ */
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import {
+  THEME_BOOTSTRAP_SCRIPT,
+  THEME_STORAGE_KEY,
+  initThemeToggle,
+  isTheme,
+  oppositeTheme,
+  readStoredTheme,
+  resolveTheme,
+} from '../../src/lib/theme';
+import { fakeMediaQuery, memoryStorage, throwingStorage } from './helpers';
+
+function setup(options: { prefersDark?: boolean; stored?: string; withMatchMedia?: boolean } = {}) {
+  document.body.innerHTML = `
+    <button type="button" data-theme-toggle aria-pressed="false">Dark mode</button>
+    <button type="button" data-theme-toggle aria-pressed="false">Dark mode</button>`;
+  const storage = memoryStorage(options.stored ? { [THEME_STORAGE_KEY]: options.stored } : {});
+  const media = fakeMediaQuery(options.prefersDark ?? false);
+  const win = {
+    localStorage: storage,
+    matchMedia: options.withMatchMedia === false ? undefined : () => media,
+  } as unknown as Pick<Window, 'localStorage' | 'matchMedia'>;
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]'));
+  return { storage, media, win, buttons };
+}
+
+beforeEach(() => {
+  document.documentElement.removeAttribute('data-theme');
+  document.documentElement.className = '';
+});
+
+afterEach(() => {
+  document.body.innerHTML = '';
+});
+
+describe('theme helpers', () => {
+  it('recognizes valid themes', () => {
+    expect(isTheme('light')).toBe(true);
+    expect(isTheme('dark')).toBe(true);
+    expect(isTheme('sepia')).toBe(false);
+    expect(isTheme(null)).toBe(false);
+  });
+
+  it('prefers a stored choice over the system setting', () => {
+    expect(resolveTheme('light', true)).toBe('light');
+    expect(resolveTheme(null, true)).toBe('dark');
+    expect(resolveTheme(null, false)).toBe('light');
+  });
+
+  it('flips between themes', () => {
+    expect(oppositeTheme('light')).toBe('dark');
+    expect(oppositeTheme('dark')).toBe('light');
+  });
+
+  it('ignores invalid or unreadable stored values', () => {
+    expect(readStoredTheme(memoryStorage({ [THEME_STORAGE_KEY]: 'neon' }))).toBeNull();
+    expect(readStoredTheme(memoryStorage({ [THEME_STORAGE_KEY]: 'dark' }))).toBe('dark');
+    expect(readStoredTheme(throwingStorage())).toBeNull();
+    expect(readStoredTheme(null)).toBeNull();
+  });
+});
+
+describe('THEME_BOOTSTRAP_SCRIPT', () => {
+  const run = () => new Function(THEME_BOOTSTRAP_SCRIPT)();
+
+  it('marks the document as JavaScript-enabled', () => {
+    localStorage.clear();
+    run();
+    expect(document.documentElement.classList.contains('js')).toBe(true);
+    expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
+  });
+
+  it('applies a saved theme before paint', () => {
+    localStorage.setItem(THEME_STORAGE_KEY, 'dark');
+    run();
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    localStorage.clear();
+  });
+
+  it('ignores unexpected saved values', () => {
+    localStorage.setItem(THEME_STORAGE_KEY, '"><script>');
+    run();
+    expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
+    localStorage.clear();
+  });
+});
+
+describe('initThemeToggle', () => {
+  it('reflects the system preference when nothing is stored', () => {
+    const { win, buttons } = setup({ prefersDark: true });
+    initThemeToggle(document, win);
+    expect(buttons.every((b) => b.getAttribute('aria-pressed') === 'true')).toBe(true);
+  });
+
+  it('toggles, persists, and syncs every toggle button', () => {
+    const { win, buttons, storage } = setup();
+    initThemeToggle(document, win);
+    expect(buttons[0]?.getAttribute('aria-pressed')).toBe('false');
+
+    buttons[0]?.click();
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(storage.getItem(THEME_STORAGE_KEY)).toBe('dark');
+    expect(buttons.every((b) => b.getAttribute('aria-pressed') === 'true')).toBe(true);
+
+    buttons[1]?.click();
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(storage.getItem(THEME_STORAGE_KEY)).toBe('light');
+  });
+
+  it('respects an explicit theme already applied by the bootstrap script', () => {
+    const { win, buttons } = setup({ prefersDark: false });
+    document.documentElement.setAttribute('data-theme', 'dark');
+    initThemeToggle(document, win);
+    expect(buttons[0]?.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('follows system changes only when the visitor has not chosen', () => {
+    const { win, media, buttons } = setup();
+    initThemeToggle(document, win);
+    media.change(true);
+    expect(buttons[0]?.getAttribute('aria-pressed')).toBe('true');
+
+    buttons[0]?.click(); // explicit choice: light
+    media.change(true);
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(buttons[0]?.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('works without matchMedia and cleans up its listeners', () => {
+    const { win, buttons } = setup({ withMatchMedia: false });
+    const cleanup = initThemeToggle(document, win);
+    expect(buttons[0]?.getAttribute('aria-pressed')).toBe('false');
+    cleanup();
+    buttons[0]?.click();
+    expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
+  });
+
+  it('removes the system listener on cleanup', () => {
+    const { win, media } = setup();
+    const cleanup = initThemeToggle(document, win);
+    cleanup();
+    expect(media.removeEventListener).toHaveBeenCalledWith('change', expect.any(Function));
+  });
+});
