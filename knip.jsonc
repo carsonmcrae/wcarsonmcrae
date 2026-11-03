@@ -1,0 +1,15 @@
+// Purpose: Knip configuration for npm run check:unused (unused files, exports, and dependencies).
+// Scope: The entry points Knip cannot infer on its own: the command-line scripts run by hand or
+//   from package.json, and the Playwright and Vitest suites. Astro pages, the Astro config, and
+//   the test configs are found through Knip's built-in plugins.
+// Does NOT belong: Duplication (.jscpd.json) or lint rules (eslint.config.js).
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["scripts/*.{ts,mjs}", "tests/**/*.{test,spec}.ts", "src/scripts/*.ts"],
+  "project": ["src/**/*.{ts,astro}", "scripts/**/*.{ts,mjs}", "tests/**/*.ts"],
+  // The font packages are referenced by file path in astro.config.mjs, which Knip cannot see.
+  "ignoreDependencies": [
+    "@fontsource-variable/atkinson-hyperlegible-next",
+    "@fontsource-variable/atkinson-hyperlegible-mono",
+  ],
+}

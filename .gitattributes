@@ -1,0 +1,14 @@
+# Purpose: Git attributes that keep text files on LF and mark binaries.
+# Scope: LF normalisation for every text file, binary marking for images and fonts, and the lockfile
+#   marked as generated so diffs and language stats skip it.
+# Does NOT belong: Ignore rules (.gitignore) or editor settings (.editorconfig).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.gif binary
+*.ico binary
+*.woff2 binary
+package-lock.json linguist-generated=true

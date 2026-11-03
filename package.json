@@ -1,0 +1,72 @@
+{
+  "name": "wcarsonmcrae",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Carson McRae's personal website, built with Astro and published to GitHub Pages.",
+  "type": "module",
+  "author": "Carson McRae",
+  "homepage": "https://wcarsonmcrae.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carsonmcrae/wcarsonmcrae.git"
+  },
+  "engines": {
+    "node": ">=22.23.4",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "astro check",
+    "check:repo": "node scripts/check-repo.ts",
+    "check:duplicates": "jscpd",
+    "check:unused": "knip",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:build": "vitest run --config vitest.build.config.ts",
+    "test:build:subpath": "node scripts/build-subpath.ts",
+    "test:e2e": "playwright test",
+    "security:audit": "npm audit --omit=dev --audit-level=high",
+    "validate:static": "npm run format:check && npm run lint && npm run check:repo && npm run check:duplicates && npm run check:unused && npm run typecheck",
+    "validate": "npm run validate:static && npm run test:coverage && npm run build && npm run test:build && npm run test:build:subpath",
+    "validate:full": "npm run validate && npm run test:e2e && npm run security:audit",
+    "images:brand": "node scripts/generate-brand-images.mjs",
+    "images:strip": "node scripts/strip-image-metadata.ts"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "@fontsource-variable/atkinson-hyperlegible-mono": "5.3.0",
+    "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",
+    "astro": "7.4.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.11",
+    "@axe-core/playwright": "4.14.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
+    "@types/node": "24.19.2",
+    "@vitest/coverage-v8": "5.0.5",
+    "eslint": "10.13.0",
+    "eslint-plugin-astro": "3.2.1",
+    "eslint-plugin-jsx-a11y-x": "0.2.0",
+    "eslint-plugin-regexp": "3.3.1",
+    "globals": "17.13.0",
+    "happy-dom": "21.0.4",
+    "jscpd": "4.3.0",
+    "knip": "6.42.1",
+    "prettier": "3.9.10",
+    "prettier-plugin-astro": "1.1.1",
+    "sharp": "0.35.5",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.0",
+    "vitest": "5.0.5"
+  },
+  "overrides": {
+    "playwright-core": "1.63.0"
+  }
+}

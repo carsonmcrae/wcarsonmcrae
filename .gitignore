@@ -1,0 +1,32 @@
+# Purpose: Keeps generated output, local tooling state, and secrets out of Git.
+# Scope: Dependencies, build and test output, local screenshots, environment files, and OS/editor clutter.
+# Does NOT belong: Formatting exclusions (.prettierignore) or attributes (.gitattributes).
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+
+# Test and coverage output
+coverage/
+playwright-report/
+test-results/
+blob-report/
+screenshots/
+
+# Environment and secrets: never commit these
+.env
+.env.*
+!.env.example
+
+# Logs and OS/editor clutter
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+dist-subpath/

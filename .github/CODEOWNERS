@@ -1,0 +1,4 @@
+# Purpose: Assigns review ownership for this repository.
+# Scope: Every path is owned by the repository owner.
+# Does NOT belong: Branch protection settings, which live in the repository settings.
+* @carsonmcrae

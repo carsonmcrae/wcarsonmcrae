@@ -1,0 +1,62 @@
+# Purpose: Publish the site to GitHub Pages after every quality gate passes.
+# Scope: Runs the full CI workflow first, then builds with the address GitHub Pages reports
+#   (https://carsonmcrae.github.io/wcarsonmcrae/ before a custom domain is set, then
+#   https://wcarsonmcrae.com/ automatically afterwards), re-checks that exact output, and deploys
+#   with GitHub's official Pages actions (SHA-pinned). Runs on pushes to main and on demand.
+# Constraints: Requires Settings → Pages → Source: GitHub Actions. No CNAME file is needed: a custom
+#   Actions workflow ignores it, and the custom domain lives in the repository's Pages settings.
+# Does NOT belong: The checks themselves (ci.yml) or DNS configuration (docs/DEPLOYMENT.md).
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: Quality gate
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    name: Build for GitHub Pages
+    needs: ci
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/node-deps
+      - id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - name: Build with the published address
+        env:
+          SITE_URL: ${{ steps.pages.outputs.origin }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: |
+          echo "Building for $SITE_URL$BASE_PATH/"
+          npm run build
+          npm run test:build
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

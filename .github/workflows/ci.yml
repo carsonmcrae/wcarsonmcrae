@@ -1,0 +1,113 @@
+# Purpose: The quality gate for every pull request, and the first stage of every deployment.
+# Scope: Static checks (format, lint, line limits, headers, asset sizes, duplication, unused code,
+#   types), unit tests at 100% per-file coverage, the built site at the domain root and under the
+#   GitHub Pages project path, browser tests with axe in desktop Chromium, mobile Chromium, and mobile
+#   WebKit, and security (npm audit, registry signatures, gitleaks). One aggregate "Validate" job is
+#   the check to require in branch protection.
+# Does NOT belong: Publishing (deploy.yml calls this workflow first) or CodeQL (codeql.yml).
+name: CI
+
+on:
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    name: Static checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/node-deps
+      - run: npm run format:check
+      - run: npm run lint
+      - name: Line limits, file headers, and asset sizes
+        run: npm run check:repo
+      - name: Copy-paste detection (jscpd)
+        run: npm run check:duplicates
+      - name: Unused files, exports, and dependencies (Knip)
+        run: npm run check:unused
+      - run: npm run typecheck
+
+  unit:
+    name: Unit tests (100% coverage per file)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/node-deps
+      - run: npm run test:coverage
+
+  build:
+    name: Built site (root and project path)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/node-deps
+      - run: npm run build
+      - run: npm run test:build
+      - run: npm run test:build:subpath
+
+  e2e:
+    name: Browser and accessibility tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/node-deps
+      - name: Install Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
+      - run: npm run build
+      - run: npm run test:e2e
+      - name: Keep the report when a test fails
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  security:
+    name: Security audits
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/node-deps
+      - name: npm audit (production dependencies, high and above)
+        run: npm run security:audit
+      - name: Registry signatures and provenance
+        run: npm audit signatures
+      - name: Gitleaks (checksum-verified download)
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          curl -sSfL -o gitleaks.tgz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks.tgz" | sha256sum --check
+          tar -xzf gitleaks.tgz gitleaks
+          # A pull request is judged on its own commits; anything else scans the whole history.
+          if [ -n "$BASE" ]; then range="$BASE..HEAD"; else range=""; fi
+          ./gitleaks git --redact --no-banner --config .gitleaks.toml ${range:+--log-opts="$range"} .
+
+  validate:
+    name: Validate
+    if: always()
+    needs: [static, unit, build, e2e, security]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: All required jobs passed
+        run: |
+          [ "${{ needs.static.result }}" = success ] && [ "${{ needs.unit.result }}" = success ] \
+            && [ "${{ needs.build.result }}" = success ] && [ "${{ needs.e2e.result }}" = success ] \
+            && [ "${{ needs.security.result }}" = success ]

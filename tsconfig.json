@@ -1,0 +1,12 @@
+// Purpose: TypeScript settings for the site, scripts, and tests.
+// Scope: Astro's strictest preset (strict mode, unchecked index access, exact optional properties),
+//   Node types for scripts and tests, and the build and report folders to skip.
+// Does NOT belong: Lint rules (eslint.config.js) or build settings (astro.config.mjs).
+{
+  "extends": "astro/tsconfigs/strictest",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist", "coverage", "playwright-report", "test-results"],
+  "compilerOptions": {
+    "types": ["node"]
+  }
+}

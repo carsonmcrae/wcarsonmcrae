@@ -1,0 +1,19 @@
+{
+  "threshold": 0,
+  "minLines": 5,
+  "minTokens": 50,
+  "format": ["typescript", "javascript", "css", "markup", "yaml"],
+  "formatsExts": {
+    "typescript": ["ts", "mts"],
+    "javascript": ["js", "mjs"],
+    "css": ["css"],
+    "markup": ["astro"],
+    "yaml": ["yml", "yaml"]
+  },
+  "path": ["src", "scripts", "tests", ".github", "astro.config.mjs", "playwright.config.ts"],
+  "gitignore": true,
+  "ignore": ["**/node_modules/**", "**/dist/**", "**/coverage/**", "**/*.d.ts"],
+  "reporters": ["console"],
+  "absolute": false,
+  "exitCode": 1
+}

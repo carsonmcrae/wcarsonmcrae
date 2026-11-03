@@ -1,0 +1,14 @@
+# Purpose: Paths Prettier must not format.
+# Scope: Generated output, dependencies, the lockfile, and binary or vendored assets.
+# Does NOT belong: Git ignore rules (.gitignore).
+dist/
+dist-subpath/
+.astro/
+coverage/
+playwright-report/
+test-results/
+screenshots/
+node_modules/
+package-lock.json
+public/
+src/assets/
