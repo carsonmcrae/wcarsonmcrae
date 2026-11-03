@@ -5,6 +5,7 @@
   "description": "Carson McRae's personal website, built with Astro and published to GitHub Pages.",
   "type": "module",
   "author": "Carson McRae",
+  "license": "UNLICENSED",
   "homepage": "https://wcarsonmcrae.com",
   "repository": {
     "type": "git",

@@ -8,13 +8,13 @@ the matching file in `src/data/`.
 
 - [ ] **Headline.** The site uses "Technical Program & Product Leader" (approved as a public headline),
       not an official HR title. Confirm, or provide the exact title to use.
-- [ ] **Booz Allen description.** The site says I coordinate software delivery across multiple engineering
-      teams supporting the Department of Veterans Affairs, and lists general responsibilities only (`src/data/career.ts`). Confirm this is fine to publish under Booz Allen's
-      social media and public-information guidance.
+- [x] **Booz Allen description.** Approved (2026-11-03). The site says I coordinate
+      software delivery across multiple engineering teams supporting the Department of Veterans Affairs,
+      and lists general responsibilities only (`src/data/career.ts`).
 - [ ] **InfoWorks.** Described only as "consulting and business analysis" with one general sentence.
       Confirm the wording; add anything specific you want shown.
-- [ ] **Nicole.** The site names Nicole as my wife and says we married in October 2026, and that
-      PicPledge debuted at the wedding. Confirm Nicole is comfortable with this.
+- [x] **Nicole.** Approved as written (2026-11-03): Nicole is named as my wife, we married in October
+      2026, and PicPledge debuted at the wedding.
 - [ ] **Margot and Quinn.** Their field-guide entries use only the details provided (doodles, coat
       colors), a coat-color swatch, and the running joke that they run the household (including the
       ASCII org chart). There are no drawings of them. Confirm the tone.
@@ -33,8 +33,9 @@ the matching file in `src/data/`.
       Company come from your GitHub profile README. Metrics (testers, guests, leads) are deliberately
       left to the portfolio. Confirm `recalen.com`, `picpledge.com`, and `southernsurfacecompany.com`
       should be linked.
-- [ ] **License.** MIT is recommended for the code (it matches TTSNative). Confirm before a `LICENSE`
-      file is added. Personal content and photos stay unlicensed either way.
+- [x] **License.** All rights reserved (2026-11-03). The repository is public only so GitHub Pages can
+      host it for free; no reuse is granted, and no `LICENSE` file is added.
+- [x] **Domain.** Confirmed: `wcarsonmcrae.com`, with `www` redirecting to it (2026-11-03).
 
 ## Assets to provide
 

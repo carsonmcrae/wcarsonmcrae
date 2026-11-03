@@ -80,7 +80,8 @@ headers, 100% per-file coverage, no duplicated code, strict linting, exactly pin
 
 ## License
 
-The license for the source code has not been chosen yet. Until it is, all rights are reserved.
+Copyright © 2026 Carson McRae. All rights reserved.
 
-Whatever license the code ends up under, it will not cover my name, likeness, photographs, personal
-content, or the names and logos of my products. Those are not licensed for reuse.
+This repository is public so GitHub Pages can host the site, not as an invitation to reuse it. No
+license is granted to copy, modify, or redistribute the code, design, content, photographs, or the
+names and logos of my products. You are welcome to read it and learn from it.
