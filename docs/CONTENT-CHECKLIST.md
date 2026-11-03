@@ -38,11 +38,11 @@ the matching file in `src/data/`.
 
 ## Assets to provide
 
-- [ ] **Portrait** of me: `src/assets/photos/carson-portrait.jpg` (square or 4:5, at least 1200 px).
-- [ ] **Margot** and **Quinn** photos: `src/assets/photos/margot.jpg`, `src/assets/photos/quinn.jpg`.
-- [ ] Optional **Nicole and me** photo, only with Nicole's approval:
-      `src/assets/photos/nicole-and-carson.jpg`.
-- [ ] Run `npm run images:strip` after adding any photo, before committing it.
+- [x] **Portrait** provided (`carson-headshot.jpg`), plus 16 more photos; see docs/HANDOFF.md for where each goes.
+- [x] **Margot** and **Quinn** photos provided (`margot-1/2.jpg`, `quinn-1/2.jpg`).
+- [x] **Wedding photos with Nicole** provided and approved (`nicole-carson-*.jpg`). Everyone pictured in
+      every photo is approved for public use (2026-11-03).
+- [x] Photos were imported with `npm run images:import`, which strips metadata and resizes.
 
 ## Optional details
 
