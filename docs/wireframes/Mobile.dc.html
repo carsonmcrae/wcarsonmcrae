@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Profile and feed on a phone (wireframe)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#111;background:#fff;line-height:1.4}
+a{color:#1a55c0}a:hover{color:#0f3a8a}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; background: #fff; border: 1px solid #c4c4c4; display: flex; flex-direction: column">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #d4d4d4; flex: none">
+    <strong style="font-size: 16px">[App name]</strong>
+    <button type="button" style="min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; background: #fff">Menu</button>
+  </header>
+
+  <div style="flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 16px 16px 0">
+    <section aria-labelledby="m-name" style="display: flex; gap: 14px; align-items: flex-start">
+      <div style="width: 96px; height: 96px; flex: none; border: 2px dashed #8a8a8a; border-radius: 16px; background: #f1f1f1; display: grid; place-items: center; color: #5c5c5c; font-size: 12px; text-align: center; box-sizing: border-box">[Main photo]</div>
+      <div style="min-width: 0; display: flex; flex-direction: column; gap: 4px">
+        <h1 id="m-name" style="margin: 0; font-size: 22px; line-height: 1.15">Carson McRae</h1>
+        <span style="color: #5c5c5c; font-size: 13px">@carsonmcrae</span>
+        <p style="margin: 0; font-size: 14px; font-weight: 600">Technical Program &amp; Product Leader · Nashville</p>
+        <p style="margin: 0; font-size: 12px; color: #5c5c5c">14 posts · 3 milestones · since 1999</p>
+      </div>
+    </section>
+
+    <div style="display: flex; gap: 8px">
+      <a href="https://www.linkedin.com/in/carsonmcrae/" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 8px; background: #111; color: #fff; text-decoration: none; font-weight: 600; font-size: 14px">LinkedIn</a>
+      <a href="https://github.com/carsonmcrae" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #111; border-radius: 8px; color: #111; text-decoration: none; font-weight: 600; font-size: 14px">GitHub</a>
+      <a href="#m-feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; color: #111; text-decoration: none; font-size: 14px">Contact</a>
+    </div>
+
+    <section aria-labelledby="m-milestones" style="display: flex; flex-direction: column; gap: 8px">
+      <h2 id="m-milestones" style="margin: 0; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #5c5c5c">Pinned milestones</h2>
+      <div style="display: flex; align-items: flex-end">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 84px; flex: none">
+          <div style="width: 64px; height: 64px; border: 2px dashed #8a8a8a; border-radius: 10px; background: #f1f1f1; box-sizing: border-box"></div>
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: #111"></div>
+          <div style="text-align: center; font-size: 11px; line-height: 1.2"><strong>1999</strong><br>Born</div>
+        </div>
+        <div style="flex: 23 1 0; height: 2px; background: #b5b5b5; margin-bottom: 36px"></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 84px; flex: none">
+          <div style="width: 64px; height: 64px; border: 2px dashed #8a8a8a; border-radius: 10px; background: #f1f1f1; box-sizing: border-box"></div>
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: #111"></div>
+          <div style="text-align: center; font-size: 11px; line-height: 1.2"><strong>2022</strong><br>Vanderbilt</div>
+        </div>
+        <div style="flex: 4 1 0; height: 2px; background: #b5b5b5; margin-bottom: 36px"></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 84px; flex: none">
+          <div style="width: 64px; height: 64px; border: 2px dashed #8a8a8a; border-radius: 10px; background: #f1f1f1; box-sizing: border-box"></div>
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: #111"></div>
+          <div style="text-align: center; font-size: 11px; line-height: 1.2"><strong>Oct 2026</strong><br>Married</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="m-feed" aria-labelledby="m-feed-title" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #d4d4d4; padding-top: 12px">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+        <h2 id="m-feed-title" style="margin: 0; font-size: 18px">Timeline</h2>
+        <div role="group" aria-label="Show" style="display: flex; gap: 6px">
+          <button type="button" aria-pressed="true" style="min-height: 36px; padding: 0 12px; border: 1px solid #111; border-radius: 999px; background: #111; color: #fff; font-size: 13px">All</button>
+          <button type="button" aria-pressed="false" style="min-height: 36px; padding: 0 12px; border: 1px solid #111; border-radius: 999px; background: #fff; font-size: 13px">Work</button>
+          <button type="button" aria-pressed="false" style="min-height: 36px; padding: 0 12px; border: 1px solid #111; border-radius: 999px; background: #fff; font-size: 13px">Projects</button>
+          <button type="button" aria-pressed="false" style="min-height: 36px; padding: 0 12px; border: 1px solid #111; border-radius: 999px; background: #fff; font-size: 13px">Life</button>
+        </div>
+      </div>
+      <div style="display: flex; gap: 12px">
+        <div style="width: 44px; flex: none; display: flex; flex-direction: column; gap: 92px; font-size: 12px; font-weight: 700; text-align: right; padding-top: 10px">
+          <span>2026</span>
+          <span>2025</span>
+        </div>
+        <div style="flex: 1 1 auto; min-width: 0; border-left: 2px solid #b5b5b5; padding-left: 12px; display: flex; flex-direction: column; gap: 10px">
+          <article style="display: flex; gap: 10px; padding: 10px; border: 1px solid #c4c4c4; border-radius: 12px">
+            <div style="width: 56px; height: 56px; flex: none; border: 2px dashed #8a8a8a; border-radius: 8px; background: #f1f1f1; box-sizing: border-box"></div>
+            <div style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 12px; color: #5c5c5c"><strong style="color: #111">Nov 2026</strong> · Projects</span>
+              <a href="Post.dc.html" style="color: #111; font-weight: 600; font-size: 14px">Built this site</a>
+            </div>
+          </article>
+          <article style="display: flex; gap: 10px; padding: 10px; border: 1px solid #c4c4c4; border-radius: 12px">
+            <div style="width: 56px; height: 56px; flex: none; border: 2px dashed #8a8a8a; border-radius: 8px; background: #f1f1f1; box-sizing: border-box"></div>
+            <div style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 12px; color: #5c5c5c"><strong style="color: #111">Oct 2026</strong> · Life · Milestone</span>
+              <a href="Post.dc.html" style="color: #111; font-weight: 600; font-size: 14px">Married Nicole</a>
+            </div>
+          </article>
+          <article style="display: flex; gap: 10px; padding: 10px; border: 1px solid #c4c4c4; border-radius: 12px">
+            <div style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 12px; color: #5c5c5c"><strong style="color: #111">Oct 2026</strong> · Projects</span>
+              <a href="Post.dc.html" style="color: #111; font-weight: 600; font-size: 14px">PicPledge launched at our wedding</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div role="group" aria-label="Zoom" style="flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 16px; border-top: 1px solid #d4d4d4; background: #fff">
+    <button type="button" aria-label="Zoom out" style="width: 44px; height: 44px; border: 1px solid #111; border-radius: 8px; background: #fff; font-size: 20px">−</button>
+    <span style="font-weight: 600">Years</span>
+    <button type="button" aria-label="Zoom in" style="width: 44px; height: 44px; border: 1px solid #111; border-radius: 8px; background: #fff; font-size: 20px">+</button>
+    <a href="#m-feed" style="font-size: 14px">Jump to year</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

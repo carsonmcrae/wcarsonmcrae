@@ -1,0 +1,20 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-11-03T06:40:00Z" },
+  "title": "wcarsonmcrae.com wireframes",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 2700, "title": "1 · Profile + timeline feed (desktop, interactive)", "expand": "fill", "is_interactive": true },
+    "Post.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 1240, "title": "2 · Post page (desktop)", "expand": "fill", "is_interactive": true },
+    "Mobile.dc.html": { "x": 0, "y": 2820, "w": 390, "h": 844, "title": "3 · Profile + feed on a phone" },
+    "ListView.dc.html": { "x": 470, "y": 2820, "w": 1280, "h": 1000, "title": "4 · Fallback: plain list (no JavaScript, screen readers, print)", "expand": "fill" }
+  },
+  "order": ["Main.dc.html", "Post.dc.html", "Mobile.dc.html", "ListView.dc.html"],
+  "notes": {
+    "title": { "x": 0, "y": -300, "text": "wcarsonmcrae.com · wireframes v1 · your profile on a timeline-based social network", "kind": "title1", "maxW": 2640 },
+    "howto": { "x": 2720, "y": 0, "w": 380, "text": "How to read this\n\nGray boxes are wireframe placeholders; dashed boxes are photos. Nothing here is final styling.\n\nArtboard 1 works: press Play, then try the All / Work / Projects / Life filters, the − and + zoom buttons (Years → Quarters → Months), and click a post title to open artboard 2.\n\nPosts sit at their real dates. When two posts would overlap, the later one is pushed down and its dot on the axis stays at the true date.", "fill": "blue" },
+    "needs": { "x": 2720, "y": 640, "w": 380, "text": "What I need from you\n\n1. A name for the social network. It appears everywhere \"[App name]\" does.\n\n2. Month + year for the posts marked \"date TBC\": Minecraft server, first PC build, Vanderbilt start, InfoWorks, Booz Allen, Margot, Quinn, TTSNative release, Recalen beta, Southern Surface.\n\n3. Which photos go with which posts (I'll draft this once I can see the photos folder).\n\n4. Yes or no: reactions and saves that live only in the visitor's browser (no accounts, no server).\n\n5. Yes or no: Margot and Quinn get their own profiles and timelines.", "fill": "orange" }
+  },
+  "designSystems": []
+}

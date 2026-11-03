@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Timeline as a plain list (fallback wireframe)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#111;background:#fff;line-height:1.5}
+a{color:#1a55c0}a:hover{color:#0f3a8a}
+</style>
+</helmet>
+<div style="max-width: 1280px; margin: 0 auto; box-sizing: border-box; padding: 0 0 80px; display: flex; flex-direction: column; gap: 0">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding: 16px 40px; border-bottom: 1px solid #d4d4d4">
+    <strong style="font-size: 18px">[App name]</strong>
+    <nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 4px 20px">
+      <a href="#list">Timeline</a>
+      <a href="#list">Work</a>
+      <a href="#list">Life</a>
+      <a href="#list">About</a>
+      <a href="#list">Contact</a>
+    </nav>
+  </header>
+
+  <section aria-labelledby="fallback-title" style="padding: 32px 40px 0; max-width: 760px; display: flex; flex-direction: column; gap: 12px">
+    <h1 id="fallback-title" style="margin: 0; font-size: 30px; line-height: 1.2">Carson McRae · Technical Program &amp; Product Leader</h1>
+    <p style="margin: 0; color: #333">The same content, as a plain chronological list. This is what the page is before JavaScript loads, what a screen reader reads, what prints, and what search engines index. The zoomable timeline is layered on top of it, never instead of it.</p>
+    <p style="margin: 0; font-size: 14px; color: #5c5c5c">Pinned milestones: <a href="#y1999">1999 Born</a> · <a href="#y2022">2022 Vanderbilt</a> · <a href="#y2026">October 2026 Married Nicole</a></p>
+  </section>
+
+  <section id="list" aria-labelledby="list-title" style="padding: 32px 40px 0; max-width: 760px; display: flex; flex-direction: column; gap: 24px">
+    <h2 id="list-title" style="margin: 0; font-size: 22px">Timeline, newest first</h2>
+
+    <div id="y2026" style="display: flex; flex-direction: column; gap: 8px">
+      <h3 style="margin: 0; font-size: 16px; color: #5c5c5c; border-bottom: 1px solid #d4d4d4; padding-bottom: 4px">2026</h3>
+      <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px">
+        <li><strong>November 2026</strong> · Projects · <a href="Post.dc.html">Built this site</a><br><span style="color: #333">My own take on social media: a profile that is a timeline.</span></li>
+        <li><strong>October 2026</strong> · Projects · <a href="Post.dc.html">PicPledge launched at our wedding</a><br><span style="color: #333">Shipped software at my own wedding. In my defense, it worked.</span></li>
+        <li><strong>October 2026</strong> · Life · Milestone · <a href="Post.dc.html">Married Nicole</a><br><span style="color: #5c5c5c; font-size: 14px">[Wedding photo: alt text describes it]</span></li>
+        <li><strong>2026 · date TBC</strong> · Projects · <a href="Post.dc.html">Recalen enters private beta</a></li>
+        <li><strong>2026 · date TBC</strong> · Projects · <a href="Post.dc.html">TTSNative released as open source</a></li>
+      </ol>
+    </div>
+
+    <div id="y2025" style="display: flex; flex-direction: column; gap: 8px">
+      <h3 style="margin: 0; font-size: 16px; color: #5c5c5c; border-bottom: 1px solid #d4d4d4; padding-bottom: 4px">2025</h3>
+      <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px">
+        <li><strong>2025 · date TBC</strong> · Life · <a href="Post.dc.html">Quinn arrives</a></li>
+        <li><strong>2025 · date TBC</strong> · Life · <a href="Post.dc.html">Margot arrives</a></li>
+      </ol>
+    </div>
+
+    <div id="y2022" style="display: flex; flex-direction: column; gap: 8px">
+      <h3 style="margin: 0; font-size: 16px; color: #5c5c5c; border-bottom: 1px solid #d4d4d4; padding-bottom: 4px">2022–2024</h3>
+      <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px">
+        <li><strong>2024 · date TBC</strong> · Work · <a href="Post.dc.html">Booz Allen Hamilton</a></li>
+        <li><strong>2022 · dates TBC</strong> · Work · <a href="Post.dc.html">InfoWorks: consulting and business analysis</a></li>
+        <li><strong>2022</strong> · Work · Milestone · <a href="Post.dc.html">Graduated from Vanderbilt</a></li>
+      </ol>
+    </div>
+
+    <div id="y1999" style="display: flex; flex-direction: column; gap: 8px">
+      <h3 style="margin: 0; font-size: 16px; color: #5c5c5c; border-bottom: 1px solid #d4d4d4; padding-bottom: 4px">1999–2018</h3>
+      <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px">
+        <li><strong>2018 · year TBC</strong> · Life · <a href="Post.dc.html">Started at Vanderbilt</a></li>
+        <li><strong>2015 · date TBC</strong> · Life · <a href="Post.dc.html">First PC build</a></li>
+        <li><strong>2012 · date TBC</strong> · Projects · <a href="Post.dc.html">Built a Minecraft server at 13</a></li>
+        <li><strong>1999</strong> · Life · Milestone · <a href="Post.dc.html">Born</a></li>
+      </ol>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

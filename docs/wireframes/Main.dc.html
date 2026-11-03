@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Profile and timeline feed (desktop wireframe)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#111;background:#fff;line-height:1.45}
+a{color:#1a55c0}a:hover{color:#0f3a8a}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="max-width: 1280px; margin: 0 auto; box-sizing: border-box; padding: 0 0 80px; display: flex; flex-direction: column; gap: 0">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding: 16px 40px; border-bottom: 1px solid #d4d4d4">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <div style="width: 32px; height: 32px; border: 2px dashed #8a8a8a; border-radius: 8px; box-sizing: border-box"></div>
+      <strong style="font-size: 18px">[App name]</strong>
+      <span style="color: #5c5c5c; font-size: 13px">a timeline social network · a concept by Carson McRae</span>
+    </div>
+    <nav aria-label="Main" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+      <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #111; border-radius: 8px; color: #111; text-decoration: none; font-weight: 600">Timeline</a>
+      <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; color: #111; text-decoration: none">Work</a>
+      <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; color: #111; text-decoration: none">Life</a>
+      <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; color: #111; text-decoration: none">About</a>
+      <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; color: #111; text-decoration: none">Contact</a>
+      <button type="button" style="min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; background: #fff">Dark mode</button>
+    </nav>
+  </header>
+
+  <section aria-labelledby="profile-name" style="display: flex; flex-wrap: wrap; gap: 32px 40px; padding: 40px">
+    <div style="width: 260px; height: 260px; flex: none; border: 2px dashed #8a8a8a; border-radius: 20px; background: #f1f1f1; display: grid; place-items: center; color: #5c5c5c; box-sizing: border-box">[Main photo]</div>
+    <div style="flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+      <h1 id="profile-name" style="margin: 0; font-size: 34px; line-height: 1.15">Carson McRae <span style="font-weight: 400; color: #5c5c5c; font-size: 18px">@carsonmcrae</span></h1>
+      <p style="margin: 0; font-size: 18px; font-weight: 600">Technical Program &amp; Product Leader · Nashville, TN</p>
+      <p style="margin: 0; max-width: 620px; color: #333">I help teams build complicated things, then go home and build more things. Booz Allen Hamilton by day; TTSNative, Recalen and PicPledge on nights and weekends. [2–3 sentence bio, final copy later]</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px 24px; color: #333; font-size: 15px">
+        <span><strong>14</strong> posts</span>
+        <span><strong>3</strong> milestones</span>
+        <span>On the timeline since <strong>1999</strong></span>
+        <span>Following <strong>2</strong> (Margot, Quinn)</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <a href="https://www.linkedin.com/in/carsonmcrae/" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 8px; background: #111; color: #fff; text-decoration: none; font-weight: 600">LinkedIn</a>
+        <a href="https://github.com/carsonmcrae" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid #111; border-radius: 8px; color: #111; text-decoration: none; font-weight: 600">GitHub</a>
+        <a href="https://carsonmcrae.github.io/" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid #111; border-radius: 8px; color: #111; text-decoration: none; font-weight: 600">Product portfolio</a>
+        <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid #c4c4c4; border-radius: 8px; color: #111; text-decoration: none">Contact</a>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="milestones-title" style="padding: 0 40px 48px; display: flex; flex-direction: column; gap: 16px">
+    <h2 id="milestones-title" style="margin: 0; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: #5c5c5c">Pinned milestones · three moments, placed by date</h2>
+    <div style="display: flex; align-items: flex-end; gap: 0">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 150px; flex: none">
+        <div style="width: 120px; height: 120px; border: 2px dashed #8a8a8a; border-radius: 12px; background: #f1f1f1; display: grid; place-items: center; color: #5c5c5c; font-size: 13px; box-sizing: border-box">[Baby photo]</div>
+        <div style="width: 16px; height: 16px; border-radius: 50%; background: #111"></div>
+        <div style="text-align: center; line-height: 1.3"><strong>1999</strong><br><span style="color: #333; font-size: 14px">Born</span></div>
+      </div>
+      <div style="flex: 23 1 0; height: 2px; background: #b5b5b5; margin-bottom: 52px"></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 150px; flex: none">
+        <div style="width: 120px; height: 120px; border: 2px dashed #8a8a8a; border-radius: 12px; background: #f1f1f1; display: grid; place-items: center; color: #5c5c5c; font-size: 13px; box-sizing: border-box">[Graduation photo]</div>
+        <div style="width: 16px; height: 16px; border-radius: 50%; background: #111"></div>
+        <div style="text-align: center; line-height: 1.3"><strong>2022</strong><br><span style="color: #333; font-size: 14px">Vanderbilt</span></div>
+      </div>
+      <div style="flex: 4 1 0; height: 2px; background: #b5b5b5; margin-bottom: 52px"></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 150px; flex: none">
+        <div style="width: 120px; height: 120px; border: 2px dashed #8a8a8a; border-radius: 12px; background: #f1f1f1; display: grid; place-items: center; color: #5c5c5c; font-size: 13px; box-sizing: border-box">[Wedding photo]</div>
+        <div style="width: 16px; height: 16px; border-radius: 50%; background: #111"></div>
+        <div style="text-align: center; line-height: 1.3"><strong>October 2026</strong><br><span style="color: #333; font-size: 14px">Married Nicole</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="feed" aria-labelledby="feed-title" style="padding: 0 40px; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding: 20px 0; border-top: 1px solid #d4d4d4; border-bottom: 1px solid #d4d4d4">
+      <h2 id="feed-title" style="margin: 0; font-size: 22px">Timeline</h2>
+      <div role="group" aria-label="Show" style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{cats}}" as="c" hint-placeholder-count="4">
+          <button type="button" onClick="{{c.pick}}" aria-pressed="{{c.selected}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #111; border-radius: 999px; background: {{c.bg}}; color: {{c.fg}}">{{c.label}}</button>
+        </sc-for>
+      </div>
+      <div role="group" aria-label="Zoom" style="display: flex; align-items: center; gap: 8px">
+        <span style="font-size: 14px; color: #5c5c5c">Zoom</span>
+        <button type="button" onClick="{{zoomOut}}" aria-label="Zoom out" style="width: 44px; height: 44px; border: 1px solid #111; border-radius: 8px; background: #fff; font-size: 20px">−</button>
+        <span style="min-width: 88px; text-align: center; font-weight: 600">{{zoomLabel}}</span>
+        <button type="button" onClick="{{zoomIn}}" aria-label="Zoom in" style="width: 44px; height: 44px; border: 1px solid #111; border-radius: 8px; background: #fff; font-size: 20px">+</button>
+      </div>
+    </div>
+    <p style="margin: 0; font-size: 14px; color: #5c5c5c">Jump to: <a href="#feed">1999</a> · <a href="#feed">2010</a> · <a href="#feed">2020</a> · <a href="#feed">Today</a> · Showing {{count}} posts</p>
+
+    <div style="position: relative; margin-left: 96px; border-left: 2px solid #b5b5b5; height: {{feedHeight}}px">
+      <sc-for list="{{ticks}}" as="t" hint-placeholder-count="6">
+        <div style="position: absolute; left: -96px; top: {{t.top}}px; width: 96px; display: flex; align-items: center; gap: 8px; transform: translateY(-50%)">
+          <span style="width: 70px; text-align: right; font-size: 14px; font-weight: {{t.weight}}; color: {{t.color}}">{{t.label}}</span>
+          <span style="width: 18px; height: 1px; background: #b5b5b5"></span>
+        </div>
+      </sc-for>
+      <sc-for list="{{posts}}" as="p" hint-placeholder-count="5">
+        <div aria-hidden="true" style="position: absolute; left: -8px; top: {{p.dotTop}}px; width: 14px; height: 14px; border-radius: 50%; background: {{p.dot}}; border: 2px solid #fff; box-sizing: border-box; transform: translateY(-50%)"></div>
+        <sc-if value="{{p.pushed}}" hint-placeholder-val="{{false}}">
+          <div aria-hidden="true" style="position: absolute; left: -1px; top: {{p.dotTop}}px; width: 40px; height: {{p.pushHeight}}px; border-left: 1px dashed #8a8a8a; border-bottom: 1px dashed #8a8a8a"></div>
+        </sc-if>
+        <article style="position: absolute; left: 40px; top: {{p.top}}px; width: min(680px, calc(100% - 80px)); box-sizing: border-box; display: flex; gap: 16px; padding: 16px; border: 1px solid #c4c4c4; border-radius: 14px; background: #fff">
+          <sc-if value="{{p.hasPhoto}}" hint-placeholder-val="{{true}}">
+            <div style="width: 118px; height: 118px; flex: none; border: 2px dashed #8a8a8a; border-radius: 10px; background: #f1f1f1; display: grid; place-items: center; color: #5c5c5c; font-size: 12px; text-align: center; box-sizing: border-box">{{p.photoLabel}}</div>
+          </sc-if>
+          <div style="min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: #5c5c5c">
+              <span style="font-weight: 600; color: #111">{{p.when}}</span>
+              <span style="padding: 2px 10px; border: 1px solid #8a8a8a; border-radius: 999px">{{p.cat}}</span>
+              <sc-if value="{{p.milestone}}" hint-placeholder-val="{{false}}"><span style="padding: 2px 10px; border-radius: 999px; background: #111; color: #fff">Milestone</span></sc-if>
+            </div>
+            <h3 style="margin: 0; font-size: 18px; line-height: 1.25"><a href="Post.dc.html" style="color: #111">{{p.title}}</a></h3>
+            <p style="margin: 0; color: #333; font-size: 15px">{{p.text}}</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px">
+              <button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #c4c4c4; border-radius: 8px; background: #fff; font-size: 14px">React · {{p.reacts}}</button>
+              <button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #c4c4c4; border-radius: 8px; background: #fff; font-size: 14px">Save</button>
+              <button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #c4c4c4; border-radius: 8px; background: #fff; font-size: 14px">Copy link</button>
+            </div>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+    <p style="margin: 0; font-size: 14px; color: #5c5c5c">Dots sit on the exact date. A dashed elbow means the card was pushed down to avoid overlapping an earlier post; zoom in to spread them out.</p>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":2700}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { zoom: 0, filter: 'all' };
+  }
+  renderVals() {
+    const START = 1999;
+    const END = 2027;
+    const ZOOMS = [
+      { label: 'Years', pxPerYear: 60, minor: 0 },
+      { label: 'Quarters', pxPerYear: 180, minor: 4 },
+      { label: 'Months', pxPerYear: 480, minor: 12 }
+    ];
+    const POSTS = [
+      { y: 1999, m: 6, when: '1999', title: 'Born', text: 'The first entry on every timeline.', cat: 'Life', milestone: true, photo: 'Baby photo', reacts: 12 },
+      { y: 2012, m: 6, when: '2012 · date TBC', title: 'Built a Minecraft server at 13', text: 'Worked with developers on a server that caught the attention of the creators of Mineplex. First thing I helped build that other people used.', cat: 'Projects', milestone: false, photo: '', reacts: 8 },
+      { y: 2015, m: 6, when: '2015 · date TBC', title: 'First PC build', text: 'It was not the last.', cat: 'Life', milestone: false, photo: 'PC build photo', reacts: 5 },
+      { y: 2018, m: 8, when: '2018 · year TBC', title: 'Started at Vanderbilt', text: 'Human & Organizational Development and Political Science.', cat: 'Life', milestone: false, photo: '', reacts: 3 },
+      { y: 2022, m: 5, when: '2022', title: 'Graduated from Vanderbilt', text: 'HOD and Political Science. Turns out a good foundation for coordinating engineering teams.', cat: 'Work', milestone: true, photo: 'Graduation photo', reacts: 21 },
+      { y: 2022, m: 7, when: '2022 · dates TBC', title: 'InfoWorks: consulting and business analysis', text: 'Learning how organizations actually operate, and turning what people need into requirements teams can build.', cat: 'Work', milestone: false, photo: '', reacts: 4 },
+      { y: 2024, m: 3, when: '2024 · date TBC', title: 'Booz Allen Hamilton', text: 'Technical program and product leadership supporting the Department of Veterans Affairs.', cat: 'Work', milestone: false, photo: '', reacts: 9 },
+      { y: 2025, m: 2, when: '2025 · date TBC', title: 'Margot arrives', text: 'Golden apricot doodle. Self-appointed co-CEO.', cat: 'Life', milestone: false, photo: 'Margot photo', reacts: 30 },
+      { y: 2025, m: 9, when: '2025 · date TBC', title: 'Quinn arrives', text: 'Black doodle with white markings. Also self-appointed co-CEO.', cat: 'Life', milestone: false, photo: 'Quinn photo', reacts: 28 },
+      { y: 2026, m: 5, when: '2026 · date TBC', title: 'TTSNative released as open source', text: 'Natural text-to-speech that runs on your own computer. MIT licensed.', cat: 'Projects', milestone: false, photo: 'TTSNative artwork', reacts: 15 },
+      { y: 2026, m: 8, when: '2026 · date TBC', title: 'Recalen enters private beta', text: 'Dump now. Recall later.', cat: 'Projects', milestone: false, photo: '', reacts: 7 },
+      { y: 2026, m: 10, when: 'October 2026', title: 'Married Nicole', text: 'The newest pinned milestone.', cat: 'Life', milestone: true, photo: 'Wedding photo', reacts: 64 },
+      { y: 2026, m: 10, when: 'October 2026', title: 'PicPledge launched at our wedding', text: 'Shipped software at my own wedding. In my defense, it worked.', cat: 'Projects', milestone: false, photo: 'PicPledge photo', reacts: 19 },
+      { y: 2026, m: 11, when: 'November 2026', title: 'Built this site', text: 'My own take on social media: a profile that is a timeline. You are looking at the prototype.', cat: 'Projects', milestone: false, photo: '', reacts: 2 }
+    ];
+    const zoom = this.state.zoom;
+    const z = ZOOMS[zoom];
+    const filter = this.state.filter;
+    const cats = ['All', 'Work', 'Projects', 'Life'].map((label) => {
+      const id = label === 'All' ? 'all' : label;
+      const selected = id === filter;
+      return { label, selected, bg: selected ? '#111' : '#fff', fg: selected ? '#fff' : '#111', pick: () => this.setState({ filter: id }) };
+    });
+    const visible = POSTS.filter((p) => filter === 'all' || p.cat === filter || p.milestone);
+    const sorted = [...visible].sort((a, b) => (a.y + a.m / 12) - (b.y + b.m / 12));
+    const CARD = 152;
+    const GAP = 14;
+    let lastBottom = -Infinity;
+    const posts = sorted.map((p) => {
+      const exact = (p.y + (p.m - 1) / 12 - START) * z.pxPerYear;
+      const top = Math.max(exact, lastBottom + GAP);
+      lastBottom = top + CARD;
+      return {
+        ...p,
+        hasPhoto: p.photo !== '',
+        photoLabel: '[' + p.photo + ']',
+        dotTop: exact,
+        dot: p.milestone ? '#111' : '#5c5c5c',
+        top,
+        pushed: top - exact > 2,
+        pushHeight: top - exact + 76
+      };
+    });
+    const ticks = [];
+    for (let y = START; y <= END; y += 1) {
+      ticks.push({ label: String(y), top: (y - START) * z.pxPerYear, weight: 700, color: '#111' });
+      if (z.minor && y < END) {
+        const names = z.minor === 12 ? ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] : ['Apr', 'Jul', 'Oct'];
+        names.forEach((name, i) => {
+          ticks.push({ label: name, top: (y - START + (i + 1) / z.minor) * z.pxPerYear, weight: 400, color: '#5c5c5c' });
+        });
+      }
+    }
+    const feedHeight = Math.max((END - START) * z.pxPerYear, lastBottom) + 40;
+    return {
+      cats,
+      posts,
+      ticks,
+      count: posts.length,
+      feedHeight,
+      zoomLabel: z.label,
+      zoomIn: () => this.setState({ zoom: Math.min(ZOOMS.length - 1, zoom + 1) }),
+      zoomOut: () => this.setState({ zoom: Math.max(0, zoom - 1) })
+    };
+  }
+}
+</script>
+</body>
+</html>
