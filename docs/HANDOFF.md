@@ -13,10 +13,9 @@ never with Co-Authored-By or "Generated with" lines.
   underlined links). It is being replaced by the **timeline social-network redesign** described in
   [design-brief.md](design-brief.md), with the version 1 wireframes in [wireframes/](wireframes/).
   Carson is getting fuller wireframes from another agent before the build.
-- **Photos:** 17 photos were imported on Carson's PC with `npm run images:import` and committed there
-  as `d460b2c` ("Add the first set of photos"). If that commit is not on GitHub yet, it is still on
-  the PC at `G:\dev\wcarsonmcrae`; see "Landing the photo commit" below. They are not yet placed on
-  any page.
+- **Photos:** 17 photos are on the branch in `src/assets/photos/` (commit `52a718b`, imported with
+  `npm run images:import`: resized, metadata stripped). They are not yet placed on any page; the table
+  below says where each goes.
 
 ## Decisions already made
 
@@ -67,16 +66,6 @@ Captions: Carson asked for drafts in his voice; he will edit.
 Not chosen. The app is "[App name]" in the brief and wireframes. As of 2026-11-03 these .coms were
 unregistered: thenline, lifetraced, chronoscroll, thenfeed, yearfeed, lifeplotted, kronofeed,
 hindsightfeed. Ninety other candidates were already taken. Another agent is handling the name.
-
-## Landing the photo commit (if `d460b2c` is not on GitHub)
-
-On Carson's PC, in `G:\dev\wcarsonmcrae`, the identity flags keep the personal email out of the
-public history:
-
-```powershell
-git -c user.name="Carson McRae" -c user.email="65742229+carsonmcrae@users.noreply.github.com" pull --rebase origin claude/vibrant-heisenberg-ggf3kl
-git push origin claude/vibrant-heisenberg-ggf3kl
-```
 
 ## What is next
 
