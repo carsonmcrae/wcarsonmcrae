@@ -10,21 +10,28 @@
  *   (astro.config.mjs).
  */
 
+/* Resolve the paired link color before SVG icons inherit currentColor. */
+@property --link {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1746ff;
+}
+
 :root {
-  color-scheme: light;
-  --bg: #ffffff;
-  --text: #111318;
-  --muted: #545e72;
-  --link: #1746ff;
-  --visited: #6b3e8c;
-  --rule: #d9e1ef;
-  --control: #8392ae;
-  --wash: #f5f7fb;
-  --selection: #dce4ff;
-  --selected: #e4eaff;
-  --surface: #ffffff;
-  --accent: #1746ff;
-  --accent-ink: #ffffff;
+  color-scheme: light dark;
+  --bg: light-dark(#ffffff, #1d2126);
+  --text: light-dark(#111318, #e6e8eb);
+  --muted: light-dark(#545e72, #a9b0b8);
+  --link: light-dark(#1746ff, #8db8ff);
+  --visited: light-dark(#6b3e8c, #cda8ee);
+  --rule: light-dark(#d9e1ef, #3a414a);
+  --control: light-dark(#8392ae, #7d8692);
+  --wash: light-dark(#f5f7fb, #252a31);
+  --selection: light-dark(#dce4ff, #2c4470);
+  --selected: light-dark(#e4eaff, #26375c);
+  --surface: light-dark(#ffffff, #232932);
+  --accent: light-dark(#1746ff, #a9c0ff);
+  --accent-ink: light-dark(#ffffff, #111b30);
 
   --measure: 44rem;
   --page: 58rem;
@@ -40,40 +47,12 @@
   --size-h3: 1.1875rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --bg: #1d2126;
-    --text: #e6e8eb;
-    --muted: #a9b0b8;
-    --link: #8db8ff;
-    --visited: #cda8ee;
-    --rule: #3a414a;
-    --control: #7d8692;
-    --wash: #252a31;
-    --selection: #2c4470;
-    --selected: #26375c;
-    --surface: #232932;
-    --accent: #a9c0ff;
-    --accent-ink: #111b30;
-  }
+:root[data-theme='light'] {
+  color-scheme: light;
 }
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #1d2126;
-  --text: #e6e8eb;
-  --muted: #a9b0b8;
-  --link: #8db8ff;
-  --visited: #cda8ee;
-  --rule: #3a414a;
-  --control: #7d8692;
-  --wash: #252a31;
-  --selection: #2c4470;
-  --selected: #26375c;
-  --surface: #232932;
-  --accent: #a9c0ff;
-  --accent-ink: #111b30;
 }
 
 *,

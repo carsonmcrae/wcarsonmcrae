@@ -10,7 +10,6 @@
     "markup": ["astro"],
     "yaml": ["yml", "yaml"]
   },
-  "path": ["src", "scripts", "tests", ".github", "astro.config.mjs", "playwright.config.ts"],
   "gitignore": true,
   "ignore": ["**/node_modules/**", "**/dist/**", "**/coverage/**", "**/*.d.ts"],
   "reporters": ["console"],

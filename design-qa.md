@@ -75,6 +75,14 @@ Nine keyboard checks cover 320 × 400, 320 × 640 with 200% text, and 390 × 844
 all three browser projects. Normal mobile widths retain the approved two-row toolbar; the date-jump
 checks also verify that its height does not obscure the destination heading.
 
+The first Linux CI run found repeated dark-palette declarations. Each light/dark color pair now has
+one declaration, with `color-scheme` selecting system or saved preference. This preserves the exact
+palette. The Windows duplicate scan had received backslash-expanded configuration paths and scanned
+zero files; passing relative scan roots fixes that gap. The same zero-duplication threshold now
+checks 155 files locally, including the Worker entry, and finds zero clones.
+Registering the link color as a CSS color resolves it before SVG inheritance. The final desktop,
+mobile, and dark-mode captures are pixel-identical to the captures before this palette extraction.
+
 - **Typography:** Inter Variable supplies the closest practical sans-serif match to the raster target.
   Name, section headings, compact post titles, and supporting text retain distinct weights and sizes.
   Pin captions use explicit line boxes; post metadata and captions remain separate. Font loading,
@@ -111,6 +119,9 @@ The complete `npm run validate:full` run passed: 220 unit tests, 100% per-file c
 all 37 covered files (899 statements, 460 branches, 186 functions, 822 lines), 207 root build checks,
 207 subpath build checks, and 455 browser checks with 19 intentional project/opt-in skips.
 The production dependency audit reported zero vulnerabilities. No gate or budget was lowered.
+After resolving the inherited link color, `npm run validate` passed again, followed by ten focused
+theme/capture checks across the three projects (two intentional capture skips). Those checks verify
+that icon colors follow link labels after theme switching, as well as saved/system preferences.
 
 The final full run includes the six-width sweep (320, 375, 390, 768, 1024, 1440), adjacent-card
 alignment, nine constrained-menu checks, date-jump heading visibility, and visual captures. The
@@ -144,6 +155,8 @@ The scoped checks above do not establish full Section 508 or WCAG conformance.
       tokens, and usage guide; 187,307 bytes, within the existing asset cap.
 - [x] Final normalized visual comparison, full validation, and focused post-fix checks recorded.
 - [ ] Owner accessibility sign-off and remaining copy review.
+- [ ] Owner: enable Dependency graph in GitHub security settings and rerun Dependency review.
+      GitHub reported that the check cannot run with the current repository setting disabled.
 - [ ] Owner release: establish reviewed `main`, enable Pages, deploy the free Worker/D1 service,
       configure Daysforth, and forward the legacy domain. See `docs/DEPLOYMENT.md`.
 

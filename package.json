@@ -24,7 +24,7 @@
     "lint": "eslint . --max-warnings 0",
     "typecheck": "astro check",
     "check:repo": "node scripts/check-repo.ts",
-    "check:duplicates": "jscpd",
+    "check:duplicates": "jscpd src scripts tests workers .github astro.config.mjs playwright.config.ts",
     "check:unused": "knip",
     "test": "vitest run",
     "test:watch": "vitest",

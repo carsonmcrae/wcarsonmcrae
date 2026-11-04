@@ -1,7 +1,7 @@
 /**
  * Purpose: Browser tests for the light and dark themes.
  * Scope: Following the system preference, the labelled toggle and its announced state, persistence
- *   across pages and reloads, and no flash of the wrong theme on load.
+ *   across pages and reloads, inherited icon colors, and no flash of the wrong theme on load.
  * Does NOT belong: Contrast audits (accessibility.spec.ts) or the toggle's unit tests.
  */
 import { expect, test, type Page } from '@playwright/test';
@@ -31,6 +31,14 @@ test('the toggle has a visible label, announces its state, and persists', async 
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect.poll(() => background(page)).not.toBe(light);
+  const colors = await page
+    .locator('.profile-summary a')
+    .first()
+    .evaluate((link) => ({
+      label: getComputedStyle(link).color,
+      icon: getComputedStyle(link.querySelector('svg')!).fill,
+    }));
+  expect(colors.icon).toBe(colors.label);
 
   await page.goto('about/');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
