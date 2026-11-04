@@ -24,16 +24,14 @@ export const accessibility = {
     'No tracking, analytics, or third-party scripts',
   ],
   testing:
-    'Automated accessibility checks run on every page, in both themes, in Chromium and WebKit, every time the site changes, along with keyboard, zoom, and text-spacing checks.',
-  limitations: [
-    'Hand testing with screen readers (VoiceOver and NVDA) hasn’t been completed for this version yet.',
-    'Photos of Margot and Quinn haven’t been added yet, so their entries are text only.',
-  ],
+    'Automated accessibility checks run on every page, in both themes, in Chromium and WebKit, every time the site changes, along with keyboard, zoom, and text-spacing checks. Core timeline controls and action feedback were also checked with NVDA on Windows.',
+  limitations: ['VoiceOver testing on macOS and iOS hasn’t been completed for this version yet.'],
   feedback:
     'If something doesn’t work for you, please tell me. A message on [LinkedIn](https://www.linkedin.com/in/carsonmcrae/) or an issue on [GitHub](https://github.com/carsonmcrae/wcarsonmcrae/issues) both reach me.',
   colophonTitle: 'About this site',
   colophon: [
-    'This site is set in Atkinson Hyperlegible Next, a typeface the Braille Institute designed to stay legible for readers with low vision. That felt right for someone who builds a text-to-speech app. The org chart on the Life page uses its monospaced sibling, Atkinson Hyperlegible Mono.',
+    'Daysforth is set in Inter, an open-source typeface chosen for clear, compact interfaces. The org chart on the Life page uses Atkinson Hyperlegible Mono.',
     'It’s built with [Astro](https://astro.build), hosted on GitHub Pages, and has no tracking, analytics, or cookies. The [source is on GitHub](https://github.com/carsonmcrae/wcarsonmcrae).',
+    'Saved moments and your theme preference stay in your browser. Shared reactions use an anonymous browser identifier to prevent duplicate votes; the service stores hashed identifiers and publishes only counts.',
   ],
 };

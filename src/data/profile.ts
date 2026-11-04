@@ -18,9 +18,8 @@ export const profile: Profile = {
   employer: 'Booz Allen Hamilton',
   summary:
     'Carson McRae is a technical program and product leader in Nashville who helps engineering teams deliver complicated software, then goes home and builds more of it.',
-  // Drop an approved photo at src/assets/photos/carson-portrait.jpg (or .png/.webp)
-  // and it replaces the monogram placeholder automatically.
-  portrait: 'carson-portrait',
+  // A square crop of the approved headshot. The full source remains in src/assets/photos/.
+  portrait: 'carson-profile',
   portraitAlt: 'Portrait of Carson McRae',
   // Set to a public address (for example "hello@example.com") to show email
   // on the contact page. Left empty until an address is approved for publication.

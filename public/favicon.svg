@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#1a55c0"/>
-  <path d="M18.9 10.8a6.8 6.8 0 1 0 0 10.4" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="24.4" cy="21.4" r="2.2" fill="#ffffff"/>
+<!-- Purpose: Daysforth small-size app mark. Scope: Original Daysforth brand artwork. Does NOT belong: UI behavior. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Daysforth small-size app mark">
+<rect width="64" height="64" rx="16" fill="#1746ff"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M12 8H31C47 8 56 18 56 32S47 56 31 56H12Q8 56 8 52V12Q8 8 12 8Z M28 20V44H31C39 44 44 39 44 32S39 20 31 20Z M23 18a5 5 0 1 0 -10 0a5 5 0 1 0 10 0Z M23 32a5 5 0 1 0 -10 0a5 5 0 1 0 10 0Z M23 46a5 5 0 1 0 -10 0a5 5 0 1 0 10 0Z"/>
 </svg>

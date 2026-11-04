@@ -11,6 +11,9 @@ uses it updates. Pages and components contain no personal facts of their own.
 | `src/data/life.ts`          | Nicole, Margot and Quinn, the org chart, interests, "Right now"                                 |
 | `src/data/site.ts`          | Navigation, page titles and descriptions, contact copy, footer, 404, achievement                |
 | `src/data/accessibility.ts` | The accessibility statement and colophon                                                        |
+| `src/data/timeline.ts`      | All 17 moments, confirmed dates, categories, pins, captions, and photo references               |
+| `src/data/photo-gallery.ts` | Approved wedding, dog, and hobby gallery photos                                                 |
+| `src/data/brand.ts`         | Daysforth name, domains, palette, typography, voice, and asset inventory                        |
 
 ## Writing rules
 
@@ -24,22 +27,24 @@ uses it updates. Pages and components contain no personal facts of their own.
 
 ## Photos
 
-Photos are optional. The site reads naturally without them, and each one appears automatically
-once its file exists.
+All 17 supplied photographs are approved for public use, including everyone pictured. Original
+incoming files are ignored and protected by a verified external backup. Never replace them during
+an update. The imported, metadata-stripped copies live in `src/assets/photos/`.
 
-| Photo             | File (any of .jpg, .png, .webp, .avif)    | Where it appears                          |
-| ----------------- | ----------------------------------------- | ----------------------------------------- |
-| Carson            | `src/assets/photos/carson-portrait.jpg`   | Small portrait on the homepage            |
-| Margot            | `src/assets/photos/margot.jpg`            | Margot’s entry on the Life page           |
-| Quinn             | `src/assets/photos/quinn.jpg`             | Quinn’s entry on the Life page            |
-| Nicole and Carson | `src/assets/photos/nicole-and-carson.jpg` | The Nicole section, only with Nicole’s OK |
+| Photo              | File (any of .jpg, .png, .webp, .avif)             | Where it appears                               |
+| ------------------ | -------------------------------------------------- | ---------------------------------------------- |
+| Carson             | `carson-profile.jpg`, `carson-solo.jpg`            | Derived profile crop and About portrait        |
+| Birth / graduation | `1999-born.jpg`, `2022-vanderbilt-graduation.jpg`  | Pins and timeline moments                      |
+| Margot / Quinn     | `margot-1/2.jpg`, `quinn-1/2.jpg`                  | Timeline, Life entries, and gallery            |
+| Wedding            | `nicole-carson-*.jpg`                              | Wedding pin, moment, Life section, and gallery |
+| PC / hobbies       | `my-first-built-pc-13.jpg`, remaining hobby photos | PC moment and Life gallery                     |
 
 Before committing any photo:
 
 1. Make sure it is approved for a public website.
 2. Run `npm run images:strip` to remove location, camera, and timestamp metadata.
 3. Keep originals under 1.5 MB (`npm run check:repo` enforces this). Astro resizes and converts them
-   to AVIF and WebP at build time.
+   to responsive WebP at build time.
 4. Update the alt text in the matching data file if the default does not describe the photo.
 
 ## Adding a project
@@ -50,8 +55,14 @@ written first in the "See …" sentence, so lead with the project's own website.
 
 ## Adding an interest
 
-Add an entry to `interests` in `src/data/life.ts`. Its `id` becomes an anchor (`/life/#id`) that
-the homepage's "Off the clock" section can link to.
+Add an entry to `interests` in `src/data/life.ts`. Its `id` becomes a stable Life page anchor.
+
+## Adding a moment
+
+Add an entry to `timelinePosts` in `src/data/timeline.ts`. Require `YYYY-MM`; use `YYYY-MM-DD` only
+when the day is confirmed. The ID becomes `/posts/<id>/`, so keep it stable after publication.
+Choose Work, Projects, or Life. Keep exactly the three approved pins unless Carson changes them.
+Do not invent captions, dates, or reaction counts. Update tests for intentional content changes.
 
 ## Keeping "Right now" fresh
 

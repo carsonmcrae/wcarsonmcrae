@@ -1,0 +1,58 @@
+---
+/**
+ * Purpose: Carson’s centered social profile introduction.
+ * Scope: Portrait, identity, approved short biography, and contact/profile links.
+ * Does NOT belong: Pinned moments or feed controls.
+ */
+import { Image } from 'astro:assets';
+import portrait from '../assets/photos/carson-profile.jpg';
+import { profile, socialLinks } from '../data/profile';
+import { timelineProfile } from '../data/timeline';
+import { withBase } from '../lib/paths';
+import Icon from './Icon.astro';
+---
+
+<section class="profile-summary" aria-labelledby="profile-name">
+  <Image
+    class="profile-summary__portrait"
+    src={portrait}
+    alt={profile.portraitAlt}
+    width={144}
+    height={144}
+    widths={[144, 288, 432]}
+    sizes="(max-width: 40rem) 72px, 144px"
+    format="webp"
+    quality={88}
+    loading="eager"
+    fetchpriority="high"
+  />
+  <div class="profile-summary__identity">
+    <h1 id="profile-name">{profile.name}</h1>
+    <p class="profile-summary__handle">
+      @{timelineProfile.handle}
+      <span class="profile-summary__location"> · {profile.location}</span>
+    </p>
+    <p class="profile-summary__headline">{profile.headline}</p>
+    <div class="profile-summary__bio">
+      <p>{timelineProfile.bio}</p>
+      <p>{timelineProfile.afterHours}</p>
+    </div>
+    <ul role="list" class="profile-summary__links">
+      {socialLinks.map((social) => (
+        <li>
+          <a href={social.href}>
+            <Icon name={social.id as 'linkedin' | 'github' | 'portfolio'} />
+            {social.label}
+            <span class="visually-hidden"> (external site)</span>
+          </a>
+        </li>
+      ))}
+      <li>
+        <a href={withBase('/contact/')}>
+          <Icon name="contact" />
+          Contact
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>

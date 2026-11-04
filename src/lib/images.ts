@@ -1,8 +1,6 @@
 /**
- * Purpose: Finds optional images by filename and guards against images that fail to load.
- * Scope: Looks up photos in src/assets/photos/ and project art in src/assets/projects/ at build
- *   time, returning undefined when a file has not been added, and marks image frames whose image
- *   fails in the browser so CSS can show a fallback.
+ * Purpose: Finds optional source images by filename at build time.
+ * Scope: Photos in src/assets/photos/ and project art in src/assets/projects/; never import in browser code.
  * Does NOT belong: Image optimization (Astro's Picture and Image components) or stripping photo
  *   metadata (scripts/strip-image-metadata.ts).
  */
@@ -40,25 +38,3 @@ export const getProjectImage = (name: string | null | undefined) => findImage(pr
 
 export const availablePhotos = () => Object.keys(photoModules).map(fileStem);
 export const availableProjectImages = () => Object.keys(projectModules).map(fileStem);
-
-/**
- * Runtime safety net: if an image fails to load in the browser, mark its
- * frame so CSS can show the fallback instead of a broken-image icon.
- */
-export function initImageFallbacks(root: ParentNode): number {
-  let watched = 0;
-  for (const image of root.querySelectorAll<HTMLImageElement>('img[data-fallback]')) {
-    const frame = image.closest('[data-image-frame]');
-    if (!frame) {
-      continue;
-    }
-    const markFailed = () => frame.setAttribute('data-image-failed', '');
-    if (image.complete && image.naturalWidth === 0 && image.getAttribute('src')) {
-      markFailed();
-    } else {
-      image.addEventListener('error', markFailed, { once: true });
-    }
-    watched += 1;
-  }
-  return watched;
-}

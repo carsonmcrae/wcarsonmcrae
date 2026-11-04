@@ -1,0 +1,40 @@
+---
+/**
+ * Purpose: Shared social actions on a moment and its permalink.
+ * Scope: Accessible reactions, browser-local Save, Copy link, and honest initial availability.
+ * Does NOT belong: Storage and network calls (src/lib/post-actions.ts).
+ */
+import { absoluteUrl } from '../lib/paths';
+import Icon from './Icon.astro';
+interface Props {
+  id: string;
+  title: string;
+}
+const { id, title } = Astro.props;
+---
+
+<div
+  class="post-actions enhancement"
+  data-post-actions={id}
+  data-post-title={title}
+  data-post-url={absoluteUrl(`/posts/${id}/`, Astro.site!.origin)}
+>
+  <button
+    type="button"
+    data-react
+    aria-pressed="false"
+    aria-label={`React to ${title}. Reaction count unavailable.`}
+    title="Reactions"
+  >
+    <Icon name="heart" />
+    <span data-reaction-count>—</span>
+  </button>
+  <button type="button" data-save aria-pressed="false" aria-label={`Save ${title}`}>
+    <Icon name="bookmark" />
+    <span data-save-label>Save</span>
+  </button>
+  <button type="button" data-copy aria-label={`Copy link to ${title}`}>
+    <Icon name="link" />
+    <span>Copy link</span>
+  </button>
+</div>

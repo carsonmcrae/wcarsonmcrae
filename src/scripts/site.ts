@@ -7,7 +7,7 @@
  * Does NOT belong: The behaviors themselves, which live (and are tested) in src/lib.
  */
 import { initAchievements } from '../lib/achievements';
-import { initImageFallbacks } from '../lib/images';
+import { initImageFallbacks } from '../lib/image-fallbacks';
 import { initMenu } from '../lib/menu';
 import { initThemeToggle } from '../lib/theme';
 
@@ -15,6 +15,7 @@ initThemeToggle(document, window);
 initMenu(document, window);
 initImageFallbacks(document);
 initAchievements(document, window);
+document.documentElement.dataset['siteReady'] = 'true';
 
 console.info(
   '%cHey, you opened the console.%c\nThat makes us the same kind of curious. The source for this site is on GitHub: https://github.com/carsonmcrae/wcarsonmcrae',

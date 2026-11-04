@@ -2,66 +2,57 @@
  * Purpose: Design tokens and global styles for the whole site.
  * Scope: Light and dark palettes (system preference, or a saved choice on <html data-theme>), type,
  *   the reading column, links (with a distinct visited color), lists, focus, forced-colors, reduced
- *   motion, and the print stylesheet that turns the homepage into a one-page résumé.
- * Constraints: Plain web, set for reading: white paper, underlined links, prose and lists instead of
- *   cards. Body text and links meet 4.5:1 and focus indicators 3:1 in both themes. Hover styles live
+ *   motion, and a readable print stylesheet.
+ * Constraints: The approved Daysforth interface: white paper, clear typography, and photographic
+ *   moments. Body text and links meet 4.5:1 and focus indicators 3:1 in both themes. Hover styles live
  *   inside @media (hover: hover). See docs/governance/design.md.
  * Does NOT belong: Component layout (each component's own <style>) or the font files
  *   (astro.config.mjs).
  */
 
-:root {
-  color-scheme: light;
-  --bg: #ffffff;
-  --text: #1b1d20;
-  --muted: #555b63;
-  --link: #1a55c0;
-  --visited: #6b3e8c;
-  --rule: #dfe3e8;
-  --control: #8a929c;
-  --wash: #f3f5f7;
-  --selection: #d6e4ff;
+/* Resolve the paired link color before SVG icons inherit currentColor. */
+@property --link {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1746ff;
+}
 
-  --measure: 37rem;
-  --page: 64rem;
-  --gutter: clamp(1rem, 0.5rem + 3vw, 3rem);
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(#ffffff, #1d2126);
+  --text: light-dark(#111318, #e6e8eb);
+  --muted: light-dark(#545e72, #a9b0b8);
+  --link: light-dark(#1746ff, #8db8ff);
+  --visited: light-dark(#6b3e8c, #cda8ee);
+  --rule: light-dark(#d9e1ef, #3a414a);
+  --control: light-dark(#8392ae, #7d8692);
+  --wash: light-dark(#f5f7fb, #252a31);
+  --selection: light-dark(#dce4ff, #2c4470);
+  --selected: light-dark(#e4eaff, #26375c);
+  --surface: light-dark(#ffffff, #232932);
+  --accent: light-dark(#1746ff, #a9c0ff);
+  --accent-ink: light-dark(#ffffff, #111b30);
+
+  --measure: 44rem;
+  --page: 58rem;
+  --gutter: clamp(1rem, 0.5rem + 2vw, 2rem);
   --space: 1.5rem;
   --section: clamp(3rem, 2.25rem + 3vw, 5rem);
 
-  --size-small: 0.9375rem;
-  --size-body: 1.125rem;
+  --size-small: 0.875rem;
+  --size-body: 1rem;
   --size-lede: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);
   --size-h1: clamp(1.75rem, 1.3rem + 2vw, 2.625rem);
   --size-h2: clamp(1.375rem, 1.25rem + 0.6vw, 1.625rem);
   --size-h3: 1.1875rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --bg: #1d2126;
-    --text: #e6e8eb;
-    --muted: #a9b0b8;
-    --link: #8db8ff;
-    --visited: #cda8ee;
-    --rule: #3a414a;
-    --control: #7d8692;
-    --wash: #252a31;
-    --selection: #2c4470;
-  }
+:root[data-theme='light'] {
+  color-scheme: light;
 }
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #1d2126;
-  --text: #e6e8eb;
-  --muted: #a9b0b8;
-  --link: #8db8ff;
-  --visited: #cda8ee;
-  --rule: #3a414a;
-  --control: #7d8692;
-  --wash: #252a31;
-  --selection: #2c4470;
 }
 
 *,
@@ -116,6 +107,19 @@ button {
   font: inherit;
   color: inherit;
   cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+[hidden] {
+  display: none !important;
+}
+html:not(.js) .enhancement {
+  display: none;
 }
 
 ::selection {
@@ -213,6 +217,7 @@ a:focus-visible {
 
 .column {
   max-width: var(--measure);
+  margin-inline: auto;
 }
 
 .flow > * + * {
@@ -281,11 +286,22 @@ li + li {
   min-height: 2.75rem;
   padding: 0.4rem 0.75rem;
   border: 1px solid var(--control);
-  border-radius: 4px;
+  border-radius: 10px;
   background: var(--bg);
   font-size: var(--size-small);
   font-weight: 600;
   line-height: 1.2;
+}
+
+.primary-control {
+  justify-content: center;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.primary-control:visited {
+  color: var(--accent-ink);
 }
 
 @media (hover: hover) {

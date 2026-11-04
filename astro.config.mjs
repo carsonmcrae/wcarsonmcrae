@@ -9,6 +9,8 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { resolveDeployConfig } from './src/lib/deploy-config.ts';
+import { reactionOrigin } from './src/lib/reaction-api.ts';
+import { readFileSync } from 'node:fs';
 
 const { site, base } = resolveDeployConfig(process.env);
 
@@ -16,6 +18,21 @@ export default defineConfig({
   site,
   base,
   trailingSlash: 'always',
+  // Browser tests use HTTPS so WebKit can exercise the unchanged production CSP.
+  vite: {
+    preview: {
+      strictPort: true,
+      ...(process.env['E2E_TLS_KEY'] && process.env['E2E_TLS_CERT']
+        ? {
+            https: {
+              key: readFileSync(process.env['E2E_TLS_KEY']),
+              cert: readFileSync(process.env['E2E_TLS_CERT']),
+            },
+          }
+        : {}),
+    },
+  },
+  markdown: { syntaxHighlight: false },
   build: {
     format: 'directory',
   },
@@ -32,7 +49,7 @@ export default defineConfig({
         "default-src 'self'",
         "img-src 'self' data:",
         "font-src 'self'",
-        "connect-src 'self'",
+        `connect-src 'self' ${reactionOrigin(process.env['PUBLIC_REACTIONS_URL'])}`,
         "media-src 'self'",
         "object-src 'none'",
         "base-uri 'self'",
@@ -43,26 +60,16 @@ export default defineConfig({
   },
   fonts: [
     {
-      // Atkinson Hyperlegible Next: the Braille Institute's typeface for low-vision readers.
       provider: fontProviders.local(),
-      name: 'Atkinson Hyperlegible Next',
+      name: 'Inter',
       cssVariable: '--font-sans',
       fallbacks: ['system-ui', 'sans-serif'],
       options: {
         variants: [
           {
-            src: [
-              '@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2',
-            ],
-            weight: '200 800',
+            src: ['@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'],
+            weight: '100 900',
             style: 'normal',
-          },
-          {
-            src: [
-              '@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-italic.woff2',
-            ],
-            weight: '200 800',
-            style: 'italic',
           },
         ],
       },

@@ -31,6 +31,7 @@ describe('site files', () => {
   it('ships icons, a manifest, and the social preview image', () => {
     for (const file of [
       'favicon.svg',
+      'favicon-16.png',
       'favicon-32.png',
       'apple-touch-icon.png',
       'icon-192.png',

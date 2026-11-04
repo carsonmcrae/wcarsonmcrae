@@ -13,9 +13,9 @@ import {
   findImage,
   getPhoto,
   getProjectImage,
-  initImageFallbacks,
   type ImageModules,
 } from '../../src/lib/images';
+import { initImageFallbacks } from '../../src/lib/image-fallbacks';
 
 const modules = {
   '../assets/photos/carson-portrait.jpg': { default: { src: '/carson.jpg' } },

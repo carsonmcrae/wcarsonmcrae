@@ -1,0 +1,19 @@
+/**
+ * Purpose: Portable Daysforth brand foundations.
+ * Scope: Colors, font family, weight scale, and interface corner radius.
+ * Does NOT belong: Product layout or behavior.
+ */
+:root {
+  --daysforth-blue: #1746ff;
+  --daysforth-ink: #111318;
+  --daysforth-paper: #ffffff;
+  --daysforth-mist: #f5f7fb;
+  --daysforth-slate: #545e72;
+  --daysforth-dark-canvas: #1d2126;
+  --daysforth-dark-blue: #a9c0ff;
+  --daysforth-font: Inter, system-ui, sans-serif;
+  --daysforth-body-weight: 400;
+  --daysforth-control-weight: 550;
+  --daysforth-heading-weight: 760;
+  --daysforth-control-radius: 10px;
+}

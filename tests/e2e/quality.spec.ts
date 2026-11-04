@@ -6,7 +6,7 @@
  * Does NOT belong: Accessibility audits (accessibility.spec.ts) or navigation (navigation.spec.ts).
  */
 import { expect, test } from '@playwright/test';
-import { horizontalOverflow, PAGES } from './helpers';
+import { horizontalOverflow, PAGES, CORE_PAGES } from './helpers';
 
 const WIDTHS = [320, 375, 390, 768, 1024, 1440];
 
@@ -19,6 +19,23 @@ test.describe('responsive layout', () => {
       for (const { name, path } of PAGES) {
         await page.goto(path);
         expect(await horizontalOverflow(page), `${name} at ${width}px`).toBeLessThanOrEqual(0);
+        if (path === '') {
+          await page.evaluate(() => document.fonts.ready);
+          const labels = await page.locator('.date-rail__label').evaluateAll((elements) =>
+            elements.map((element) => {
+              const { left, right, top, bottom } = element.getBoundingClientRect();
+              return { left, right, top, bottom };
+            }),
+          );
+          for (const [index, first] of labels.entries()) {
+            for (const second of labels.slice(index + 1)) {
+              const overlap =
+                Math.min(first.right, second.right) > Math.max(first.left, second.left) &&
+                Math.min(first.bottom, second.bottom) > Math.max(first.top, second.top);
+              expect(overlap, `Pinned date targets at ${width}px`).toBe(false);
+            }
+          }
+        }
         if (process.env['SCREENSHOTS'] === '1') {
           for (const scheme of ['light', 'dark'] as const) {
             await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
@@ -55,7 +72,7 @@ test('pages load without console errors or failed requests', async ({ page }) =>
 test('the explain-it toggle switches between plain English and engineer-speak', async ({
   page,
 }) => {
-  await page.goto('');
+  await page.goto('work/');
   const plain = page.getByRole('radio', { name: 'Plain English' });
   const technical = page.getByRole('radio', { name: 'Engineer-speak' });
   await expect(plain).toBeChecked();
@@ -67,12 +84,12 @@ test('the explain-it toggle switches between plain English and engineer-speak', 
 });
 
 test('visiting every page unlocks the achievement once', async ({ page }) => {
-  for (const { path } of PAGES.slice(0, -1)) {
+  for (const { path } of CORE_PAGES.slice(0, -1)) {
     await page.goto(path);
   }
   const notice = page.locator('[data-achievement]');
   await expect(notice).toBeHidden();
-  await page.goto(PAGES.at(-1)!.path);
+  await page.goto(CORE_PAGES.at(-1)!.path);
   await expect(notice).toBeVisible();
   await expect(notice).toContainText('Achievement unlocked');
   await notice.getByRole('button', { name: 'Dismiss' }).click();

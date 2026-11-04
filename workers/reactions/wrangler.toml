@@ -1,0 +1,25 @@
+# Purpose: Free-tier deployment configuration for Daysforth shared reactions.
+# Scope: Worker entry, D1 binding, allowed browser origins, and rate-limit cleanup.
+# Does NOT belong: Secrets (set RATE_LIMIT_SALT with wrangler secret put) or site hosting.
+name = "daysforth-reactions"
+account_id = "e40c53bd15ed7311ba8ef5fdfa63bfac"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+workers_dev = true
+preview_urls = false
+
+[observability]
+enabled = false
+
+[vars]
+ALLOWED_ORIGINS = "https://wcarsonmcrae.com,https://www.wcarsonmcrae.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "daysforth-reactions"
+# Configure the real free D1 database before deploying.
+database_id = "71eb69da-50dd-4c15-8db3-a3b8c9424f5c"
+migrations_dir = "migrations"
+
+[triggers]
+crons = ["17 * * * *"]

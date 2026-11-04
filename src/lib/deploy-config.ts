@@ -23,9 +23,10 @@ export function normalizeSiteUrl(value: string | undefined): string {
   } catch {
     throw new Error(`SITE_URL must be an absolute URL, received "${raw}"`);
   }
-  if (url.protocol !== 'https:' && url.hostname !== 'localhost') {
+  if (url.protocol !== 'https:' && !(url.protocol === 'http:' && url.hostname === 'localhost')) {
     throw new Error(`SITE_URL must use https, received "${raw}"`);
   }
+  if (url.username || url.password) throw new Error('SITE_URL must not contain credentials.');
   return url.origin;
 }
 

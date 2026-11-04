@@ -5,11 +5,16 @@
 // Does NOT belong: Duplication (.jscpd.json) or lint rules (eslint.config.js).
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": ["scripts/*.{ts,mjs}", "tests/**/*.{test,spec}.ts", "src/scripts/*.ts"],
-  "project": ["src/**/*.{ts,astro}", "scripts/**/*.{ts,mjs}", "tests/**/*.ts"],
+  "entry": [
+    "scripts/*.{ts,mjs}",
+    "tests/**/*.{test,spec}.ts",
+    "src/scripts/*.ts",
+    "workers/**/src/index.ts",
+  ],
+  "project": ["src/**/*.{ts,astro}", "scripts/**/*.{ts,mjs}", "tests/**/*.ts", "workers/**/*.ts"],
   // The font packages are referenced by file path in astro.config.mjs, which Knip cannot see.
   "ignoreDependencies": [
-    "@fontsource-variable/atkinson-hyperlegible-next",
+    "@fontsource-variable/inter",
     "@fontsource-variable/atkinson-hyperlegible-mono",
   ],
 }

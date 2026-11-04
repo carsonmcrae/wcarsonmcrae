@@ -7,6 +7,7 @@
  * Does NOT belong: The copy (src/data/career.ts and src/data/projects.ts).
  */
 import Markdown from '../components/Markdown.astro';
+import ExplainToggle from '../components/ExplainToggle.astro';
 import PageIntro from '../components/PageIntro.astro';
 import ProjectList from '../components/ProjectList.astro';
 import Section from '../components/Section.astro';
@@ -26,6 +27,10 @@ const [current, ...earlier] = roles;
       text="On this page: [current role](#current-role), [background](#background), [skills](#skills), and [projects](#projects)."
     />
   </PageIntro>
+
+  <Section title="What I actually do" id="what-i-do">
+    <ExplainToggle />
+  </Section>
 
   {current && (
     <Section title={current.organization} id="current-role">

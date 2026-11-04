@@ -14,7 +14,7 @@ test.describe('routing', () => {
       const response = await page.goto(path);
       expect(response?.status()).toBe(200);
       await expect(page.locator('h1')).toHaveCount(1);
-      await expect(page).toHaveTitle(/Carson McRae/);
+      await expect(page).toHaveTitle(/Daysforth/);
     });
   }
 
@@ -54,7 +54,7 @@ test.describe('main navigation', () => {
 
   test('the brand link returns home', async ({ page }) => {
     await page.goto('work/');
-    await page.getByRole('link', { name: 'Carson McRae', exact: true }).first().click();
+    await page.getByRole('link', { name: 'Daysforth', exact: true }).first().click();
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await expect(page).not.toHaveURL(/work\/$/);
   });
@@ -112,14 +112,17 @@ test.describe('small-screen menu', () => {
 });
 
 test.describe('outbound links', () => {
-  test('the homepage links to the portfolio, GitHub, and TTSNative', async ({ page }) => {
+  test('the homepage links to the portfolio and GitHub, and project moments link to their product', async ({
+    page,
+  }) => {
     await page.goto('');
     const hrefs = await page
       .locator('main a[href^="https://"]')
       .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
     expect(hrefs).toContain('https://carsonmcrae.github.io/');
     expect(hrefs).toContain('https://github.com/carsonmcrae');
-    expect(hrefs).toContain('https://ttsnative.com');
+    await page.locator('#moment-ttsnative-1 h3 a').click();
+    await expect(page.locator('main a[href="https://ttsnative.com"]')).toBeVisible();
   });
 
   test('the work page links every project and LinkedIn', async ({ page }) => {

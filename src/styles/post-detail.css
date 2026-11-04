@@ -1,0 +1,139 @@
+/**
+ * Purpose: Focused reading layout for a moment’s permalink.
+ * Scope: Comfortable copy, uncropped photography, metadata, and previous/next navigation.
+ * Does NOT belong: Social action behavior or feed-card styling.
+ */
+.post-detail {
+  max-width: 48rem;
+  margin: 2rem auto;
+}
+.back-to-timeline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  margin-bottom: 2rem;
+  font-size: 0.875rem;
+}
+.post-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.post-detail h1 {
+  max-width: none;
+  letter-spacing: -0.045em;
+}
+.post-detail__caption {
+  margin-top: 0.75rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+.post-detail__photo,
+.post-detail__project {
+  margin-top: 1.5rem;
+  overflow: hidden;
+  border-radius: 16px;
+}
+.post-detail__photo img {
+  width: 100%;
+  max-height: 44rem;
+  object-fit: contain;
+  background: var(--wash);
+}
+.post-detail__project {
+  min-height: 13rem;
+}
+.post-detail__project img {
+  width: 8rem;
+  height: 8rem;
+}
+.post-detail__body {
+  margin-top: 1.5rem;
+}
+.post-detail__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: 1rem;
+}
+.post-detail__links li + li {
+  margin: 0;
+}
+.post-detail__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+.post-detail > .post-actions {
+  margin-top: 1rem;
+  padding-block: 0.5rem;
+  border-block: 1px solid var(--rule);
+}
+.post-neighbors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.post-location {
+  margin-top: 2rem;
+}
+.post-location a {
+  display: grid;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  color: var(--text);
+  text-decoration: none;
+}
+.post-location__dates {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+.post-location__dates > span {
+  color: var(--muted);
+}
+.post-location__track {
+  position: relative;
+  display: block;
+  height: 1rem;
+  margin-inline: 0.25rem;
+  border-top: 2px solid var(--rule);
+}
+.post-location__point {
+  position: absolute;
+  top: -6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateX(-50%);
+}
+.post-neighbors a {
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  text-decoration: none;
+}
+.post-neighbors span {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.post-neighbors strong {
+  font-size: 0.9375rem;
+}
+@media (max-width: 30rem) {
+  .post-neighbors {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

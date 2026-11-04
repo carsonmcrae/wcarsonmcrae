@@ -1,35 +1,27 @@
 ---
 /**
- * Purpose: The labelled light/dark theme switch.
- * Scope: A button with a visible "Dark mode" label and a check box that fills when dark mode is
- *   on; aria-pressed announces the state. Behavior lives in src/lib/theme.ts.
- * Constraints: Hidden without JavaScript, when the system theme still applies.
- * Does NOT belong: Theme colors (src/styles/global.css) or persistence (src/lib/theme.ts).
+ * Purpose: The visibly labelled light/dark theme switch.
+ * Scope: The moon icon and pressed state; the operating-system theme still works without JavaScript.
+ * Does NOT belong: Theme behavior or palette definitions.
  */
+import Icon from './Icon.astro';
 ---
 
-<button type="button" class="control theme-toggle" data-theme-toggle aria-pressed="false">
-  <span class="theme-toggle__box" aria-hidden="true"></span>
+<button
+  type="button"
+  class="control theme-toggle enhancement"
+  data-theme-toggle
+  aria-pressed="false"
+>
+  <Icon name="moon" />
   Dark mode
 </button>
-
 <style>
-  .theme-toggle__box {
-    position: relative;
-    width: 0.95rem;
-    height: 0.95rem;
-    border: 1.5px solid currentColor;
-    border-radius: 2px;
+  .theme-toggle {
+    font-size: 0.75rem;
   }
-
-  .theme-toggle[aria-pressed='true'] .theme-toggle__box::after {
-    content: '';
-    position: absolute;
-    inset: 2px;
-    background: currentColor;
-  }
-
-  :global(html:not(.js)) .theme-toggle {
-    display: none;
+  .theme-toggle[aria-pressed='true'] {
+    background: var(--selected);
+    color: var(--link);
   }
 </style>

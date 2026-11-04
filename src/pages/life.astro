@@ -11,6 +11,8 @@ import Markdown from '../components/Markdown.astro';
 import OrgChart from '../components/OrgChart.astro';
 import PageIntro from '../components/PageIntro.astro';
 import Photo from '../components/Photo.astro';
+import PhotoGallery from '../components/PhotoGallery.astro';
+import { weddingPhotos, dogPhotos, lifePhotos } from '../data/photo-gallery';
 import Section from '../components/Section.astro';
 import { dogs, dogsIntro, interests, interestsIntro, lifeIntro, nicole, now } from '../data/life';
 import { pages } from '../data/site';
@@ -26,6 +28,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       {nicole.body.map((paragraph) => (
         <Markdown text={paragraph} />
       ))}
+      <PhotoGallery photos={weddingPhotos} />
     </div>
   </Section>
 
@@ -36,6 +39,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       ))}
     </div>
     <OrgChart />
+    <PhotoGallery photos={dogPhotos} />
   </Section>
 
   <Section title={interestsIntro.title} id="interests" lede={interestsIntro.lede}>
@@ -58,6 +62,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </>
       ))}
     </dl>
+  </Section>
+
+  <Section title="Out and about" id="photos">
+    <PhotoGallery photos={lifePhotos} />
   </Section>
 </BaseLayout>
 

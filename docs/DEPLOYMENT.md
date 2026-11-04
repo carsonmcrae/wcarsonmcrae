@@ -1,93 +1,89 @@
-# Deploying to GitHub Pages and wcarsonmcrae.com
+# Deploying Daysforth for free
 
-The site is built and published by GitHub Actions (`.github/workflows/deploy.yml`) whenever `main`
-changes. Nothing is published from any other branch. The DNS values below come from GitHub's own
-documentation ([managing a custom domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site),
-checked November 2026). Re-check that page before changing DNS in case the values have changed.
+The canonical address is **https://wcarsonmcrae.com/**. **daysforth.com** and its `www` host forward
+to that address. GitHub Pages hosts the static frontend; Cloudflare Free supplies DNS, edge
+protection, redirects, and the Worker/D1 reactions service. GoDaddy remains the registrar.
+No paid upgrade or usage plan is authorized.
 
-## How the address is chosen
+On November 4, 2026, Carson explicitly authorized the agent to merge, enable Pages, deploy,
+configure Cloudflare/reactions, and update DNS. This overrides the standing owner-only rule for
+this release. The separate `carsonmcrae.github.io` portfolio repository remains unchanged.
 
-`actions/configure-pages` reports the address GitHub Pages will serve, and the build uses it for every
-link, canonical tag, sitemap entry, and social image:
+## Configuration
 
-| Stage                   | Address                                       |
-| ----------------------- | --------------------------------------------- |
-| Before a custom domain  | `https://carsonmcrae.github.io/wcarsonmcrae/` |
-| After the domain is set | `https://wcarsonmcrae.com/`                   |
+- Pages source: **GitHub Actions**. Custom domain: **wcarsonmcrae.com**. Actions use the Pages
+  setting rather than a CNAME file. Local builds also default to the personal domain.
+- Repository variable `PUBLIC_REACTIONS_URL`:
+  `https://daysforth-reactions.wcarsonmcrae.workers.dev`.
+- Worker and D1 database: `daysforth-reactions`; binding: `DB`. Its account/database IDs are public
+  configuration in `wrangler.toml`; the salt remains encrypted in Cloudflare secrets.
+- The isolated `daysforth` Wrangler profile is bound only to `workers/reactions/`. Verify its
+  account before deployment; the default CLI profile belongs to another project.
+- Workers and both zones use Free. Version previews, logs, traces, and Issues are off.
+- Bot Preference Sync is off by Carson's explicit choice; retain the app's own robots.txt.
 
-No code change is needed when the domain switches over. `npm run test:build:subpath` proves the project
-path works on every change.
+## DNS and TLS
 
-This is a **project site**, separate from the `carsonmcrae.github.io` portfolio repository, which has no
-custom domain. Adding a custom domain to this repository does not change the portfolio. (If the
-portfolio ever gets a custom domain, project sites without their own domain would move under it; this
-one has its own, so it would not.)
+Both domains' original DNS tables were saved outside Git before modification. The primary's
+original zone file was exported. Preserve DMARC, Domain Connect, and unrelated records. Neither
+zone had MX records or enabled DNSSEC at migration time. Never introduce wildcard records.
 
-## 1. Enable Pages (once)
+The primary's assigned nameservers are `kara.ns.cloudflare.com` and `kevin.ns.cloudflare.com`.
+Use the exact pair assigned to each zone in GoDaddy's custom nameservers.
 
-1. In **carsonmcrae/wcarsonmcrae → Settings → Pages**, set **Source** to **GitHub Actions**.
-2. Merge to `main` (or run the **Deploy** workflow from the Actions tab). The quality gate runs first;
-   the site deploys only if every check passes.
-3. Open `https://carsonmcrae.github.io/wcarsonmcrae/` and check the site.
+| Type  | Primary host | Origin value          |
+| ----- | ------------ | --------------------- |
+| A     | @            | 185.199.108.153       |
+| A     | @            | 185.199.109.153       |
+| A     | @            | 185.199.110.153       |
+| A     | @            | 185.199.111.153       |
+| CNAME | www          | carsonmcrae.github.io |
 
-## 2. Verify the domain (recommended, protects against takeovers)
+Start these records DNS-only for GitHub's domain validation and certificate issuance. Once its
+certificate is valid, enforce HTTPS in Pages and proxy the web records through Cloudflare.
+Use **Full (strict)** encryption, never Flexible. Leave Domain Connect DNS-only.
 
-1. Open your **profile** settings (not the repository's): **Settings → Pages → Add a domain**, and
-   enter `wcarsonmcrae.com`.
-2. Add the TXT record GitHub shows you at your DNS provider. Its name has the form
-   `_github-pages-challenge-carsonmcrae.wcarsonmcrae.com`.
-3. Confirm it has propagated, then click **Verify**. Keep the TXT record afterwards.
+Daysforth uses proxied redirect-only records with reserved documentation addresses. A single 301
+rule matches its apex and www over HTTP/HTTPS, redirects to `https://wcarsonmcrae.com` plus the
+original path, and preserves the query string. It serves no origin content. Verify before sign-off.
 
-```bash
-dig _github-pages-challenge-carsonmcrae.wcarsonmcrae.com +nostats +nocomments +nocmd TXT
-```
+## Hardening and release checks
 
-## 3. Add the custom domain
+Keep the app's hashed-script/style CSP in HTML. Add edge headers for `frame-ancestors 'none'`,
+`X-Frame-Options: DENY`, nosniff, a strict referrer policy, and disabled camera/microphone/geolocation.
+Set HSTS only after HTTPS works, without includeSubDomains or preload. Keep script/HTML rewriting
+and analytics features off so CSP hashes match and the privacy statement stays accurate.
 
-1. In **Settings → Pages → Custom domain**, enter `wcarsonmcrae.com` and save. With a custom Actions
-   workflow, GitHub creates no `CNAME` file and ignores one if it exists, so this repository has none.
-2. At your DNS provider, remove any default parking records for the apex, then add:
+Reactions require an approved Origin and JSON for writes, cap bodies at 512 bytes, deduplicate in
+SQL, hash browser/network identifiers with a private salt, and limit new votes to 20/network/hour.
+Only the primary apex/www are allowed in production. CORS is a browser boundary, not identity proof.
+Quota exhaustion leaves the feed and local Save usable. Salt rotation changes deduplication IDs.
+See [the service guide](../workers/reactions/README.md).
 
-| Type    | Name  | Value                                                                                      |
-| ------- | ----- | ------------------------------------------------------------------------------------------ |
-| `A`     | `@`   | `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`                 |
-| `AAAA`  | `@`   | `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153` |
-| `CNAME` | `www` | `carsonmcrae.github.io` (your user domain, without the repository name)                    |
+Run `npm run validate:full` and inspect CI, CodeQL, and Dependency review. Merge into the existing
+review base, then establish main from that reviewed result and make it the default, avoiding the
+historical site's accidental publication. Every main push runs the quality gate before deploying.
 
-If your provider supports `ALIAS` or `ANAME` records, one pointing `@` at `carsonmcrae.github.io` can
-replace the `A` and `AAAA` records. Do not use wildcard records such as `*.wcarsonmcrae.com`.
+Verify all four domain/host variants over HTTP/HTTPS, deep paths and queries, direct post/secondary
+pages, custom 404, canonical tags, robots, sitemap, share images, security headers, both themes,
+keyboard controls, and the real brand ZIP. Verify shared totals and duplicate protection across
+browsers; remove exact test votes. Record actual outcomes in design-qa.md.
 
-With both the apex and `www` configured, GitHub redirects `www.wcarsonmcrae.com` to
-`wcarsonmcrae.com` automatically, because the custom domain is the apex.
+VoiceOver on macOS/iOS and native Safari download verification remain outstanding. Windows NVDA
+and automated WebKit do not establish conformance. Carson authorized publication with these
+limitations recorded.
 
-## 4. Check DNS and turn on HTTPS
+## Rollback
 
-```bash
-dig wcarsonmcrae.com +noall +answer -t A
-```
+Revert the release commit on main or unpublish Pages. Restore prior DNS from the saved inventories
+if needed. Never delete protected photo originals, backups, or real reactions. SQL triggers maintain
+totals after targeted vote deletion. A Worker rollback must remain compatible with its schema.
 
-```bash
-dig wcarsonmcrae.com +noall +answer -t AAAA
-```
+## Official references
 
-```bash
-dig www.wcarsonmcrae.com +nostats +nocomments +nocmd
-```
-
-The apex should list the four GitHub addresses; `www` should be a CNAME to `carsonmcrae.github.io`.
-DNS changes can take up to 24 hours. Then select **Enforce HTTPS** in **Settings → Pages** (it can take
-up to 24 hours to become available while GitHub issues the certificate). If the certificate stalls,
-remove the custom domain, save it again, and wait.
-
-## 5. Verify the live site
-
-- `https://wcarsonmcrae.com/` loads over HTTPS, and `http://` and `www.` redirect to it.
-- `https://wcarsonmcrae.com/about/`, `/work/`, `/life/`, `/contact/`, and `/accessibility/` load directly.
-- `https://wcarsonmcrae.com/sitemap-index.xml` and `/robots.txt` use the custom domain.
-- A missing page such as `/nope/` shows the site's 404 page.
-- Share the homepage link in a messaging app to check the preview image and text.
-
-## Rolling back
-
-Revert the commit on `main`; the Deploy workflow republishes the previous version. To take the site
-offline, set **Settings → Pages → Source** to none (or unpublish the site from that page).
+- [GitHub custom domains](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)
+- [Cloudflare nameserver setup](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/)
+- [Free redirect quotas](https://developers.cloudflare.com/rules/url-forwarding/)
+- [Response header rules](https://developers.cloudflare.com/rules/transform/response-header-modification/)
+- [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/)
+- [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/)

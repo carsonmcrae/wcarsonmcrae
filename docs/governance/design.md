@@ -1,57 +1,46 @@
-# Design notes
+# Daysforth design notes
 
-The site is **plain web, set for reading**. Carson builds a text-to-speech app, so the site takes its
-form from readability: one typeface designed for legibility, prose and plain lists, underlined links,
-and nothing that exists only to decorate. It should read like a person's own website, never like a
-template.
+The approved visual source is [the November 2026 wireframe set](../wireframes/approved/README.md).
+Daysforth is a timeline-first social profile: a centered identity, photographic pinned moments,
+and a chronological story that switches between Timeline and Posts. The older reading-first design
+and wireframe experiments are historical. Preserve the approved composition when adding features.
 
-## The system
+## Foundations
 
-- **Type.** Atkinson Hyperlegible Next for everything; Atkinson Hyperlegible Mono only for the ASCII
-  org chart. 18 px body at 1.6 line height. Hierarchy comes from size and weight, never from labels.
-- **Color.** White paper and slate dark mode (not black). Body text, a muted grey, link blue, a
-  distinct visited purple, and hairline rules. There is no accent color beyond the links.
+- Inter Variable is the interface typeface. Atkinson Hyperlegible Mono remains only for the household
+  org chart. Body text starts at 16 px with comfortable line spacing.
+- White, ink, restrained blue, fine borders, and generous space establish the light theme. Dark mode
+  uses slate surfaces and a lighter blue. Check contrast in both themes.
+- The desktop profile and pins use an 800 px centered column; the feed uses 928 px. The timeline
+  stays centered when the profile scrolls away. Secondary pages use a narrower reading column.
+- Use the original Daysforth mark and wordmark from the [brand kit](../../public/brand/README.md).
+  UI icons come from Phosphor. Use Carson's approved photos, never generated substitutes.
+- The approved refined D uses a connected inset timeline at 32 px and larger. Use the simplified
+  three-moment drawing below 32 px and in browser favicons, including high-resolution favicon PNGs.
+  Headers, app icons, lockups, and social artwork use the full timeline. Preserve the selected
+  geometry in `docs/wireframes/approved/daysforth-logo-main.svg` and `daysforth-logo-small.svg`.
 
-  | Role       | Light     | Dark      |
-  | ---------- | --------- | --------- |
-  | Background | `#ffffff` | `#1d2126` |
-  | Text       | `#1b1d20` | `#e6e8eb` |
-  | Muted      | `#555b63` | `#a9b0b8` |
-  | Link       | `#1a55c0` | `#8db8ff` |
-  | Visited    | `#6b3e8c` | `#cda8ee` |
-  | Rule       | `#dfe3e8` | `#3a414a` |
+## Timeline behavior
 
-  Text and links meet 4.5:1 in both themes; links are always underlined, because their contrast
-  against body text alone is not enough.
+- Every moment requires a confirmed month and year. Days are optional; never invent a date.
+- The three pins are Born, Vanderbilt graduation, and Married Nicole. The rail labels only those
+  three dates and positions them proportionally across the available months.
+- The blue thumb supports dragging and keyboard input. Do not add “Drag to explore” hint text.
+- Keep Timeline and Posts visible. Consolidate categories into one menu and date navigation plus
+  date detail into a second. Keep native, labeled forms inside those menus.
+- Years and quarters can collapse groups. Milestones remain visible through category filtering.
+- Separate post metadata, title, caption, and actions with deliberate spacing. Both presentations
+  share content and actions without duplicating state.
+- URL state supports refresh and Back/Forward. Every moment has a permanent, shareable page.
+- Without JavaScript, show a chronological, year-grouped story with ordinary permalink navigation.
 
-- **Layout.** One left-aligned reading column (about 37 rem) inside a 64 rem page. Every page opens
-  with a full-sentence `h1`, then sections with plain `h2` headings.
-- **Controls.** Rectangular, 4 px radius, 44 px tall, with visible text labels.
+## Restraint and accessibility
 
-## Signature details
+Use photographs and typography for personality. Avoid dashboard chrome, decorative metrics,
+gradients, fake browser frames, stock portraits, and unnecessary labels. Do not invent personal
+facts, quotes, or engagement counts.
 
-- Full-sentence headings ("Hey, I'm Carson. I help teams build complicated things, …").
-- Hobbies on the homepage link to their own entries on the Life page.
-- "Explain it in: Plain English / Engineer-speak", built from native radio buttons.
-- Field-guide entries for Margot and Quinn with coat-color swatches, and an ASCII household org chart.
-- A dated "Right now" list, a colophon on the accessibility page, and "Updated" in the footer.
-- Visited links in their own color. The homepage prints as a one-page résumé.
-- The footer is signed "Supervised by Margot and Quinn."
-
-## Avoid
-
-These patterns make a site read as generated or templated. Do not add them.
-
-- Cream backgrounds with a soft serif and a terracotta accent; indigo or violet gradients; gradient
-  text; near-black pages with one neon accent; glassmorphism or glow shadows.
-- Monospace uppercase "eyebrow" labels above headings; italic accent-colored words in headlines.
-- Cards for everything, cards inside cards, pill buttons and pill chips, icons in tinted squares,
-  "Available for work" badges, status-chip piles.
-- Big-number stat grids, numbered "01 / 02 / 03" feature cards, logo or tech-stack grids,
-  contribution graphs, now-playing widgets, typewriter job titles, fake terminal or browser chrome.
-- Fade-up-on-scroll for every section, count-up numbers, bouncy easing.
-- Metadata strung together with middle dots, an arrow on every link, a four-column footer.
-- Copy tricolons ("Builder. Leader. Dog dad."), "I craft delightful experiences", "not just X, it's Y".
-- Stock photos, or any image that could be mistaken for a real photo of Carson, Nicole, or the dogs.
-
-When in doubt, write a better sentence instead of adding a component.
+Keep visible control labels, keyboard access, clear focus, 44 px standalone targets, meaningful image
+alternatives, reduced-motion support, and reflow at 320 px. Check enlarged text in both themes.
+Follow [accessibility.md](accessibility.md); wireframes do not override those requirements.
+Record visual comparisons and intentional differences in the project-root `design-qa.md`.

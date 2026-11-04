@@ -1,0 +1,101 @@
+---
+/**
+ * Purpose: The approved consolidated timeline toolbar.
+ * Scope: Presentation switch and category/date disclosures with native radio/select controls.
+ * Does NOT belong: Filtering or date navigation (src/lib/timeline-controller.ts).
+ */
+import { timelinePosts } from '../data/timeline';
+import { chronological } from '../lib/timeline-model';
+import { dateLabel, MONTHS } from '../lib/timeline-dates';
+import Icon from './Icon.astro';
+const latest = chronological(timelinePosts)[0]!.date;
+const years = Array.from(
+  { length: Number(latest.slice(0, 4)) - 1999 + 1 },
+  (_, index) => Number(latest.slice(0, 4)) - index,
+);
+---
+
+<div class="timeline-toolbar enhancement" aria-label="Timeline controls">
+  <div class="view-switch" role="group" aria-label="View">
+    <button type="button" data-view="timeline" aria-pressed="true">
+      <Icon name="timeline" />
+      Timeline
+    </button>
+    <button type="button" data-view="posts" aria-pressed="false">
+      <Icon name="grid" />
+      Posts
+    </button>
+  </div>
+  <div class="timeline-toolbar__menus">
+    <details class="timeline-menu" data-timeline-menu>
+      <summary class="control">
+        <Icon name="filter" />
+        <span data-category-label>All categories</span>
+        <Icon name="chevron" />
+      </summary>
+      <div class="timeline-menu__panel timeline-menu__panel--category">
+        <fieldset>
+          <legend>Show posts</legend>
+          {['All', 'Work', 'Projects', 'Life'].map((category) => (
+            <label>
+              <input type="radio" name="category" value={category} checked={category === 'All'} />
+              <span>{category === 'All' ? 'All categories' : category}</span>
+            </label>
+          ))}
+        </fieldset>
+        <p class="timeline-menu__note">Milestones always shown</p>
+      </div>
+    </details>
+    <details class="timeline-menu" data-timeline-menu>
+      <summary class="control">
+        <Icon name="calendar" />
+        <span data-current-date>{dateLabel(latest)}</span>
+        <Icon name="chevron" />
+      </summary>
+      <div class="timeline-menu__panel timeline-menu__panel--date">
+        <form data-date-form>
+          <fieldset>
+            <legend>Go to date</legend>
+            <div class="date-fields">
+              <label>
+                Month
+                <select name="month">
+                  {MONTHS.map((month, index) => (
+                    <option
+                      value={String(index + 1).padStart(2, '0')}
+                      selected={Number(latest.slice(5, 7)) === index + 1}
+                    >
+                      {month}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Year
+                <select name="year">
+                  {years.map((year) => (
+                    <option value={year}>{year}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <button type="submit" class="control primary-control">
+              Go to date
+            </button>
+          </fieldset>
+        </form>
+        <fieldset class="date-detail">
+          <legend>Date detail</legend>
+          <div class="detail-switch">
+            {['years', 'quarters', 'months'].map((detail) => (
+              <label>
+                <input type="radio" name="detail" value={detail} checked={detail === 'months'} />
+                <span>{detail.slice(0, 1).toUpperCase() + detail.slice(1)}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+    </details>
+  </div>
+</div>

@@ -1,0 +1,104 @@
+---
+/**
+ * Purpose: A stable, shareable page for every timeline moment.
+ * Scope: Actual date precision, associated media, context, shared actions, and adjacent moments.
+ * Does NOT belong: Post content (src/data/timeline.ts) or action behavior.
+ */
+import MomentImage from '../../components/MomentImage.astro';
+import PostActions from '../../components/PostActions.astro';
+import ActionNotice from '../../components/ActionNotice.astro';
+import PostLocation from '../../components/PostLocation.astro';
+import Icon from '../../components/Icon.astro';
+import { profile } from '../../data/profile';
+import { timelinePosts, type TimelinePost } from '../../data/timeline';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fullDateLabel } from '../../lib/timeline-dates';
+import { chronological } from '../../lib/timeline-model';
+import { withBase } from '../../lib/paths';
+import '../../styles/timeline.css';
+import '../../styles/post-detail.css';
+export function getStaticPaths() {
+  return timelinePosts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+interface Props {
+  post: TimelinePost;
+}
+const { post } = Astro.props;
+const ordered = chronological(timelinePosts);
+const index = ordered.findIndex((item) => item.id === post.id);
+const newer = ordered[index - 1];
+const older = ordered[index + 1];
+const page = {
+  id: 'post' as const,
+  title: `${post.title} · ${profile.name}`,
+  path: `/posts/${post.id}/`,
+  description: `${post.title}. ${post.caption} A moment from ${profile.name}’s timeline on Daysforth.`,
+};
+---
+
+<BaseLayout page={page}>
+  <article class="post-detail">
+    <a
+      class="back-to-timeline"
+      href={withBase(`/?date=${post.date.slice(0, 7)}#moment-${post.id}`)}
+    >
+      <Icon name="arrow" />
+      Back to the timeline
+    </a>
+    <p class="post-detail__meta">
+      <span>{profile.name}</span>
+      <time datetime={post.date}>{fullDateLabel(post.date)}</time>
+      <span>{post.category}</span>
+      {post.milestone && <span class="milestone-label">Milestone</span>}
+    </p>
+    <h1>{post.title}</h1>
+    {post.caption && <p class="post-detail__caption">{post.caption}</p>}
+    {post.image && (
+      <div class="post-detail__photo">
+        <MomentImage name={post.image} alt={post.imageAlt!} eager />
+      </div>
+    )}
+    {!post.image && post.project && (
+      <div class={`post-detail__project project-art project-art--${post.project}`}>
+        <MomentImage name={post.project} alt={`${post.project} app artwork`} kind="project" eager />
+      </div>
+    )}
+    <div class="post-detail__body flow">
+      {post.body.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
+    {post.links && (
+      <ul class="post-detail__links" role="list">
+        {post.links.map((link) => (
+          <li>
+            <a href={link.href}>
+              {link.label}
+              <span class="visually-hidden"> (external site)</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+    <PostActions id={post.id} title={post.title} />
+    <PostLocation id={post.id} date={post.date} />
+    <nav class="post-neighbors" aria-label="Adjacent moments">
+      {newer && (
+        <a href={withBase(`/posts/${newer.id}/`)}>
+          <span>Newer moment</span>
+          <strong>{newer.title}</strong>
+        </a>
+      )}
+      {older && (
+        <a href={withBase(`/posts/${older.id}/`)}>
+          <span>Earlier moment</span>
+          <strong>{older.title}</strong>
+        </a>
+      )}
+    </nav>
+  </article>
+  <ActionNotice />
+</BaseLayout>
+<script>
+  import '../../scripts/timeline.ts';
+</script>

@@ -26,10 +26,12 @@ const sizes = size === 'avatar' ? '6rem' : '(min-width: 40rem) 24rem, 90vw';
   <figure class:list={['photo', `photo--${size}`]} data-image-frame>
     <Picture
       src={photo}
+      width={size === 'avatar' ? 288 : 768}
       alt={alt}
       widths={size === 'avatar' ? [96, 192, 288] : [384, 576, 768]}
       sizes={sizes}
       formats={['avif', 'webp']}
+      quality={78}
       data-fallback
     />
     {caption && <figcaption class="small muted">{caption}</figcaption>}
