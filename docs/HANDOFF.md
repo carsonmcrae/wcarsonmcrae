@@ -7,8 +7,9 @@ Read [AGENTS.md](../AGENTS.md), [DAYSFORTH.md](DAYSFORTH.md), and
 ## Checkout and release
 
 - Fast-forwarded the original checkout from `52a718b` to remote `c02ec77` before implementation.
-- Work is on `codex/daysforth`. The remote default is `claude/vibrant-heisenberg-ggf3kl`; no `main`
-  exists yet. Do not mistake that historical branch for the reviewed release.
+- PR #1 merged after all checks passed. `main` was established from the reviewed merge and is now
+  the default, protected by the Validate, CodeQL, and Dependency review checks and a PR requirement.
+  Work continues on `codex/daysforth`; the historical default is retained without separate changes.
 - All 17 incoming originals were copied outside the checkout and SHA-256 verified before pulling.
   Originals remain ignored and unchanged. Published source photos are metadata-stripped.
 - The static app and brand exports are implemented. Carson authorized the agent to complete this

@@ -1,5 +1,5 @@
 # Purpose: Publish the site to GitHub Pages after every quality gate passes.
-# Scope: Runs the full CI workflow first, then builds with the address GitHub Pages reports
+# Scope: Runs the full CI workflow first, then builds with HTTPS and the host/path Pages reports
 #   (https://carsonmcrae.github.io/wcarsonmcrae/ before a custom domain is set, then
 #   https://wcarsonmcrae.com/ automatically afterwards), re-checks that exact output, and deploys
 #   with GitHub's official Pages actions (SHA-pinned). Runs on pushes to main and on demand.
@@ -37,7 +37,9 @@ jobs:
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - name: Build with the published address
         env:
-          SITE_URL: ${{ steps.pages.outputs.origin }}
+          # A newly configured custom domain reports HTTP until its first certificate is ready.
+          # Canonical links must use HTTPS during that initial certificate provisioning too.
+          SITE_URL: https://${{ steps.pages.outputs.host }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
           PUBLIC_REACTIONS_URL: ${{ vars.PUBLIC_REACTIONS_URL }}
         run: |
