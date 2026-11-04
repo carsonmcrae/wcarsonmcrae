@@ -34,7 +34,13 @@ the matching file in `src/data/`.
       for now (your call, 2026-11-03).
 - [x] **License.** All rights reserved (2026-11-03). The repository is public only so GitHub Pages can
       host it for free; no reuse is granted, and no `LICENSE` file is added.
-- [x] **Domain.** Confirmed: `wcarsonmcrae.com`, with `www` redirecting to it (2026-11-03).
+- [x] **Name and domains.** Daysforth is chosen and `daysforth.com` purchased. It is the canonical
+      destination; `wcarsonmcrae.com` and `www` should forward there (2026-11-04).
+- [x] **Timeline dates.** Month and year required; days optional. Born November 1999, PC December
+      2015, Vanderbilt August 2018, InfoWorks June 2021, graduation May 2022, Margot July 2022,
+      Booz Allen September 2022, Quinn July 2023, wedding October 2026. See `src/data/timeline.ts`.
+- [x] **Wireframes.** Four approved references archived in `docs/wireframes/approved/`. Apply the
+      post-spacing correction and omit the drag hint. Use the supplied real photos.
 
 ## Assets to provide
 
@@ -48,7 +54,7 @@ the matching file in `src/data/`.
 
 - [ ] A public **email address** for the contact page (`profile.email` in `src/data/profile.ts`;
       currently none is shown).
-- [ ] **Start dates** for Booz Allen and InfoWorks, if you want them on the work page.
+- [x] **Start dates** for Booz Allen (September 2022) and InfoWorks (June 2021) confirmed.
 - [ ] Specifics for interests: games you are playing, a watch you like, places you have traveled.
 - [ ] Keep **Right now** (`src/data/life.ts`) current, and update its date when you do.
 - [ ] Idea: a short **TTSNative audio sample** reading the homepage introduction aloud (with a
@@ -56,5 +62,8 @@ the matching file in `src/data/`.
 
 ## Accessibility sign-off
 
-- [ ] Hand-test with VoiceOver (Safari on macOS and iOS) and NVDA (Windows), then update the
+- [x] NVDA 2026.2 core timeline/control and action-feedback spot check on Windows, November 4, 2026.
+      Findings and fixes are recorded in the project-root `design-qa.md`.
+
+- [ ] Hand-test with VoiceOver (Safari on macOS and iOS), then update the
       limitations on the [accessibility statement](../src/data/accessibility.ts).

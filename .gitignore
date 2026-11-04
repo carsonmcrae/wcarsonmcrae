@@ -33,3 +33,8 @@ dist-subpath/
 
 # Photos dropped here are imported by npm run images:import; the originals never enter git
 photos-incoming/
+
+# Local Worker database and deployment cache
+.wrangler/
+.dev.vars
+.dev.vars.*

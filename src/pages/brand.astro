@@ -1,0 +1,183 @@
+---
+/**
+ * Purpose: A usable, public reference for the Daysforth identity.
+ * Scope: Logo variants, colors, typography, voice, usage rules, and downloadable original assets.
+ * Does NOT belong: Personal biography or app controls.
+ */
+import { brand } from '../data/brand';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/paths';
+import '../styles/brand.css';
+const page = {
+  id: 'brand' as const,
+  path: '/brand/',
+  title: 'Brand kit',
+  description:
+    'The Daysforth brand kit: original vector logos, app icons, typography, colors, social templates, and guidance for consistent use.',
+};
+---
+
+<BaseLayout page={page}>
+  <div class="brand-guide">
+    <div class="brand-guide__intro">
+      <p class="muted">The Daysforth brand kit</p>
+      <h1>{brand.tagline}</h1>
+      <p class="lede">{brand.description}</p>
+      <a class="control primary-control" href={withBase('/brand/daysforth-brand-kit.zip')} download>
+        Download the brand kit
+      </a>
+    </div>
+    <section class="brand-section" aria-labelledby="brand-identity">
+      <h2 id="brand-identity">One line. Three moments. Always moving.</h2>
+      <p>
+        The Daysforth D connects three moments along a single stem. Its open interior leaves room
+        for the story. The rounded mark and tightly set wordmark feel familiar at the size of an app
+        icon or a navigation bar.
+      </p>
+      <div class="brand-lockups">
+        <figure>
+          <img
+            src={withBase('/brand/daysforth-lockup.svg')}
+            alt="Primary Daysforth logo: blue D mark and ink wordmark"
+            width="330"
+            height="64"
+          />
+          <figcaption>Primary · Paper</figcaption>
+        </figure>
+        <figure class="brand-lockups__dark">
+          <img
+            src={withBase('/brand/daysforth-lockup-reversed.svg')}
+            alt="Daysforth logo with a white wordmark on dark ink"
+            width="330"
+            height="64"
+          />
+          <figcaption>Reversed · Ink</figcaption>
+        </figure>
+        <figure>
+          <img
+            src={withBase('/brand/daysforth-lockup-mono.svg')}
+            alt="Monochrome Daysforth logo"
+            width="330"
+            height="64"
+          />
+          <figcaption>One color</figcaption>
+        </figure>
+        <figure>
+          <img
+            class="brand-guide__mark"
+            src={withBase('/brand/daysforth-mark.svg')}
+            alt="The Daysforth app mark"
+            width="64"
+            height="64"
+          />
+          <figcaption>App icon · Small spaces</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="brand-section" aria-labelledby="brand-palette">
+      <h2 id="brand-palette">A little blue. A lot of room.</h2>
+      <p>
+        Keep the interface quiet so people and photographs supply the character. Forth blue marks
+        the places where you can act.
+      </p>
+      <ul class="brand-colors" role="list">
+        {brand.colors.map((color, index) => (
+          <li>
+            <div class={`brand-color brand-color--${index}`} aria-hidden="true"></div>
+            <h3>{color.name}</h3>
+            <code>{color.hex}</code>
+            <p>{color.role}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="small muted">
+        Use white text on Forth blue. In dark mode, links and selected controls use a lighter blue
+        (#a9c0ff); keep supporting text readable and focus indicators visible.
+      </p>
+    </section>
+    <section class="brand-section" aria-labelledby="brand-type">
+      <h2 id="brand-type">Clear words, confidently set.</h2>
+      <div class="brand-type">
+        <p class="brand-type__sample">
+          The everyday.
+          <br />
+          The once-in-a-lifetime.
+        </p>
+        <div>
+          <h3>{brand.font}</h3>
+          <p>
+            Regular 400 for reading. Medium 550 for controls. Semibold 650 for emphasis. Bold
+            750–780 for headings and the product name.
+          </p>
+          <p>
+            Use a comfortable line height: 1.5–1.6 for body text, 1.25–1.35 for compact headings.
+            Give metadata, titles, captions, and actions their own space.
+          </p>
+          <a href={withBase('/brand/Inter-variable-latin.woff2')} download>
+            Download the web font
+          </a>
+        </div>
+      </div>
+    </section>
+    <section class="brand-section" aria-labelledby="brand-voice">
+      <h2 id="brand-voice">Sounds like a person.</h2>
+      <div class="brand-voice">
+        {brand.voice.map((voice) => (
+          <div>
+            <h3>{voice.title}</h3>
+            <p>{voice.detail}</p>
+          </div>
+        ))}
+      </div>
+      <blockquote>{brand.promise}</blockquote>
+      <p>
+        Say “Save this moment,” “Back to the timeline,” and “Your life, as it unfolds.” Keep
+        interface labels short and literal; let the moments have the personality.
+      </p>
+    </section>
+    <section class="brand-section" aria-labelledby="brand-usage">
+      <h2 id="brand-usage">Keep it recognizably Daysforth.</h2>
+      <ul>
+        <li>Leave at least half the mark’s width clear on every side of a logo.</li>
+        <li>
+          Use the full horizontal logo at 128 px wide or larger; use the mark alone below that.
+        </li>
+        <li>Keep the mark at least 24 px in interfaces and 16 px for a favicon.</li>
+        <li>Use primary, reversed, or monochrome artwork with sufficient background contrast.</li>
+        <li>
+          Keep the proportions, spacing, and original colors. Avoid stretching, shadows, gradients,
+          or adding words inside the mark.
+        </li>
+        <li>
+          Write the name as <strong>Daysforth</strong>. Write the address as{' '}
+          <strong>daysforth.com</strong>.
+        </li>
+      </ul>
+    </section>
+    <section class="brand-section" aria-labelledby="brand-downloads">
+      <h2 id="brand-downloads">Ready to use.</h2>
+      <p>
+        SVG logos contain outlined lettering. The kit also includes transparent PNGs, app icons,
+        social artwork, font files, licenses, and a usage guide.
+      </p>
+      <ul class="brand-downloads" role="list">
+        {brand.downloads.map((asset) => (
+          <li>
+            <a href={withBase(`/brand/${asset.file}`)} download>
+              {asset.label}
+              <span>SVG</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <img
+        class="brand-social-preview"
+        src={withBase('/brand/daysforth-social.png')}
+        alt="Daysforth social card with the words Your life, as it unfolds"
+        width="1200"
+        height="630"
+        loading="lazy"
+      />
+    </section>
+  </div>
+</BaseLayout>

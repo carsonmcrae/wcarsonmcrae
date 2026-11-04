@@ -1,0 +1,32 @@
+---
+/**
+ * Purpose: Shows where a shared moment belongs in the complete life timeline.
+ * Scope: A proportionally placed date point and a native link back to that exact month.
+ * Does NOT belong: Slider behavior or chronological sorting.
+ */
+import { timelinePosts } from '../data/timeline';
+import { dateLabel } from '../lib/timeline-dates';
+import { chronological } from '../lib/timeline-model';
+import { withBase } from '../lib/paths';
+interface Props {
+  id: string;
+  date: string;
+}
+const { id, date } = Astro.props;
+const ordered = chronological(timelinePosts);
+const position = timelinePosts.findIndex((post) => post.id === id);
+---
+
+<nav class="post-location" aria-label="Moment on the full timeline">
+  <a href={withBase(`/?date=${date.slice(0, 7)}#moment-${id}`)}>
+    <span class="post-location__dates">
+      <span>{dateLabel(ordered.at(-1)!.date)}</span>
+      <strong>{dateLabel(date)}</strong>
+      <span>{dateLabel(ordered[0]!.date)}</span>
+    </span>
+    <span class="post-location__track" aria-hidden="true">
+      <span class={`post-location__point post-location__point--${position}`}></span>
+    </span>
+    <span class="visually-hidden">Return to this moment in the full timeline</span>
+  </a>
+</nav>

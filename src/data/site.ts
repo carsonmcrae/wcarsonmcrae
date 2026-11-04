@@ -7,23 +7,24 @@
 import type { LinkItem } from './types';
 
 export const site = {
-  name: 'Carson McRae',
+  name: 'Daysforth',
   /** Default title for the homepage and link previews. */
-  defaultTitle: 'Carson McRae · Technical Program & Product Leader',
+  defaultTitle: 'Carson McRae · Daysforth',
   locale: 'en_US',
   language: 'en',
   repositoryUrl: 'https://github.com/carsonmcrae/wcarsonmcrae',
   /** Social preview image in `public/`. Regenerate with `npm run images:brand`. */
   ogImage: '/og-image.png',
-  ogImageAlt: 'Carson McRae: Technical Program & Product Leader in Nashville',
+  ogImageAlt: 'The Daysforth logo and the words Your life, as it unfolds.',
   themeColor: { light: '#ffffff', dark: '#1d2126' },
 };
 
 /** Primary navigation. Every page here must exist in `src/pages/`. */
 export const navigation: LinkItem[] = [
-  { label: 'About', href: '/about/' },
+  { label: 'Timeline', href: '/' },
   { label: 'Work', href: '/work/' },
   { label: 'Life', href: '/life/' },
+  { label: 'About', href: '/about/' },
   { label: 'Contact', href: '/contact/' },
 ];
 

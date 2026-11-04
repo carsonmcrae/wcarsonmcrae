@@ -18,7 +18,9 @@ export const SITE = deploy.site;
 /** The base as it appears in URLs: "/" or "/wcarsonmcrae/". */
 export const BASE = deploy.base === '/' ? '/' : `${deploy.base}/`;
 
-export const files = existsSync(DIST) ? walk(DIST).map((file) => relative(DIST, file)) : [];
+export const files = existsSync(DIST)
+  ? walk(DIST).map((file) => relative(DIST, file).replaceAll('\\', '/'))
+  : [];
 export const htmlPages = files
   .filter((file) => file.endsWith('.html'))
   .sort((a, b) => Number(a > b) - Number(a < b));

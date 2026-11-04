@@ -1,0 +1,394 @@
+/**
+ * Purpose: The same moments presented as an axis or a photographic post grid.
+ * Scope: Card hierarchy, real-date connectors, clusters, action rows, empty states, and mobile reflow.
+ * Does NOT belong: Toolbar menus or profile layout.
+ */
+.timeline-feed {
+  container: timeline / inline-size;
+  scroll-margin-top: 1rem;
+}
+.moment-group {
+  margin-top: 1.25rem;
+}
+.moment-group,
+.moment-group > h2,
+.post-card,
+.timeline-empty {
+  scroll-margin-top: 6rem;
+}
+.moment-group + .moment-group {
+  margin-top: 2.5rem;
+}
+.moment-group > h2 {
+  margin-bottom: 0.75rem;
+  font-size: 1.625rem;
+  letter-spacing: -0.04em;
+  line-height: 1.25;
+}
+.moment-group__cards {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  padding-left: 3.75rem;
+}
+.moment-group__cards::before {
+  content: '';
+  position: absolute;
+  top: 1.3rem;
+  bottom: 0;
+  left: 2.7rem;
+  border-left: 1px solid var(--control);
+}
+.post-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.35rem 1rem;
+  min-width: 0;
+  padding: 0.875rem 1rem 0.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 15px;
+  background: var(--surface);
+}
+.post-card::before {
+  content: '';
+  position: absolute;
+  left: -1.5rem;
+  top: 1.2rem;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  background: var(--accent);
+}
+.post-card::after {
+  content: '';
+  position: absolute;
+  left: -1rem;
+  top: 1.55rem;
+  width: 1rem;
+  border-top: 1px solid var(--control);
+}
+.post-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.65rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+.post-card__meta > * + *::before {
+  content: '·';
+  color: var(--muted);
+  margin-right: 0.65rem;
+}
+.post-card__meta .milestone-label::before {
+  content: none;
+}
+.milestone-label {
+  display: inline-block;
+  padding: 0.12rem 0.6rem;
+  border-radius: 7px;
+  background: var(--selected);
+  color: var(--link);
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+.post-card h3 {
+  font-size: 1.25rem;
+  font-weight: 750;
+  line-height: 1.3;
+  letter-spacing: -0.035em;
+}
+.post-card h3 a,
+.post-card h3 a:visited {
+  color: var(--text);
+  text-decoration: none;
+}
+.post-card__caption {
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.post-card__media {
+  overflow: hidden;
+  min-width: 0;
+  border-radius: 11px;
+}
+.post-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.post-card--milestone .post-card__media {
+  height: 7rem;
+  margin-top: 0.25rem;
+}
+.project-art {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 6rem;
+  background: var(--wash);
+}
+.project-art img {
+  width: 5rem;
+  height: 5rem;
+  object-fit: contain;
+  border-radius: 16px;
+}
+.project-art--ttsnative {
+  background: #e9f5fd;
+}
+.project-art--recalen {
+  background: #f0edfb;
+}
+.project-art--picpledge {
+  background: #fff1e6;
+}
+.post-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 1.125rem;
+}
+.post-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0;
+  border: 0;
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 550;
+  line-height: 1.35;
+}
+.post-actions button[aria-pressed='true'] {
+  color: var(--link);
+}
+.post-actions button:disabled {
+  color: var(--muted);
+  cursor: wait;
+}
+.moment-cluster {
+  margin-left: 0;
+}
+.moment-cluster > summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--control);
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.moment-cluster > summary::before {
+  content: '+';
+  margin-right: 0.65rem;
+}
+.moment-cluster[open] > summary::before {
+  content: '−';
+}
+.timeline-empty {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+}
+.timeline-empty p + p {
+  margin-top: 0.5rem;
+}
+.timeline-empty a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+.action-notice {
+  position: fixed;
+  z-index: 30;
+  bottom: 1rem;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: max-content;
+  max-width: calc(100% - 2rem);
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--control);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 6px 24px #101b3014;
+  transform: translateX(-50%);
+  font-size: 0.875rem;
+}
+.action-notice button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: none;
+  background: transparent;
+  color: var(--link);
+  font-weight: 650;
+}
+[data-timeline][data-view='posts'] .moment-group__cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding-left: 0;
+}
+[data-view='posts'] .moment-group__cards::before,
+[data-view='posts'] .post-card::before,
+[data-view='posts'] .post-card::after {
+  display: none;
+}
+[data-view='posts'] .post-card {
+  padding: 0 0 0.5rem;
+  gap: 0;
+  overflow: hidden;
+}
+[data-view='posts'] .post-card--illustrated:not(.post-card--milestone) {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+[data-view='posts'] .post-card__media {
+  grid-row: 1;
+  height: 7rem;
+  margin: 0;
+  border-radius: 0;
+}
+[data-view='posts'] .post-card__copy {
+  display: flex;
+  flex-direction: column;
+  padding: 0.875rem 1rem 0.35rem;
+}
+[data-view='posts'] .post-card h3 {
+  order: -1;
+}
+[data-view='posts'] .post-actions {
+  padding-inline: 1rem;
+}
+[data-view='posts'] .post-card--milestone {
+  grid-column: 1 / -1;
+}
+[data-view='posts'] .post-card:only-child {
+  grid-column: 1 / -1;
+}
+[data-view='posts'] .post-card--milestone .post-card__media {
+  height: 8rem;
+}
+[data-view='posts'] .post-card__meta > span:first-child,
+[data-view='posts'] .post-card__meta > time {
+  display: none;
+}
+[data-view='posts'] .post-card__meta > span::before {
+  content: none;
+  margin: 0;
+}
+@media (min-width: 48rem) {
+  [data-view='posts'] .post-card--milestone {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  [data-view='posts'] .post-card--milestone .post-card__media {
+    grid-column: 1 / -1;
+  }
+  [data-view='posts'] .post-card--milestone .post-card__copy {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+  }
+  [data-view='posts'] .post-card--milestone .post-card__caption {
+    flex-basis: 100%;
+  }
+  [data-view='posts'] .post-card--milestone .post-actions {
+    align-self: center;
+  }
+  [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+  }
+  [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) .post-card__media {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: stretch;
+    margin-bottom: 0.5rem;
+  }
+}
+@media (max-width: 48rem) {
+  .moment-group,
+  .moment-group > h2,
+  .post-card,
+  .timeline-empty {
+    scroll-margin-top: 9.5rem;
+  }
+}
+@media (max-width: 40rem) {
+  .moment-group > h2 {
+    font-size: 1.5rem;
+  }
+  .moment-group__cards {
+    padding-left: 1.15rem;
+  }
+  .moment-group__cards::before {
+    left: 0.3rem;
+  }
+  .post-card {
+    padding: 0.875rem 0.75rem 0.25rem;
+    border-radius: 14px;
+  }
+  .post-card::before {
+    left: -1.25rem;
+  }
+  .post-card::after {
+    left: -0.8rem;
+    width: 0.8rem;
+  }
+  .post-card h3 {
+    font-size: 1.125rem;
+  }
+  .post-card__meta {
+    gap: 0.2rem 0.4rem;
+    font-size: 0.6875rem;
+  }
+  .post-card__meta > * + *::before {
+    margin-right: 0.4rem;
+  }
+  .post-card--milestone .post-card__media {
+    height: 7.5rem;
+    margin-top: 0.5rem;
+  }
+  .post-actions {
+    gap: 0 0.75rem;
+  }
+  .post-actions button {
+    font-size: 0.75rem;
+  }
+  [data-timeline][data-view='posts'] .moment-group__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (hover: hover) {
+  .post-card h3 a:hover {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .post-actions button:hover {
+    color: var(--link);
+  }
+}
+@media (forced-colors: active) {
+  .post-card,
+  .action-notice {
+    border-color: CanvasText;
+  }
+  .post-card::before {
+    background: Highlight;
+  }
+  .post-actions button[aria-pressed='true'] {
+    outline: 1px solid Highlight;
+  }
+}

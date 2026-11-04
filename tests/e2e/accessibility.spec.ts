@@ -8,20 +8,8 @@
  *   recorded separately (docs/governance/accessibility.md).
  * Does NOT belong: Navigation behavior (navigation.spec.ts) or the theme toggle (theme.spec.ts).
  */
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
-import { horizontalOverflow, PAGES } from './helpers';
-
-const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'];
-
-async function expectNoViolations(page: Page) {
-  const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
-  const summary = results.violations.map(
-    (violation) =>
-      `${violation.id}: ${violation.nodes.map((node) => node.target.join(' ')).join(', ')}`,
-  );
-  expect(summary).toEqual([]);
-}
+import { expect, test } from '@playwright/test';
+import { horizontalOverflow, PAGES, expectNoViolations } from './helpers';
 
 test.describe('axe audits', () => {
   for (const { name, path } of PAGES) {
@@ -44,6 +32,7 @@ test.describe('axe audits', () => {
 test.describe('keyboard', () => {
   test('the skip link comes first and moves focus to the main content', async ({ page }) => {
     await page.goto('');
+    await page.locator('html[data-site-ready="true"]').waitFor();
     await page.keyboard.press('Tab');
     const skip = page.getByRole('link', { name: 'Skip to content' });
     await expect(skip).toBeFocused();

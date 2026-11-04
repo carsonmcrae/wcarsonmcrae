@@ -1,0 +1,41 @@
+---
+/**
+ * Purpose: Server-rendered chronological content and progressive timeline entry point.
+ * Scope: A complete year-grouped no-JavaScript feed, controls, and accessible notices.
+ * Does NOT belong: The date rail or browsing behavior (src/lib/timeline-controller.ts).
+ */
+import { timelinePosts } from '../data/timeline';
+import { groupMoments } from '../lib/timeline-model';
+import PostCard from './PostCard.astro';
+import TimelineControls from './TimelineControls.astro';
+import ActionNotice from './ActionNotice.astro';
+const groups = groupMoments(timelinePosts, 'years');
+---
+
+<section
+  class="timeline-feed"
+  id="timeline"
+  aria-label="Carson’s timeline"
+  data-timeline
+  data-view="timeline"
+>
+  <TimelineControls />
+  <div class="timeline-empty" data-timeline-empty hidden tabindex="-1"></div>
+  <div class="timeline-groups" data-timeline-groups>
+    {groups.map((group) => (
+      <section class="moment-group" data-period={group.key} data-period-date={group.date}>
+        <h2 tabindex="-1">{group.label}</h2>
+        <div class="moment-group__cards">
+          {group.items.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+  <p class="visually-hidden" role="status" aria-live="polite" data-timeline-status></p>
+</section>
+<ActionNotice />
+<script>
+  import '../scripts/timeline.ts';
+</script>

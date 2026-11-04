@@ -9,19 +9,21 @@ import { defineConfig, devices } from '@playwright/test';
 import { normalizeBasePath } from './src/lib/deploy-config';
 
 const isCI = Boolean(process.env['CI']);
-const port = Number(process.env['PREVIEW_PORT'] ?? 4321);
+const port = Number(process.env['PREVIEW_PORT'] ?? 4323);
 const base = normalizeBasePath(process.env['BASE_PATH']);
-const baseURL = `http://localhost:${port}${base === '/' ? '' : base}/`;
+const baseURL = `https://127.0.0.1:${port}${base === '/' ? '' : base}/`;
 
 export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: true,
   forbidOnly: isCI,
   retries: 0,
-  ...(isCI ? { workers: 2 } : {}),
+  workers: isCI ? 2 : 4,
   reporter: isCI ? [['github'], ['html', { open: 'never' }]] : [['list']],
   use: {
     baseURL,
+    // Only this temporary loopback test certificate is self-signed; production CSP stays intact.
+    ignoreHTTPSErrors: true,
     trace: 'retain-on-failure',
   },
   projects: [
@@ -36,9 +38,10 @@ export default defineConfig({
       : []),
   ],
   webServer: {
-    command: `npx astro preview --port ${port}`,
+    command: `node tests/e2e/preview.ts ${port}`,
     url: baseURL,
     reuseExistingServer: !isCI,
+    ignoreHTTPSErrors: true,
     timeout: 60_000,
   },
 });

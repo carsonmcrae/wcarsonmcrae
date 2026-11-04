@@ -14,12 +14,25 @@ import * as life from '../../src/data/life';
 import * as profileData from '../../src/data/profile';
 import * as projectData from '../../src/data/projects';
 import * as siteData from '../../src/data/site';
+import * as brandData from '../../src/data/brand';
+import * as timelineData from '../../src/data/timeline';
+import * as galleryData from '../../src/data/photo-gallery';
 import { availableProjectImages } from '../../src/lib/images';
 import { isExternalUrl } from '../../src/lib/paths';
 import { walk } from '../support/walk';
 
 const ROOT = join(import.meta.dirname, '..', '..');
-const allData = { accessibilityData, career, life, profileData, projectData, siteData };
+const allData = {
+  accessibilityData,
+  career,
+  life,
+  profileData,
+  projectData,
+  siteData,
+  brandData,
+  timelineData,
+  galleryData,
+};
 
 /** Every string anywhere in the content layer. */
 function collectStrings(value: unknown, found: string[] = []): string[] {

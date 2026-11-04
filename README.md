@@ -1,8 +1,9 @@
-# wcarsonmcrae.com
+# Daysforth
 
-The personal website of Carson McRae: what I do, what I build, and who I am outside of work.
-It's a static site built with [Astro](https://astro.build), published to GitHub Pages, and served at
-[wcarsonmcrae.com](https://wcarsonmcrae.com).
+Carson McRae's story in a centered, photo-rich timeline. Switch between Timeline and Posts, jump
+through dates, and open a permanent page for any moment. Built with [Astro](https://astro.build)
+for free GitHub Pages hosting at [daysforth.com](https://daysforth.com), with the legacy domain
+forwarding there after the owner completes the release checklist.
 
 Looking for my software projects? They live in my [product portfolio](https://carsonmcrae.github.io/)
 and on [GitHub](https://github.com/carsonmcrae).
@@ -40,23 +41,27 @@ npm run build && npm run preview
 Run `npm run build` before `npm run test:e2e`. Set `SCREENSHOTS=1` to save full-page screenshots of
 every page at six widths in both themes to `screenshots/`. Browser tests need Playwright's browsers
 (`npx playwright install chromium webkit`).
+Set `PW_WEBKIT=1` to include WebKit locally. Browser tests generate a temporary loopback HTTPS
+certificate using OpenSSL (bundled with Git for Windows; override `OPENSSL_PATH` if needed).
+They do not install a trust root or change the production Content Security Policy.
 
 ## Project structure
 
 ```text
 src/
-  data/         All personal content: profile, career, projects, life, site copy
+  data/         All personal content, timeline dates, photo galleries, and brand tokens
   lib/          Logic: URLs, metadata, theme, menu, motion, notices, images (fully tested)
   components/   Astro components (presentation only)
   layouts/      The page shell
   pages/        One file per route, plus robots.txt
   styles/       Design tokens and global styles
-  assets/       Project artwork and (once approved) photos, optimized at build time
+  assets/       Approved photos, project artwork, and the licensed outline-source font
   scripts/      The browser entry point
-public/         Icons, social preview image, web manifest (served as-is)
+public/         Icons, social preview, manifest, and downloadable brand kit
 scripts/        Repository gates, image tools, and the subpath build check
 tests/          unit/ (Vitest), build/ (built output), e2e/ (Playwright + axe)
 docs/           Deployment, content guide, checklist, and governance
+workers/        Free shared-reactions API and D1 migration
 ```
 
 ## Updating content
@@ -69,6 +74,12 @@ See [docs/CONTENT.md](docs/CONTENT.md) for adding photos, projects, and interest
 
 A push to `main` runs the full quality gate, then deploys to GitHub Pages. Setup, the custom domain,
 DNS records, and HTTPS are covered step by step in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+Only Carson performs that release. The existing remote has no `main` branch yet.
+
+See [docs/DAYSFORTH.md](docs/DAYSFORTH.md) for the approved design, confirmed dates, photo protection,
+and brand system. Preview the brand guide at `/brand/`; `npm run images:brand` regenerates its vector,
+PNG, icon, and ZIP exports. Shared reactions require the separately deployed
+[Worker/D1 service](workers/reactions/README.md). Save stays browser-local.
 
 ## Standards
 

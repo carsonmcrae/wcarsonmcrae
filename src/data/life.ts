@@ -29,7 +29,7 @@ export const nicole = {
     'Yes, I shipped software at my own wedding. In my defense, it worked.',
   ],
   // Optional: an approved photo at src/assets/photos/nicole-and-carson.jpg. Nothing shows until then.
-  photo: 'nicole-and-carson',
+  photo: 'nicole-carson-2',
   photoAlt: 'Nicole and Carson',
 };
 
@@ -45,7 +45,7 @@ export const dogs: Dog[] = [
     coat: 'Golden apricot, wavy',
     title: 'Co-CEO (self-appointed)',
     detail: 'One half of the household’s management team. Nobody voted on this.',
-    photo: 'margot',
+    photo: 'margot-1',
     photoAlt: 'Margot, a golden apricot doodle with a wavy coat',
     swatch: 'margot',
   },
@@ -55,7 +55,7 @@ export const dogs: Dog[] = [
     coat: 'Black and shaggy, with white markings',
     title: 'Co-CEO (also self-appointed)',
     detail: 'The other half of management. Also unelected.',
-    photo: 'quinn',
+    photo: 'quinn-1',
     photoAlt: 'Quinn, a black doodle with a shaggy coat and white markings',
     swatch: 'quinn',
   },

@@ -6,7 +6,7 @@
  * Does NOT belong: Building URLs for pages and assets (src/lib/paths.ts) or Astro configuration
  *   itself (astro.config.mjs).
  */
-export const DEFAULT_SITE_URL = 'https://wcarsonmcrae.com';
+export const DEFAULT_SITE_URL = 'https://daysforth.com';
 
 export interface DeployConfig {
   /** Absolute origin, without a trailing slash. */

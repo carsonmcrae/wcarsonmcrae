@@ -8,6 +8,7 @@
 import Markdown from '../components/Markdown.astro';
 import PageIntro from '../components/PageIntro.astro';
 import Section from '../components/Section.astro';
+import Photo from '../components/Photo.astro';
 import { about, principles, quickFacts, timeline } from '../data/career';
 import { pages } from '../data/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -15,6 +16,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout page={pages.about}>
   <PageIntro title={about.title} lede={about.lede}>
+    <Photo name="carson-solo" alt="Carson McRae" />
     {about.body.map((paragraph) => (
       <Markdown text={paragraph} />
     ))}

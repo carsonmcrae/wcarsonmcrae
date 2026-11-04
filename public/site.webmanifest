@@ -1,17 +1,13 @@
 {
-  "name": "Carson McRae",
-  "short_name": "Carson McRae",
-  "description": "Technical program and product leader in Nashville. Builder of software on the side.",
-  "start_url": ".",
-  "display": "browser",
+  "name": "Daysforth — Carson McRae",
+  "short_name": "Daysforth",
+  "description": "Your life, as it unfolds.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#1746ff",
   "icons": [
-    {
-      "src": "favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
-    },
     {
       "src": "icon-192.png",
       "sizes": "192x192",
@@ -20,7 +16,8 @@
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
