@@ -22,6 +22,8 @@ this release. The separate `carsonmcrae.github.io` portfolio repository remains 
   account before deployment; the default CLI profile belongs to another project.
 - Workers and both zones use Free. Version previews, logs, traces, and Issues are off.
 - Bot Preference Sync is off by Carson's explicit choice; retain the app's own robots.txt.
+- Both zones have DNSSEC signing and matching DS records at GoDaddy. Public validating DNS responses
+  were checked after delegation. Both edge configurations require TLS 1.2 or newer.
 
 ## DNS and TLS
 
@@ -78,9 +80,12 @@ limitations recorded.
 
 ## Rollback
 
-Revert the release commit on main or unpublish Pages. Restore prior DNS from the saved inventories
-if needed. Never delete protected photo originals, backups, or real reactions. SQL triggers maintain
-totals after targeted vote deletion. A Worker rollback must remain compatible with its schema.
+Revert the release commit on main or unpublish Pages. Restore prior records from the saved inventories
+if needed. Before moving authoritative DNS away from Cloudflare, remove the DS record at GoDaddy and
+wait for its cached delegation to expire, then change nameservers. Never disable signing while the
+parent DS remains published: that breaks validating resolvers. Never delete protected photo originals,
+backups, or real reactions. SQL triggers maintain totals after targeted vote deletion. A Worker
+rollback must remain compatible with its schema.
 
 ## Official references
 
