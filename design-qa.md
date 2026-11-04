@@ -15,15 +15,16 @@ its temporary local HTTPS preview. Desktop CSS viewport and captures are 1440 ×
 mobile captures are 390 × 844 at density 1. Reference images are normalized to those frame sizes
 for the combined source-left / implementation-right comparisons. No browser chrome is included.
 
-| State                            | Combined evidence                                                        |
-| -------------------------------- | ------------------------------------------------------------------------ |
-| Light Timeline, profile and pins | [Desktop comparison](docs/wireframes/qa/desktop-comparison.jpg)          |
-| Light Posts, profile and pins    | [Posts comparison](docs/wireframes/qa/posts-comparison.jpg)              |
-| Light mobile Timeline            | [Mobile comparison](docs/wireframes/qa/mobile-comparison.jpg)            |
-| October photo cards              | [Focused Posts comparison](docs/wireframes/qa/post-cards-comparison.jpg) |
-| Consolidated date menu           | [Date menu](docs/wireframes/qa/date-menu-comparison.jpg)                 |
-| Date options at 200% text        | [Enlarged menu](docs/wireframes/qa/menu-200.jpg)                         |
-| New identity and brand guide     | [Brand guide](docs/wireframes/qa/brand-guide.jpg)                        |
+| State                             | Combined evidence                                                        |
+| --------------------------------- | ------------------------------------------------------------------------ |
+| Light Timeline, profile and pins  | [Desktop comparison](docs/wireframes/qa/desktop-comparison.jpg)          |
+| Light Posts, profile and pins     | [Posts comparison](docs/wireframes/qa/posts-comparison.jpg)              |
+| Light mobile Timeline             | [Mobile comparison](docs/wireframes/qa/mobile-comparison.jpg)            |
+| October photo cards               | [Focused Posts comparison](docs/wireframes/qa/post-cards-comparison.jpg) |
+| Consolidated date menu            | [Date menu](docs/wireframes/qa/date-menu-comparison.jpg)                 |
+| Date options at 200% text         | [Enlarged menu](docs/wireframes/qa/menu-200.jpg)                         |
+| New identity and brand guide      | [Brand guide](docs/wireframes/qa/brand-guide.jpg)                        |
+| Approved refined D and small mark | [Logo comparison](docs/wireframes/qa/logo-comparison.jpg)                |
 
 Raw captures are in ignored `screenshots/daysforth-*.png`; the compact review images above are
 committed. The October captures verify the scrolled feed separately from the profile overview.
@@ -33,6 +34,9 @@ committed. The October captures verify the scrolled feed separately from the pro
 These are intentional consequences of the owner's later instructions, not claims of pixel identity:
 
 - Daysforth replaces the rejected Thenroll name and mark. The blue, ink, and white system remains.
+- Carson subsequently approved the refined filled D and the simplified three-moment drawing in
+  `docs/wireframes/approved/logo-refinement.png`. The approved SVGs are archived beside it. The
+  existing palette, wordmark, typography, voice, and layout remain unchanged.
 - Carson's approved real photographs replace generated illustrative people. Real project icons
   replace the illustrative waveform and group photo in the project cards.
 - The November 2026 Daysforth moment precedes October. The reference starts in October; therefore
@@ -115,9 +119,9 @@ It is prepared locally; it is not deployed. The static app reports unavailable c
 Wrangler 4.151.3 also bundled the Worker successfully in a deployment dry run: 11.27 KiB,
 3.92 KiB gzipped. No remote resource or deployment was created.
 
-The complete `npm run validate:full` run passed: 220 unit tests, 100% per-file coverage across
-all 37 covered files (899 statements, 460 branches, 186 functions, 822 lines), 207 root build checks,
-207 subpath build checks, and 455 browser checks with 19 intentional project/opt-in skips.
+The latest complete `npm run validate:full` run passed: 222 unit tests, 100% per-file coverage across
+all 37 covered files (904 statements, 465 branches, 186 functions, 826 lines), 207 root build checks,
+207 subpath build checks, and 458 browser checks with 19 intentional project/opt-in skips.
 The production dependency audit reported zero vulnerabilities. No gate or budget was lowered.
 After resolving the inherited link color, `npm run validate` passed again, followed by ten focused
 theme/capture checks across the three projects (two intentional capture skips). Those checks verify
@@ -126,6 +130,26 @@ that icon colors follow link labels after theme switching, as well as saved/syst
 The final full run includes the six-width sweep (320, 375, 390, 768, 1024, 1440), adjacent-card
 alignment, nine constrained-menu checks, date-jump heading visibility, and visual captures. The
 sweep checks all 24 content pages and verifies that the three rail targets never overlap.
+
+## Approved logo update
+
+The main mark is the exact selected refined D, with a connected inset timeline. The simplified
+version uses three separate moments below 32 px and in browser favicons. High-resolution favicon
+PNGs use the simplified drawing because their browser-tab placement is small; app icons, the
+32 px header, horizontal/stacked lockups, and social artwork use the full timeline.
+
+Both generated SVGs render pixel-identically to the approved references. The exported 16 px favicon
+also matches the approved optical drawing. The brand guide shows the 16/24 px examples at their
+actual CSS sizes; browser checks verify those dimensions and retrieve the real 37-file ZIP in all
+three projects. The archive is 198,142 bytes, within the unchanged 256 KB cap. Monochrome and reversed
+exports, usage guidance, download labels, and the complete ZIP were regenerated together.
+
+The app and brand page were visually checked in both themes. The updated comparison images and
+[logo proof](docs/wireframes/qa/logo-comparison.jpg) retain the approved geometry and existing layout.
+Native ZIP downloads completed in Chromium during the focused checks. Windows WebKit did not emit
+a native download event in the loopback HTTPS environment; this is not claimed as native Safari
+verification. The archive URL, contents, logo dimensions, and accessibility checks passed in all
+three browser projects. Include the native file download in the remaining manual Safari review.
 
 ## Manual accessibility review — November 4, 2026
 
@@ -151,12 +175,11 @@ The scoped checks above do not establish full Section 508 or WCAG conformance.
 
 - [x] Latest original branch pulled; work isolated on `codex/daysforth`.
 - [x] All 17 incoming originals backed up externally and SHA-256 verified before pulling.
-- [x] Brand kit: 29-file archive with outlined SVGs, PNGs, app icons, social artwork, font, licenses,
-      tokens, and usage guide; 187,307 bytes, within the existing asset cap.
+- [x] Brand kit: 37-file archive with both approved mark drawings, SVGs, PNGs, app icons, social
+      artwork, font, licenses, tokens, and usage guide; 198,142 bytes, within the existing asset cap.
 - [x] Final normalized visual comparison, full validation, and focused post-fix checks recorded.
 - [ ] Owner accessibility sign-off and remaining copy review.
-- [ ] Owner: enable Dependency graph in GitHub security settings and rerun Dependency review.
-      GitHub reported that the check cannot run with the current repository setting disabled.
+- [x] Carson enabled Dependency graph; the rerun of Dependency review passed.
 - [ ] Owner release: establish reviewed `main`, enable Pages, deploy the free Worker/D1 service,
       configure Daysforth, and forward the legacy domain. See `docs/DEPLOYMENT.md`.
 

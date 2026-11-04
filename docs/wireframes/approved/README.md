@@ -18,3 +18,11 @@ family. Production photographs live in `src/assets/photos/`.
 composition. `controls-and-menus.png` defines the consolidated controls.
 
 The older HTML wireframes one directory above are superseded for visual design.
+
+## Approved logo refinement
+
+Carson selected the refined filled D and the simplified small-size drawing on November 4, 2026.
+`logo-refinement.png` shows the approved comparison and size behavior. `daysforth-logo-main.svg`
+is the exact main artwork; `daysforth-logo-small.svg` is the exact simplified reference.
+Use the full timeline at 32 px and larger. Below 32 px and in browser favicons, use three separate
+moments to preserve their visibility. The existing colors and wordmark remain unchanged.

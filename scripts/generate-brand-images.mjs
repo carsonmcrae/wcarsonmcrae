@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Purpose: Exports the original Daysforth brand kit and production icons.
- * Scope: Outlines the Inter wordmark, renders PNGs, copies font licensing, and creates the manifest.
+ * Scope: Exports both approved mark sizes, outlines the wordmark, renders PNGs, and packages the kit.
  * Does NOT belong: Vector construction (scripts/lib/brand-assets.ts) or photo processing.
  */
 import { mkdir, readFile, writeFile, copyFile } from 'node:fs/promises';
@@ -40,15 +40,20 @@ for (const [name, svg] of Object.entries(vectors)) {
     .toFile(join(kit, name.replace('.svg', '.png')));
 }
 const mark = vectors['daysforth-mark.svg'];
-await writeFile(join(publicDir, 'favicon.svg'), mark);
+const smallMark = vectors['daysforth-mark-small.svg'];
+await writeFile(join(publicDir, 'favicon.svg'), smallMark);
 const icons = [
-  ['favicon-32.png', 32],
-  ['apple-touch-icon.png', 180],
-  ['icon-192.png', 192],
-  ['icon-512.png', 512],
+  ['favicon-16.png', 16, smallMark],
+  ['favicon-32.png', 32, smallMark],
+  ['apple-touch-icon.png', 180, mark],
+  ['icon-192.png', 192, mark],
+  ['icon-512.png', 512, mark],
 ];
-for (const [name, size] of icons) {
-  await sharp(Buffer.from(mark)).resize(size, size).png().toFile(join(publicDir, name));
+for (const [name, size, vector] of icons) {
+  await sharp(Buffer.from(vector), { density: (72 * size) / 64 })
+    .resize(size, size)
+    .png()
+    .toFile(join(publicDir, name));
 }
 await copyFile(join(kit, 'daysforth-social.png'), join(publicDir, 'og-image.png'));
 await copyFile(fontPath, join(kit, 'Inter-variable-latin.woff2'));
@@ -80,10 +85,9 @@ await writeFile(
 const license = await readFile(join(root, 'node_modules/@phosphor-icons/core/LICENSE'), 'utf8');
 await writeFile(join(kit, 'ICON-LICENSE.txt'), license);
 const entries = await Promise.all(
-  brandArchiveManifest(
-    Object.keys(vectors),
-    icons.map(([name]) => name),
-  ).map(async ([name, source]) => [name, new Uint8Array(await readFile(join(publicDir, source)))]),
+  brandArchiveManifest(Object.keys(vectors), ['favicon.svg', ...icons.map(([name]) => name)]).map(
+    async ([name, source]) => [name, new Uint8Array(await readFile(join(publicDir, source)))],
+  ),
 );
 await writeFile(
   join(kit, 'daysforth-brand-kit.zip'),

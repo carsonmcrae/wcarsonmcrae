@@ -15,6 +15,10 @@ and wireframe experiments are historical. Preserve the approved composition when
   stays centered when the profile scrolls away. Secondary pages use a narrower reading column.
 - Use the original Daysforth mark and wordmark from the [brand kit](../../public/brand/README.md).
   UI icons come from Phosphor. Use Carson's approved photos, never generated substitutes.
+- The approved refined D uses a connected inset timeline at 32 px and larger. Use the simplified
+  three-moment drawing below 32 px and in browser favicons, including high-resolution favicon PNGs.
+  Headers, app icons, lockups, and social artwork use the full timeline. Preserve the selected
+  geometry in `docs/wireframes/approved/daysforth-logo-main.svg` and `daysforth-logo-small.svg`.
 
 ## Timeline behavior
 

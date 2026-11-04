@@ -39,9 +39,11 @@ already existed in `src/assets/photos/`; a separate square crop supplies the pro
 outlined SVG logos, PNG variants, app icons, social artwork, the web font, licenses, tokens, and usage
 guidance. Run `npm run images:brand` to regenerate all assets and the archive together.
 
-The mark is an original D with three connected moments. The palette is blue, ink, paper, mist, and
-slate. Inter matches the compact typography of the approved product direction; Atkinson Hyperlegible
-Mono remains in the Life page’s existing org chart.
+The approved refined D uses a connected inset timeline at 32 px and larger. The simplified drawing
+uses three separate moments below 32 px and in all browser favicons. Main, reversed, monochrome,
+small-size, app-icon, and social exports are generated together from the selected artwork. The
+palette stays blue, ink, paper, mist, and slate. Inter and the wordmark are unchanged; Atkinson
+Hyperlegible Mono remains in the Life page’s existing org chart.
 
 Font outlining uses the official Inter 4.1 source at
 `https://raw.githubusercontent.com/rsms/inter/v4.1/docs/font-files/InterVariable.ttf`, SHA-256

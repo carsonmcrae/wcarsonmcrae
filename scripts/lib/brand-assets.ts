@@ -1,6 +1,6 @@
 /**
  * Purpose: Portable vector construction for the original Daysforth identity.
- * Scope: The connected-moments D, outlined font paths, lockups, and social templates.
+ * Scope: The approved main and small D marks, outlined font paths, lockups, and social templates.
  * Does NOT belong: File IO or raster export (scripts/generate-brand-images.mjs).
  */
 import { brand } from '../../src/data/brand.ts';
@@ -32,8 +32,13 @@ export function outlineWordmark(font: OutlineFont, text: string, size: number): 
 function svgDocument(content: string, width: number, height: number, title: string): string {
   return `<!-- Purpose: ${title}. Scope: Original Daysforth brand artwork. Does NOT belong: UI behavior. -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${title}">\n${content}\n</svg>\n`;
 }
-function markDrawing(background: string, foreground: string): string {
-  return `<rect width="64" height="64" rx="16" fill="${background}"/>\n<path d="M19 15h12c12 0 20 7 20 17s-8 17-20 17H19V15" fill="none" stroke="${foreground}" stroke-width="4.5" stroke-linejoin="round"/>\n<circle cx="19" cy="15" r="4" fill="${foreground}"/><circle cx="19" cy="32" r="4" fill="${foreground}"/><circle cx="19" cy="49" r="4" fill="${foreground}"/>`;
+const MAIN_MARK_PATH =
+  'M13 11H31C46 11 54 20 54 32S46 53 31 53H13Q9 53 9 49V15Q9 11 13 11Z M27 22V42H31C39 42 44 38 44 32S39 22 31 22Z M18 15.5A4.5 4.5 0 0 1 20 24.031128874149275V27.968871125850725A4.5 4.5 0 0 1 20 36.031128874149275V39.968871125850725A4.5 4.5 0 1 1 16 39.968871125850725V36.031128874149275A4.5 4.5 0 0 1 16 27.968871125850725V24.031128874149275A4.5 4.5 0 0 1 18 15.5Z';
+const SMALL_MARK_PATH =
+  'M12 8H31C47 8 56 18 56 32S47 56 31 56H12Q8 56 8 52V12Q8 8 12 8Z M28 20V44H31C39 44 44 39 44 32S39 20 31 20Z M23 18a5 5 0 1 0 -10 0a5 5 0 1 0 10 0Z M23 32a5 5 0 1 0 -10 0a5 5 0 1 0 10 0Z M23 46a5 5 0 1 0 -10 0a5 5 0 1 0 10 0Z';
+function markDrawing(background: string, foreground: string, small = false): string {
+  const path = small ? SMALL_MARK_PATH : MAIN_MARK_PATH;
+  return `<rect width="64" height="64" rx="16" fill="${background}"/>\n<path fill="${foreground}" fill-rule="evenodd" d="${path}"/>`;
 }
 export function brandVectors(
   wordmark: WordmarkOutline,
@@ -55,6 +60,24 @@ export function brandVectors(
     );
   return {
     'daysforth-mark.svg': svgDocument(mark, 64, 64, 'Daysforth app mark'),
+    'daysforth-mark-small.svg': svgDocument(
+      markDrawing(blue, '#ffffff', true),
+      64,
+      64,
+      'Daysforth small-size app mark',
+    ),
+    'daysforth-mark-small-mono.svg': svgDocument(
+      markDrawing('none', ink, true),
+      64,
+      64,
+      'Daysforth small-size monochrome mark',
+    ),
+    'daysforth-mark-small-white.svg': svgDocument(
+      markDrawing('none', '#ffffff', true),
+      64,
+      64,
+      'Daysforth small-size white mark',
+    ),
     'daysforth-mark-mono.svg': svgDocument(
       markDrawing('none', ink),
       64,
@@ -98,6 +121,7 @@ export function brandVectors(
 }
 
 export function brandRasterWidth(name: string): number {
+  if (name.startsWith('daysforth-mark-small')) return 24;
   if (name.startsWith('daysforth-mark')) return 512;
   if (name === 'daysforth-banner.svg') return 1500;
   if (name === 'daysforth-stacked.svg') return 720;

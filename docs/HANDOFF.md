@@ -40,6 +40,9 @@ and secondary pages. Keep personal content in `src/data/`.
 - Separate post metadata, title, caption, and actions with comfortable spacing.
 - Use real photos, Phosphor icons, Inter, and the original Daysforth identity. Preserve both themes,
   native controls, keyboard access, and the no-JavaScript fallback.
+- Carson approved the refined filled D and simplified small-size mark on November 4. All exports
+  come from `scripts/lib/brand-assets.ts`; keep both drawings matched to the approved SVG references.
+  Use the main mark at 32 px and up, and the simplified version below 32 px and in browser favicons.
 
 ## Operations and review
 

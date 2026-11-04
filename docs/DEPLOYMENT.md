@@ -12,8 +12,8 @@ changes have already occurred.
 
 1. Review `codex/daysforth`, `design-qa.md`, and the content checklist. Run `npm run validate:full`.
    Complete the manual assistive-technology checks listed in the accessibility rules.
-   Enable **Dependency graph** in [repository security settings](https://github.com/carsonmcrae/wcarsonmcrae/settings/security_analysis)
-   and rerun Dependency review; the first PR run reported that the graph is disabled.
+   Keep **Dependency graph** enabled in [repository security settings](https://github.com/carsonmcrae/wcarsonmcrae/settings/security_analysis).
+   Carson enabled it on November 4, and Dependency review subsequently passed.
 2. The remote currently has no `main` branch; its default is `claude/vibrant-heisenberg-ggf3kl`.
    Carson must establish `main` from the reviewed implementation before enabling the main-only Deploy
    workflow. Do not accidentally publish the historical default branch.

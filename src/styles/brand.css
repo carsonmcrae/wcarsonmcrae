@@ -70,6 +70,25 @@
 .brand-lockups img.brand-guide__mark {
   width: 4rem;
 }
+.brand-small-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: min(2rem, 5vw);
+  min-height: 4rem;
+}
+.brand-small-sizes img {
+  width: 24px;
+  height: 24px;
+}
+.brand-small-sizes img[width='16'] {
+  width: 16px;
+  height: 16px;
+}
+.brand-lockups img.brand-guide__small {
+  width: 24px;
+}
 .brand-lockups figcaption {
   font-size: 0.8125rem;
 }

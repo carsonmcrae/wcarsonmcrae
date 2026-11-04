@@ -1,6 +1,5 @@
 <!-- Purpose: Daysforth app mark. Scope: Original Daysforth brand artwork. Does NOT belong: UI behavior. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Daysforth app mark">
 <rect width="64" height="64" rx="16" fill="#1746ff"/>
-<path d="M19 15h12c12 0 20 7 20 17s-8 17-20 17H19V15" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linejoin="round"/>
-<circle cx="19" cy="15" r="4" fill="#ffffff"/><circle cx="19" cy="32" r="4" fill="#ffffff"/><circle cx="19" cy="49" r="4" fill="#ffffff"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M13 11H31C46 11 54 20 54 32S46 53 31 53H13Q9 53 9 49V15Q9 11 13 11Z M27 22V42H31C39 42 44 38 44 32S39 22 31 22Z M18 15.5A4.5 4.5 0 0 1 20 24.031128874149275V27.968871125850725A4.5 4.5 0 0 1 20 36.031128874149275V39.968871125850725A4.5 4.5 0 1 1 16 39.968871125850725V36.031128874149275A4.5 4.5 0 0 1 16 27.968871125850725V24.031128874149275A4.5 4.5 0 0 1 18 15.5Z"/>
 </svg>

@@ -13,6 +13,11 @@ Daysforth gives everyday moments and big milestones a place together, in the ord
 - `daysforth-wordmark.svg` / `.png`: lettering alone.
 - `daysforth-mark.svg` / `.png`: app mark with a blue background.
 - `daysforth-mark-mono.svg` and `daysforth-mark-white.svg`: transparent one-color marks.
+- `daysforth-mark-small.svg` / `.png`: simplified three-moment mark; PNG is 24 px.
+- `daysforth-mark-small-mono.svg` / `.png` and `daysforth-mark-small-white.svg` / `.png`:
+  simplified transparent marks in ink and white; PNGs are 24 px.
+- `favicon-16.png` and `favicon-32.png`: simplified mark for browser tabs, including high-resolution displays.
+- `apple-touch-icon.png`, `icon-192.png`, and `icon-512.png`: full timeline mark for app icons.
 - `daysforth-social.svg` / `.png`: 1200 × 630 social card.
 - `daysforth-banner.svg` / `.png`: 1500 × 500 profile banner.
 - `tokens.css`: reusable brand colors and typography values.
@@ -24,10 +29,14 @@ the vector originals. PNG logos have transparent backgrounds where appropriate.
 
 ## Logo use
 
-The D connects three moments along one stem: an individual story continuing through time.
+The refined D holds three moments along one stem: an individual story continuing through time.
+The main mark connects them with a continuous timeline. The small-size mark separates the three
+moments so they remain distinct when tiny. Both are approved drawings of the same identity.
 
-Leave at least half the mark’s width clear on every side. Keep the horizontal logo at least 128 px
-wide. Use the mark alone at smaller sizes: 24 px minimum in an interface, 16 px for a favicon.
+Leave at least half the mark’s width clear on every side. Keep the horizontal logo at least 168 px
+wide. Use the mark alone at smaller sizes. Use the full timeline at 32 px and larger, and the
+simplified mark below 32 px (typically 16–24 px). Browser favicons always use the simplified mark,
+including high-resolution PNGs; app icons and interface headers use the full timeline.
 
 Use the supplied primary, reversed, or monochrome artwork. Preserve proportions and spacing.
 Choose a variant with strong contrast. Keep the mark free of gradients, shadows, extra symbols,
