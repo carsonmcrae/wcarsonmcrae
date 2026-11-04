@@ -1,83 +1,89 @@
 # Deploying Daysforth for free
 
-The intended canonical address is **https://daysforth.com/**. **wcarsonmcrae.com** and its `www`
-address should forward there. The static frontend uses GitHub Pages; shared reactions use a
-Cloudflare Worker and D1 on the Free plan. No paid service or upgrade is authorized.
+The canonical address is **https://wcarsonmcrae.com/**. **daysforth.com** and its `www` host forward
+to that address. GitHub Pages hosts the static frontend; Cloudflare Free supplies DNS, edge
+protection, redirects, and the Worker/D1 reactions service. GoDaddy remains the registrar.
+No paid upgrade or usage plan is authorized.
 
-Only Carson performs merges, deployments, repository/Pages settings changes, and DNS changes under
-[AGENTS.md](../AGENTS.md). This checklist prepares his release; it does not mean deployment or DNS
-changes have already occurred.
+On November 4, 2026, Carson explicitly authorized the agent to merge, enable Pages, deploy,
+configure Cloudflare/reactions, and update DNS. This overrides the standing owner-only rule for
+this release. The separate `carsonmcrae.github.io` portfolio repository remains unchanged.
 
-## Release order
+## Configuration
 
-1. Review `codex/daysforth`, `design-qa.md`, and the content checklist. Run `npm run validate:full`.
-   Complete the manual assistive-technology checks listed in the accessibility rules.
-   Keep **Dependency graph** enabled in [repository security settings](https://github.com/carsonmcrae/wcarsonmcrae/settings/security_analysis).
-   Carson enabled it on November 4, and Dependency review subsequently passed.
-2. The remote currently has no `main` branch; its default is `claude/vibrant-heisenberg-ggf3kl`.
-   Carson must establish `main` from the reviewed implementation before enabling the main-only Deploy
-   workflow. Do not accidentally publish the historical default branch.
-3. In this repository's Settings → Pages, choose **GitHub Actions**. Keep the separate
-   `carsonmcrae.github.io` portfolio repository and its settings unchanged.
-4. Provision reactions using [its guide](../workers/reactions/README.md), after confirming the existing
-   Cloudflare account is on the Free plan. Set repository Actions variable `PUBLIC_REACTIONS_URL`
-   to its HTTPS origin. Counts gracefully report unavailable without it.
-5. Configure `daysforth.com` in GitHub Pages **before** changing DNS. Actions deployments ignore
-   `CNAME` files; this repository intentionally has none.
-6. Publish the reviewed main branch, configure the records below, then enforce HTTPS when the
-   certificate is ready. Configure the legacy-domain redirect after the destination works.
+- Pages source: **GitHub Actions**. Custom domain: **wcarsonmcrae.com**. Actions use the Pages
+  setting rather than a CNAME file. Local builds also default to the personal domain.
+- Repository variable `PUBLIC_REACTIONS_URL`:
+  `https://daysforth-reactions.wcarsonmcrae.workers.dev`.
+- Worker and D1 database: `daysforth-reactions`; binding: `DB`. Its account/database IDs are public
+  configuration in `wrangler.toml`; the salt remains encrypted in Cloudflare secrets.
+- The isolated `daysforth` Wrangler profile is bound only to `workers/reactions/`. Verify its
+  account before deployment; the default CLI profile belongs to another project.
+- Workers and both zones use Free. Version previews, logs, traces, and Issues are off.
+- Bot Preference Sync is off by Carson's explicit choice; retain the app's own robots.txt.
 
-`actions/configure-pages` supplies the deployed origin and project path to Astro. Canonical links,
-assets, sitemap, social images, and copy-link actions follow that address. Local builds default to
-`https://daysforth.com`; `npm run test:build:subpath` verifies the GitHub project path separately.
+## DNS and TLS
 
-## daysforth.com DNS at GoDaddy
+Both domains' original DNS tables were saved outside Git before modification. The primary's
+original zone file was exported. Preserve DMARC, Domain Connect, and unrelated records. Neither
+zone had MX records or enabled DNSSEC at migration time. Never introduce wildcard records.
 
-Optionally verify ownership first in GitHub profile Settings → Pages using GitHub's TXT challenge.
-Retain that TXT record. Preserve MX, TXT, and unrelated records when replacing parking records.
+The primary's assigned nameservers are `kara.ns.cloudflare.com` and `kevin.ns.cloudflare.com`.
+Use the exact pair assigned to each zone in GoDaddy's custom nameservers.
 
-| Type  | Name | Value                   |
-| ----- | ---- | ----------------------- |
-| A     | @    | `185.199.108.153`       |
-| A     | @    | `185.199.109.153`       |
-| A     | @    | `185.199.110.153`       |
-| A     | @    | `185.199.111.153`       |
-| CNAME | www  | `carsonmcrae.github.io` |
+| Type  | Primary host | Origin value          |
+| ----- | ------------ | --------------------- |
+| A     | @            | 185.199.108.153       |
+| A     | @            | 185.199.109.153       |
+| A     | @            | 185.199.110.153       |
+| A     | @            | 185.199.111.153       |
+| CNAME | www          | carsonmcrae.github.io |
 
-Optional IPv6 records are `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`,
-and `2606:50c0:8003::153`. Never use wildcard records. GitHub redirects `www.daysforth.com` to the
-configured apex. DNS and certificate issuance can each take up to 24 hours.
+Start these records DNS-only for GitHub's domain validation and certificate issuance. Once its
+certificate is valid, enforce HTTPS in Pages and proxy the web records through Cloudflare.
+Use **Full (strict)** encryption, never Flexible. Leave Domain Connect DNS-only.
 
-## wcarsonmcrae.com forwarding
+Daysforth uses proxied redirect-only records with reserved documentation addresses. A single 301
+rule matches its apex and www over HTTP/HTTPS, redirects to `https://wcarsonmcrae.com` plus the
+original path, and preserves the query string. It serves no origin content. Verify before sign-off.
 
-GitHub Pages accepts one unrelated custom domain per site. In GoDaddy's DNS → Forwarding, add an
-unmasked permanent **301** redirect to `https://daysforth.com/` for the domain and its `www` host.
-GoDaddy provides HTTPS forwarding. Preserve unrelated email/DNS records. Verify HTTP, HTTPS,
-`www`, and representative old deep links. Record whether the registrar preserves paths and queries
-rather than promising that behavior in advance.
+## Hardening and release checks
 
-## Live acceptance checks
+Keep the app's hashed-script/style CSP in HTML. Add edge headers for `frame-ancestors 'none'`,
+`X-Frame-Options: DENY`, nosniff, a strict referrer policy, and disabled camera/microphone/geolocation.
+Set HSTS only after HTTPS works, without includeSubDomains or preload. Keep script/HTML rewriting
+and analytics features off so CSP hashes match and the privacy statement stays accurate.
 
-- The HTTPS Daysforth apex loads; HTTP and `www` redirect to it.
-- Both forms of `wcarsonmcrae.com` reach Daysforth over HTTP and HTTPS.
-- `/posts/married-nicole/`, `/brand/`, `/work/`, `/life/`, `/about/`, `/contact/`, and
-  `/accessibility/` load directly. Unknown paths show the custom 404.
-- Sitemap, robots, canonical tags, and share previews use Daysforth.
-- A reaction appears in another browser. Duplicate reactions do not increment twice. Save is local.
-- Free plan limits remain enabled; do not enable paid overages or upgrades.
+Reactions require an approved Origin and JSON for writes, cap bodies at 512 bytes, deduplicate in
+SQL, hash browser/network identifiers with a private salt, and limit new votes to 20/network/hour.
+Only the primary apex/www are allowed in production. CORS is a browser boundary, not identity proof.
+Quota exhaustion leaves the feed and local Save usable. Salt rotation changes deduplication IDs.
+See [the service guide](../workers/reactions/README.md).
+
+Run `npm run validate:full` and inspect CI, CodeQL, and Dependency review. Merge into the existing
+review base, then establish main from that reviewed result and make it the default, avoiding the
+historical site's accidental publication. Every main push runs the quality gate before deploying.
+
+Verify all four domain/host variants over HTTP/HTTPS, deep paths and queries, direct post/secondary
+pages, custom 404, canonical tags, robots, sitemap, share images, security headers, both themes,
+keyboard controls, and the real brand ZIP. Verify shared totals and duplicate protection across
+browsers; remove exact test votes. Record actual outcomes in design-qa.md.
+
+VoiceOver on macOS/iOS and native Safari download verification remain outstanding. Windows NVDA
+and automated WebKit do not establish conformance. Carson authorized publication with these
+limitations recorded.
 
 ## Rollback
 
-Carson can revert the reviewed commit on `main` to republish the previous build, or unpublish Pages.
-Record prior DNS/forwarding values before changing them. Do not delete protected photo originals or
-backups during rollback.
+Revert the release commit on main or unpublish Pages. Restore prior DNS from the saved inventories
+if needed. Never delete protected photo originals, backups, or real reactions. SQL triggers maintain
+totals after targeted vote deletion. A Worker rollback must remain compatible with its schema.
 
 ## Official references
 
-Checked November 2026; re-check before applying provider settings:
-
-- [GitHub: custom domains](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)
-- [GitHub: troubleshooting domains](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/troubleshooting-custom-domains-and-github-pages)
-- [GoDaddy: forwarding](https://www.godaddy.com/en-ca/help/forward-my-godaddy-domain-12123)
+- [GitHub custom domains](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)
+- [Cloudflare nameserver setup](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/)
+- [Free redirect quotas](https://developers.cloudflare.com/rules/url-forwarding/)
+- [Response header rules](https://developers.cloudflare.com/rules/transform/response-header-modification/)
 - [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/)
 - [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/)

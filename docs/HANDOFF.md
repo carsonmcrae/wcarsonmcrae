@@ -11,8 +11,10 @@ Read [AGENTS.md](../AGENTS.md), [DAYSFORTH.md](DAYSFORTH.md), and
   exists yet. Do not mistake that historical branch for the reviewed release.
 - All 17 incoming originals were copied outside the checkout and SHA-256 verified before pulling.
   Originals remain ignored and unchanged. Published source photos are metadata-stripped.
-- The static app, brand exports, and reactions service are implemented for review. Deployment,
-  Pages settings, and DNS remain owner actions. See `design-qa.md` for actual verification status.
+- The static app and brand exports are implemented. Carson authorized the agent to complete this
+  release, including Pages, Cloudflare, merges, and DNS, on November 4. The primary domain is
+  `wcarsonmcrae.com`; `daysforth.com` forwards there. See `DEPLOYMENT.md` for operational details
+  and `design-qa.md` for actual verification status.
 
 ## Confirmed content
 
@@ -50,10 +52,12 @@ The frontend uses free GitHub Pages. The free Cloudflare Worker/D1 implementatio
 `workers/reactions`; a separate backend repository is unnecessary. Save is browser-only; shared
 counts require the deployed API and `PUBLIC_REACTIONS_URL`.
 
-Only Carson merges, deploys, tags, or changes settings/DNS. Commits use his GitHub noreply identity
+The standing owner-only release rule is overridden by Carson's explicit authorization for this
+release. Commits use his GitHub noreply identity
 `65742229+carsonmcrae@users.noreply.github.com`, without co-author or generated trailers.
 No paid upgrade is authorized. Keep the separate GitHub portfolio repository unchanged.
 
 Run `npm run validate:full` and record results in `design-qa.md`. The NVDA core-flow spot check is
-recorded there; VoiceOver on macOS/iOS remains required before release sign-off. Review
+recorded there; VoiceOver on macOS/iOS remains outstanding and no full conformance is claimed. Carson
+authorized proceeding with publication with that limitation recorded. Review
 [CONTENT-CHECKLIST.md](CONTENT-CHECKLIST.md).

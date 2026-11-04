@@ -8,22 +8,30 @@ An outage or quota limit leaves the feed, Save, and Copy link usable.
 
 - `GET /reactions` returns a count for each approved moment.
 - `POST /reactions/<id>` accepts `{ "visitorId": "<browser UUID>" }` and returns `{ "count": 1 }`.
-- An existing browser/moment pair is idempotent. SQL uniqueness and an insert trigger keep totals
-  consistent, including concurrent submissions.
+- An existing browser/moment pair is idempotent. SQL uniqueness and insert/delete triggers keep
+  totals consistent, including concurrent submissions and targeted operator cleanup.
 - New votes are limited to 20 per network per hour. Bodies are limited to 512 bytes.
+- POST requires an approved Origin and JSON content type. Production permits only the personal
+  domain and its www host; local development origins must be explicitly configured locally.
 - Raw browser identifiers and network addresses are never stored. SHA-256 hashes use a private salt.
 - Expired rate-limit buckets are deleted hourly. Vote hashes remain to prevent duplicate votes.
 
 The implementation lives in `src/lib/reaction-service.ts`; the Worker entry only supplies bindings
 and approved post IDs. Unit tests execute the real migration and queries against in-memory SQLite.
 
-## Owner deployment
+## Deployment
 
 Use the existing signed-in Cloudflare account only after confirming its Workers plan is Free.
 Commands below use the pinned, eligible CLI checked on November 4, 2026.
 
-1. In this directory, run `npx wrangler@4.151.3 d1 create daysforth-reactions`.
-2. Put the returned database ID in `wrangler.toml`; the all-zero placeholder targets no real database.
+The existing `daysforth` Wrangler profile is bound only to this directory. It uses the Cloudflare
+account pinned in `wrangler.toml`, preserving the unrelated default login. Never deploy this service
+using an unverified account. The database is already provisioned; do not create a second copy.
+
+For a fresh installation only:
+
+1. In this directory, run `npx wrangler@4.151.3 d1 create daysforth-reactions --profile daysforth`.
+2. Put the returned database ID in `wrangler.toml`.
 3. Run `npx wrangler@4.151.3 d1 migrations apply daysforth-reactions --remote`.
 4. Set a cryptographically random secret with `npx wrangler@4.151.3 secret put RATE_LIMIT_SALT`.
    Use at least 32 characters. Do not put the value in Git, command arguments, screenshots, or logs.
@@ -31,8 +39,9 @@ Commands below use the pinned, eligible CLI checked on November 4, 2026.
 6. Set the returned Worker URL as the GitHub repository variable `PUBLIC_REACTIONS_URL`, then rebuild
    the site. The URL is public; no browser-facing secret is needed.
 
-Before deploying, remove loopback origins from the production allowlist. Keep both custom domains,
-their `www` forms, and the portfolio origin if project-path previews are required.
+The production endpoint is `https://daysforth-reactions.wcarsonmcrae.workers.dev`. Version preview
+URLs are disabled. Request logs/observability are disabled, and rate buckets expire hourly. Keep the
+salt in Cloudflare secrets; changing it resets anonymous deduplication identities.
 
 ## Local verification
 

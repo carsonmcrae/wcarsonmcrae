@@ -6,7 +6,7 @@
  * Does NOT belong: Building URLs for pages and assets (src/lib/paths.ts) or Astro configuration
  *   itself (astro.config.mjs).
  */
-export const DEFAULT_SITE_URL = 'https://daysforth.com';
+export const DEFAULT_SITE_URL = 'https://wcarsonmcrae.com';
 
 export interface DeployConfig {
   /** Absolute origin, without a trailing slash. */
@@ -23,9 +23,10 @@ export function normalizeSiteUrl(value: string | undefined): string {
   } catch {
     throw new Error(`SITE_URL must be an absolute URL, received "${raw}"`);
   }
-  if (url.protocol !== 'https:' && url.hostname !== 'localhost') {
+  if (url.protocol !== 'https:' && !(url.protocol === 'http:' && url.hostname === 'localhost')) {
     throw new Error(`SITE_URL must use https, received "${raw}"`);
   }
+  if (url.username || url.password) throw new Error('SITE_URL must not contain credentials.');
   return url.origin;
 }
 

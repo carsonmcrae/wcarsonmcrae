@@ -1,8 +1,8 @@
 # Daysforth implementation
 
 Daysforth is Carson McRae’s personal website and a working demonstration of a profile that is a
-timeline. Its primary address is `https://daysforth.com`. `wcarsonmcrae.com` is the personal-domain
-alias. The source remains in `carsonmcrae/wcarsonmcrae`.
+timeline. Its primary address is `https://wcarsonmcrae.com`. `daysforth.com` forwards to the personal
+domain. The source remains in `carsonmcrae/wcarsonmcrae`.
 
 ## Approved interface
 
@@ -63,9 +63,10 @@ identifiers, prevents duplicate votes in SQL, and rate-limits new reactions. It 
 
 ## Release
 
-Run `npm run validate:full`, then follow [DEPLOYMENT.md](DEPLOYMENT.md). The repository reserves
-merges, deployments, repository/Pages settings, and DNS changes to Carson. Local implementation and
-preparation do not imply those release actions have happened.
+Run `npm run validate:full`, then follow [DEPLOYMENT.md](DEPLOYMENT.md). Carson explicitly authorized
+the agent to perform this release, including merges, GitHub Pages, Cloudflare, and domain settings,
+on November 4, 2026. This authorization overrides the owner-only rule for this release; it does not
+change the repository's standing rules for future work.
 
 Automated accessibility results do not replace the required NVDA and VoiceOver evaluation. Record
 the actual browser/platform findings in `design-qa.md` and the release review.

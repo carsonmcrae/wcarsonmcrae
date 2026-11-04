@@ -14,6 +14,7 @@ import {
 
 describe('normalizeSiteUrl', () => {
   it('defaults to the custom domain', () => {
+    expect(DEFAULT_SITE_URL).toBe('https://wcarsonmcrae.com');
     expect(normalizeSiteUrl(undefined)).toBe(DEFAULT_SITE_URL);
     expect(normalizeSiteUrl('   ')).toBe(DEFAULT_SITE_URL);
   });
@@ -28,6 +29,9 @@ describe('normalizeSiteUrl', () => {
   it('allows http only for localhost', () => {
     expect(normalizeSiteUrl('http://localhost:4321')).toBe('http://localhost:4321');
     expect(() => normalizeSiteUrl('http://wcarsonmcrae.com')).toThrow(/https/);
+    expect(() => normalizeSiteUrl('ftp://localhost')).toThrow(/https/);
+    expect(() => normalizeSiteUrl('https://user@example.com')).toThrow(/credentials/);
+    expect(() => normalizeSiteUrl('https://:password@example.com')).toThrow(/credentials/);
   });
 
   it('rejects values that are not absolute URLs', () => {

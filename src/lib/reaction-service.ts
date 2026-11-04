@@ -55,7 +55,7 @@ export async function handleReactions(
   now = Date.now(),
 ): Promise<Response> {
   const origin = request.headers.get('Origin');
-  const allowed = (env.ALLOWED_ORIGINS ?? 'https://daysforth.com')
+  const allowed = (env.ALLOWED_ORIGINS ?? 'https://wcarsonmcrae.com')
     .split(',')
     .map((value) => value.trim());
   const headers: Record<string, string> = {
@@ -63,6 +63,9 @@ export async function handleReactions(
     'Cache-Control': 'no-store',
     Vary: 'Origin',
     'X-Content-Type-Options': 'nosniff',
+    'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'no-referrer',
   };
   const json = (data: unknown, status = 200) =>
     new Response(JSON.stringify(data), { status, headers });
@@ -75,11 +78,14 @@ export async function handleReactions(
   const postId = /^\/reactions\/([a-z0-9-]+)$/.exec(path)?.[1];
   if (path !== '/reactions' && (!postId || !postIds.includes(postId)))
     return json({ error: 'Moment not found' }, 404);
-  if (request.method !== 'GET' && request.method !== 'POST')
+  if (request.method !== 'GET' && request.method !== 'POST') {
+    headers['Allow'] = 'GET, POST, OPTIONS';
     return json({ error: 'Method not allowed' }, 405);
+  }
   if (request.method === 'GET' && path !== '/reactions')
     return json({ error: 'Route not found' }, 404);
   if (request.method === 'POST' && !postId) return json({ error: 'Moment not found' }, 404);
+  if (request.method === 'POST' && !origin) return json({ error: 'Origin required' }, 403);
   const db = env.DB;
   if (!db) return json({ error: 'Reactions are unavailable' }, 503);
   try {

@@ -6,8 +6,13 @@
 export function reactionEndpoint(raw: string | undefined): string {
   if (!raw?.trim()) return '';
   const url = new URL(raw);
-  if (url.protocol !== 'https:' && url.hostname !== 'localhost' && url.hostname !== '127.0.0.1')
+  if (
+    url.protocol !== 'https:' &&
+    !(url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname))
+  )
     throw new Error('Reactions endpoint must use HTTPS.');
+  if (url.username || url.password || url.search || url.hash)
+    throw new Error('Reactions endpoint must not contain credentials, a query, or a fragment.');
   return url.href.replace(/\/$/, '');
 }
 

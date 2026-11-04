@@ -20,7 +20,7 @@ beforeEach(() => {
   env = {
     DB: database.db,
     RATE_LIMIT_SALT: 'test-only-salt-with-at-least-32-characters',
-    ALLOWED_ORIGINS: 'https://daysforth.com, https://wcarsonmcrae.com',
+    ALLOWED_ORIGINS: 'https://wcarsonmcrae.com, https://www.wcarsonmcrae.com',
   };
 });
 afterEach(() => {
@@ -31,7 +31,7 @@ function vote(visitorId = randomUUID(), id = 'born', options: RequestInit = {}) 
   return new Request(`https://reactions.example.com/reactions/${id}`, {
     method: 'POST',
     headers: {
-      Origin: 'https://daysforth.com',
+      Origin: 'https://wcarsonmcrae.com',
       'Content-Type': 'application/json',
       'CF-Connecting-IP': '192.0.2.1',
     },
@@ -96,6 +96,22 @@ describe('shared totals', () => {
     expect(stored).not.toContain('192.0.2.1');
     expect(stored).toMatch(/[a-f\d]{64}/);
   });
+  it('keeps totals accurate when an operator removes a specific vote', async () => {
+    await handleReactions(vote(), env, ids, now);
+    await handleReactions(vote(), env, ids, now);
+    database.sqlite.exec(
+      'DELETE FROM reactions WHERE rowid = (SELECT rowid FROM reactions LIMIT 1)',
+    );
+    expect(await (await handleReactions(read(), env, ids, now)).json()).toEqual({
+      born: 1,
+      graduation: 0,
+    });
+    database.sqlite.exec('DELETE FROM reactions');
+    expect(await (await handleReactions(read(), env, ids, now)).json()).toEqual({
+      born: 0,
+      graduation: 0,
+    });
+  });
 });
 describe('abuse limits and resilience', () => {
   it('limits new reactions by network/hour, permits a duplicate, and resets next hour', async () => {
@@ -114,12 +130,24 @@ describe('abuse limits and resilience', () => {
   it('supports local development and JSON charset parameters', async () => {
     const response = await handleReactions(
       vote(randomUUID(), 'born', {
-        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        headers: {
+          Origin: 'http://localhost:8787',
+          'Content-Type': 'application/json; charset=utf-8',
+        },
       }),
-      { DB: database.db, RATE_LIMIT_SALT: env.RATE_LIMIT_SALT! },
+      { ...env, ALLOWED_ORIGINS: 'http://localhost:8787' },
       ids,
     );
     expect(response.status).toBe(200);
+    expect(
+      (
+        await handleReactions(
+          vote(),
+          { DB: database.db, RATE_LIMIT_SALT: env.RATE_LIMIT_SALT! },
+          ids,
+        )
+      ).status,
+    ).toBe(200);
   });
   it('returns an honest unavailable state when bindings, salt, SQL, or count integrity fail', async () => {
     expect((await handleReactions(read(), {}, ids, now)).status).toBe(503);
@@ -142,7 +170,7 @@ describe('HTTP boundary', () => {
     const preflight = await handleReactions(
       new Request('https://reactions.example.com/reactions', {
         method: 'OPTIONS',
-        headers: { Origin: 'https://daysforth.com' },
+        headers: { Origin: 'https://wcarsonmcrae.com' },
       }),
       env,
       ids,
@@ -153,6 +181,19 @@ describe('HTTP boundary', () => {
     const bad = await handleReactions(read('https://unapproved.example.com'), env, ids, now);
     expect(bad.status).toBe(403);
     expect(bad.headers.has('Access-Control-Allow-Origin')).toBe(false);
+    expect(bad.headers.get('Content-Security-Policy')).toBe(
+      "default-src 'none'; frame-ancestors 'none'",
+    );
+    expect(bad.headers.get('X-Frame-Options')).toBe('DENY');
+    expect(bad.headers.get('Referrer-Policy')).toBe('no-referrer');
+    const missing = await handleReactions(
+      vote(randomUUID(), 'born', { headers: { 'Content-Type': 'application/json' } }),
+      env,
+      ids,
+      now,
+    );
+    expect(missing.status).toBe(403);
+    expect(database.sqlite.prepare('SELECT * FROM reactions').all()).toHaveLength(0);
   });
   it.each([
     ['/wrong', 'GET', 404],
@@ -165,7 +206,10 @@ describe('HTTP boundary', () => {
     expect(
       (
         await handleReactions(
-          new Request(`https://reactions.example.com${path}`, { method }),
+          new Request(`https://reactions.example.com${path}`, {
+            method,
+            headers: { Origin: 'https://wcarsonmcrae.com' },
+          }),
           env,
           ids,
           now,
@@ -190,7 +234,14 @@ describe('HTTP boundary', () => {
   );
   it('rejects missing content types, malformed JSON, missing bodies, and oversized streamed bodies', async () => {
     expect(
-      (await handleReactions(vote(randomUUID(), 'born', { headers: {} }), env, ids, now)).status,
+      (
+        await handleReactions(
+          vote(randomUUID(), 'born', { headers: { Origin: 'https://wcarsonmcrae.com' } }),
+          env,
+          ids,
+          now,
+        )
+      ).status,
     ).toBe(415);
     expect(
       (await handleReactions(vote(randomUUID(), 'born', { body: '{' }), env, ids, now)).status,

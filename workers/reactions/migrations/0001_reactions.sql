@@ -15,6 +15,9 @@ CREATE TRIGGER reaction_added AFTER INSERT ON reactions BEGIN
   INSERT INTO reaction_totals (post_id, count) VALUES (NEW.post_id, 1)
   ON CONFLICT(post_id) DO UPDATE SET count = count + 1;
 END;
+CREATE TRIGGER reaction_removed AFTER DELETE ON reactions BEGIN
+  UPDATE reaction_totals SET count = count - 1 WHERE post_id = OLD.post_id;
+END;
 CREATE TABLE reaction_limits (
   bucket TEXT PRIMARY KEY,
   hits INTEGER NOT NULL,

@@ -23,7 +23,17 @@ describe('reaction endpoint', () => {
     expect(reactionEndpoint('http://localhost:8787')).toBe('http://localhost:8787');
     expect(reactionEndpoint('http://127.0.0.1:8787')).toBe('http://127.0.0.1:8787');
     expect(() => reactionEndpoint('http://example.com')).toThrow(/HTTPS/);
+    expect(() => reactionEndpoint('ftp://localhost')).toThrow(/HTTPS/);
+    expect(() => reactionEndpoint('ftp://127.0.0.1')).toThrow(/HTTPS/);
     expect(() => reactionEndpoint('invalid')).toThrow();
+  });
+  it.each([
+    'https://user@api.example.com',
+    'https://:password@api.example.com',
+    'https://api.example.com?token=private',
+    'https://api.example.com#private',
+  ])('rejects public endpoint configuration containing private or ambiguous parts: %s', (url) => {
+    expect(() => reactionEndpoint(url)).toThrow(/credentials, a query, or a fragment/);
   });
 });
 describe('count and vote contracts', () => {

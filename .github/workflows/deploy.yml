@@ -1,7 +1,7 @@
 # Purpose: Publish the site to GitHub Pages after every quality gate passes.
 # Scope: Runs the full CI workflow first, then builds with the address GitHub Pages reports
 #   (https://carsonmcrae.github.io/wcarsonmcrae/ before a custom domain is set, then
-#   https://daysforth.com/ automatically afterwards), re-checks that exact output, and deploys
+#   https://wcarsonmcrae.com/ automatically afterwards), re-checks that exact output, and deploys
 #   with GitHub's official Pages actions (SHA-pinned). Runs on pushes to main and on demand.
 # Constraints: Requires Settings → Pages → Source: GitHub Actions. No CNAME file is needed: a custom
 #   Actions workflow ignores it, and the custom domain lives in the repository's Pages settings.

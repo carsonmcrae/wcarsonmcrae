@@ -2,7 +2,8 @@
 
 final result: passed
 
-The implementation and final visual comparisons passed. Owner release checks remain separate.
+The implementation and final visual comparisons passed. Carson authorized the agent to complete
+publication and infrastructure on November 4; live release checks are recorded below.
 
 ## Visual truth and captures
 
@@ -180,8 +181,29 @@ The scoped checks above do not establish full Section 508 or WCAG conformance.
 - [x] Final normalized visual comparison, full validation, and focused post-fix checks recorded.
 - [ ] Owner accessibility sign-off and remaining copy review.
 - [x] Carson enabled Dependency graph; the rerun of Dependency review passed.
-- [ ] Owner release: establish reviewed `main`, enable Pages, deploy the free Worker/D1 service,
-      configure Daysforth, and forward the legacy domain. See `docs/DEPLOYMENT.md`.
+- [ ] Authorized release: establish reviewed `main`, publish Pages at `wcarsonmcrae.com`, finish
+      Cloudflare edge settings, and forward `daysforth.com`. See `docs/DEPLOYMENT.md`.
 
-The repo's owner-only merge/deployment/settings/DNS rule remains in force. No hosting or DNS
-change has occurred during implementation. The separate GitHub portfolio remains unchanged.
+The standing owner-only release rule is overridden by Carson's explicit authorization for this
+release. The separate GitHub portfolio remains unchanged.
+
+## Release hardening — November 4, 2026
+
+The canonical default is now `https://wcarsonmcrae.com`. URL validation rejects unsupported protocols
+and credentials; the public API URL also rejects queries/fragments. POST requires an approved
+browser Origin. Worker responses include nosniff, denied framing, a deny-all document CSP, and
+no-referrer. Version previews and request logging are disabled. SQL deletion maintains totals,
+allowing exact canary cleanup without affecting real reactions.
+
+Full local validation passed: **227 unit tests, 100% per-file coverage across 37 files, 207 root and
+207 subpath build checks, 458 browser checks passed with 19 intentional skips, and zero production
+dependency vulnerabilities**. No threshold, gate, or asset cap was lowered.
+
+The Free Worker and D1 are deployed in the verified account. Verified HTTPS integration returned all
+17 totals, persisted a test vote, kept a duplicate at one, and rejected missing/unapproved Origins
+with 403. A finally-block cleanup deleted only the exact canary hash; SQL verified no canary remained
+and the affected total returned to zero. No fake engagement was retained.
+
+Pages is configured for GitHub Actions with the primary custom domain and public reactions URL.
+The primary Cloudflare zone is active. Frontend publication and edge/redirect acceptance checks
+are in progress at this checkpoint.
