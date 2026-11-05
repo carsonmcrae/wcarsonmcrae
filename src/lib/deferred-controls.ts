@@ -5,6 +5,20 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
+function clickedControl(event: MouseEvent, selector: string): HTMLElement | null {
+  const target = event.target;
+  if (
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey ||
+    !(target instanceof Element)
+  )
+    return null;
+  return target.closest<HTMLElement>(selector);
+}
+
 export function deferControl(
   doc: Document,
   selector: string,
@@ -35,16 +49,7 @@ export function deferControl(
   const intent = (event: Event) => {
     const target = event.target;
     if (event instanceof MouseEvent) {
-      if (
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey ||
-        !(target instanceof Element)
-      )
-        return;
-      const control = target.closest<HTMLElement>(selector);
+      const control = clickedControl(event, selector);
       if (!control) return;
       event.preventDefault();
       replay.push(() => activate(control));
