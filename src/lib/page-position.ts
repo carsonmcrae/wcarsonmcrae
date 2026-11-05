@@ -9,6 +9,13 @@ type PositionWindow = Pick<Window, 'history' | 'location' | 'scrollY'> & {
     entries(): { index: number; url: string | null }[];
   };
 };
+export function prepareTimelineRestore(win: Pick<Window, 'history'>): number | null {
+  const position: unknown = win.history.state?.scrollY;
+  if (typeof position !== 'number' || !Number.isFinite(position) || position < 0) return null;
+  // A fresh document owns this restore; native restoration must not race the hydrated layout.
+  win.history.scrollRestoration = 'manual';
+  return position;
+}
 export function initPagePosition(doc: Document, win: PositionWindow) {
   const remember = () =>
     win.history.replaceState({ ...win.history.state, scrollY: win.scrollY }, '');

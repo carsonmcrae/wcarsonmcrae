@@ -20,6 +20,22 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe('timeline interaction', () => {
+  it('restores captured history positions instead of replacing them with a date jump', () => {
+    const { controller, events, win, history, scrolling } = timelineFixture(
+      '?date=2022-05',
+      false,
+      0,
+    );
+    cleanups.push(controller.destroy);
+    expect(scrolling).not.toHaveBeenCalled();
+    events.dispatchEvent(new Event('popstate'));
+    expect(win.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'instant' });
+    history.state = { scrollY: 4512 };
+    events.dispatchEvent(new Event('popstate'));
+    expect(win.scrollTo).toHaveBeenLastCalledWith({ top: 4512, behavior: 'instant' });
+    controller.goToDate('1999-11');
+    expect(history.pushState).toHaveBeenLastCalledWith({}, '', expect.any(URL));
+  });
   it('jumps to the visible collection boundaries, including filtered and empty collections', () => {
     const { controller, change } = setup();
     document.body.insertAdjacentHTML(

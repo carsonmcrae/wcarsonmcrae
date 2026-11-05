@@ -29,6 +29,10 @@ updated reactions Worker, and frontend release. Standing owner-controlled releas
   identified. No persistent browsing-history store was introduced. Direct links restore the requested
   date before revealing the feed. Older browsers without native entry inspection retain a date-link
   fallback; the header’s native Back button can still restore their exact prior browser entry.
+  Fresh document restores wait for the self-hosted font layout before revealing the restored feed.
+  Cached returns refresh bookmarks and reaction totals without recreating cards or resetting scroll.
+  Recorded positions take precedence over date jumps, and scroll anchoring cannot adjust the feed
+  after restoration. Newly pushed date choices do not inherit a different entry’s old position.
 - Optional browser persistence requires consent. The notice and Storage settings explain choices,
   withdrawal, and erasure. The [privacy review](PRIVACY-REVIEW.md) records sources and limits.
 

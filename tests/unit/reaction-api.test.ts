@@ -46,6 +46,9 @@ describe('count and vote contracts', () => {
       born: 0,
       wedding: 3,
     });
+    expect(fetcher).toHaveBeenLastCalledWith('https://api.example.com/reactions', {
+      cache: 'no-store',
+    });
     expect(await submitReaction('https://api.example.com', 'a/b', 'visitor', fetcher)).toBe(4);
     expect(fetcher).toHaveBeenLastCalledWith(
       'https://api.example.com/reactions/a%2Fb',

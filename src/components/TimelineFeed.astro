@@ -60,9 +60,11 @@ const groups = groupMoments(timelinePosts, 'years');
 </div>
 <script>
   import '../scripts/site';
+  import { prepareTimelineRestore } from '../lib/page-position';
   import { initTimeline } from '../lib/timeline-controller';
+  const position = prepareTimelineRestore(window);
+  await document.fonts.ready;
   initTimeline(document, window);
-  if (history.state?.scrollY > 0)
-    window.scrollTo({ top: history.state.scrollY, behavior: 'instant' });
+  if (position !== null) window.scrollTo({ top: position, behavior: 'instant' });
   document.documentElement.removeAttribute('data-timeline-restore');
 </script>

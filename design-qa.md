@@ -291,10 +291,17 @@ text, obscured jump headings, and cached-page history availability. Changing vie
 now preserves that position; deep browsing preserves the selected period. Storage changes update
 the existing cards rather than rebuilding a controller from only the currently filtered subset.
 
-The Worker dry run and account/binding check passed; migration 0002 is the only pending migration.
-The production preflight found five real reactions. Release verification must preserve all real
-increments, remove only its identified synthetic canary, and deploy the Worker before the frontend.
-Final Worker version, PR/Pages identifiers, and live outcomes belong in the release PR evidence.
+Migration 0002 was applied and Worker version `27bdc096-110d-45ef-a2a3-2b6d15f9016d` was deployed
+before the frontend. The live canary proved an idempotent increment, rejected decrement, and
+identifier erasure without losing its aggregate. Only that synthetic increment was then removed;
+all five real reactions were preserved. CORS, request bounds, and security headers passed live checks.
+Final PR/Pages identifiers and frontend live outcomes belong in the release PR evidence.
+
+CI exposed a small return-position shift. Recorded positions now take precedence over date jumps;
+fresh restores wait for font layout and own restoration, and the feed disables scroll anchoring.
+New date entries do not inherit an earlier entry’s captured position. Cached returns refresh saves
+and counts without resetting cards or scroll. Twelve repeated exact-position checks passed across
+desktop Chromium, mobile Chromium, and mobile WebKit; the strict assertion remains unchanged.
 
 CI’s secret scanner classified the literal `daysforth.consent.v1` storage name as a generic API key.
 It grants no access and is shipped publicly in the browser code. An anchored exact-value exception

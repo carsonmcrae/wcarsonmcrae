@@ -7,7 +7,7 @@ import { vi } from 'vitest';
 import { timelinePosts } from '../../src/data/timeline';
 import { monthIndex, MONTHS } from '../../src/lib/timeline-dates';
 import { initTimeline } from '../../src/lib/timeline-controller';
-export function timelineFixture(search = '', observe = false) {
+export function timelineFixture(search = '', observe = false, scrollY?: number) {
   document.body.innerHTML = `<div><button data-jump-date="1999-11">Born</button><input data-date-slider type="range" min="${monthIndex('1999-11')}" max="${monthIndex('2026-11')}" value="${monthIndex('2026-11')}"><output data-date-preview hidden></output></div>
   <section data-timeline><div><button data-view="timeline">Timeline</button><button data-view="posts"><span>Posts</span></button></div>
   <details data-timeline-menu><summary><span data-category-label>All categories</span></summary><fieldset>${['All', 'Work', 'Projects', 'Life', 'Milestones', 'Saved'].map((value) => `<input type="radio" name="category" value="${value}">`).join('')}</fieldset></details>
@@ -17,7 +17,12 @@ export function timelineFixture(search = '', observe = false) {
   const navigate = (_data: unknown, _unused: string, url: string | URL | null | undefined) => {
     location = new URL(String(url));
   };
-  const history = { replaceState: vi.fn(navigate), pushState: vi.fn(navigate) };
+  const history = {
+    state: scrollY === undefined ? null : { scrollY },
+    scrollRestoration: 'auto',
+    replaceState: vi.fn(navigate),
+    pushState: vi.fn(navigate),
+  };
   const events = new EventTarget();
   const observers: {
     callback: IntersectionObserverCallback;
@@ -35,6 +40,7 @@ export function timelineFixture(search = '', observe = false) {
       return location;
     },
     history,
+    scrollTo: vi.fn(),
     addEventListener: events.addEventListener.bind(events),
     removeEventListener: events.removeEventListener.bind(events),
     ...(observe ? { IntersectionObserver: Observer } : {}),

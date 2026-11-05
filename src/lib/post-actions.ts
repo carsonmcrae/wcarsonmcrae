@@ -1,6 +1,6 @@
 /**
  * Purpose: Restore saved choices and display shared counts before any interaction.
- * Scope: Action markup, consent-aware hydration, initial fetch, and shared update state.
+ * Scope: Action markup, consent-aware hydration, cache restoration, and shared update state.
  * Does NOT belong: Lazy mutation or clipboard events (post-action-events.ts).
  */
 import { loadReactionCounts } from './reaction-api';
@@ -11,6 +11,8 @@ import { migrateSavedMoments } from './saved-moments';
 import { readItem, safeStorage } from './storage';
 import { preferenceStorage, consentChoice } from './consent';
 export interface ActionWindow {
+  addEventListener: Window['addEventListener'];
+  removeEventListener: Window['removeEventListener'];
   localStorage: Storage;
   location: Pick<Location, 'origin'>;
   navigator: { clipboard?: Pick<Clipboard, 'writeText'> };
@@ -67,19 +69,35 @@ export function initPostActions(doc: Document, win: ActionWindow, endpoint: stri
       }
     }
   };
-  if (endpoint && rows.length > 0) {
+  let request = 0;
+  const refresh = () => {
+    if (!endpoint || rows.length === 0) return;
+    const current = ++request;
+    changed.clear();
     void loadReactionCounts(endpoint, win.fetch)
-      .then((counts) => updateCounts(counts, true))
+      .then((counts) => {
+        if (current === request) updateCounts(counts, true);
+      })
       .catch(() => {
         for (const row of rows)
           for (const button of row.querySelectorAll('[data-react]'))
             button.setAttribute('title', 'Reactions temporarily unavailable');
       });
-  }
+  };
+  const onResume = (event: PageTransitionEvent) => {
+    if (!event.persisted) return;
+    onStorage();
+    refresh();
+  };
+  refresh();
+  win.addEventListener('pageshow', onResume);
   return {
     storage,
     changed,
     updateCounts,
-    destroy: () => doc.removeEventListener('daysforth:storage', onStorage),
+    destroy: () => {
+      doc.removeEventListener('daysforth:storage', onStorage);
+      win.removeEventListener('pageshow', onResume);
+    },
   };
 }

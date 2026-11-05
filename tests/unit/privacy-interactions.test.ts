@@ -15,7 +15,7 @@ import {
 import { initPrivacyControls } from '../../src/lib/privacy-controls';
 import { initPhotoViewer } from '../../src/lib/photo-viewer';
 import { initHistoryControls } from '../../src/lib/history-controls';
-import { initPagePosition } from '../../src/lib/page-position';
+import { initPagePosition, prepareTimelineRestore } from '../../src/lib/page-position';
 import { consentingStorage, memoryStorage } from './helpers';
 const stops: (() => void)[] = [];
 beforeEach(() => {
@@ -297,6 +297,21 @@ describe('header history', () => {
   });
 });
 describe('returning to the timeline', () => {
+  it('gives valid recorded positions exclusive restoration ownership, including the top', () => {
+    const history = { state: null as unknown, scrollRestoration: 'auto' };
+    const win = { history } as Pick<Window, 'history'>;
+    expect(prepareTimelineRestore(win)).toBeNull();
+    for (const position of ['500', NaN, Infinity, -1]) {
+      history.state = { scrollY: position };
+      expect(prepareTimelineRestore(win)).toBeNull();
+      expect(history.scrollRestoration).toBe('auto');
+    }
+    for (const position of [500, 0]) {
+      history.state = { scrollY: position };
+      expect(prepareTimelineRestore(win)).toBe(position);
+      expect(history.scrollRestoration).toBe('manual');
+    }
+  });
   it('uses same-origin native entries when the strict referrer policy hides the prior URL', () => {
     document.body.innerHTML =
       '<a href="https://daysforth.com/?date=2022-05" data-return-timeline>Back</a>';

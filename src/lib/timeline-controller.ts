@@ -13,10 +13,11 @@ import {
   type TimelineState,
 } from './timeline-model';
 import { readMomentCards, renderMomentGroups } from './timeline-render';
+import { prepareTimelineRestore } from './page-position';
 
 type TimelineWindow = Pick<
   Window,
-  'location' | 'history' | 'addEventListener' | 'removeEventListener'
+  'location' | 'history' | 'scrollTo' | 'addEventListener' | 'removeEventListener'
 > & { IntersectionObserver?: typeof IntersectionObserver };
 export function initTimeline(doc: Document, win: TimelineWindow) {
   const root = doc.querySelector<HTMLElement>('[data-timeline]');
@@ -42,8 +43,11 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
   const saveUrl = (push = false) => {
     const url = new URL(win.location.href);
     url.search = stateSearch(state);
-    if (push) win.history.pushState(win.history.state, '', url);
-    else win.history.replaceState(win.history.state, '', url);
+    if (push) {
+      const next: Record<string, unknown> = { ...win.history.state };
+      delete next['scrollY'];
+      win.history.pushState(next, '', url);
+    } else win.history.replaceState(win.history.state, '', url);
     doc.dispatchEvent(new CustomEvent('daysforth:history'));
   };
   const syncDate = () => {
@@ -193,7 +197,9 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
   const onPopState = () => {
     state = readTimelineState(win.location.search, latest);
     render();
-    goToDate(state.date, false, 'none');
+    const position = prepareTimelineRestore(win);
+    if (position !== null) win.scrollTo({ top: position, behavior: 'instant' });
+    else goToDate(state.date, false, 'none');
   };
   const onSaved = () => {
     if (state.category === 'Saved') {
@@ -209,7 +215,10 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
   win.addEventListener('popstate', onPopState);
   doc.addEventListener('daysforth:saved', onSaved);
   for (const intent of scrollIntents) doc.addEventListener(intent, follow, { passive: true });
-  if (new URLSearchParams(win.location.search).has('date') && !win.history.state?.scrollY)
+  if (
+    new URLSearchParams(win.location.search).has('date') &&
+    win.history.state?.scrollY === undefined
+  )
     goToDate(state.date, false, 'replace');
   return {
     getState: () => ({ ...state }),
