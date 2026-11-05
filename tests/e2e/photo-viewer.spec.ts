@@ -189,3 +189,41 @@ for (const remembered of [false, true]) {
     expect(fixture.writes).toHaveLength(2);
   });
 }
+
+test.describe('reader-sized photo captions', () => {
+  // Match the existing accessibility text-size test; the production CSP stays enabled elsewhere.
+  test.use({ bypassCSP: true });
+
+  test('200% caption text is keyboard-scrollable without moving the background', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 664 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const { viewer, strip } = await openCarsonAlbum(page);
+    await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+    const messiPhoto = strip.getByRole('button').nth(5);
+    await messiPhoto.click();
+    await expect(viewer.locator('[data-photo-caption-output]')).toHaveText(
+      carsonGallery.photos[5]!.caption,
+    );
+    const caption = viewer.getByRole('region', { name: 'Photo caption', exact: true });
+    expect(await caption.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(
+      true,
+    );
+    const background = await page.evaluate(() => scrollY);
+    await messiPhoto.focus();
+    await page.keyboard.press('Tab');
+    await expect(caption).toBeFocused();
+    await page.keyboard.press('PageDown');
+    await expect.poll(() => caption.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+    await expect
+      .poll(() =>
+        caption.evaluate((element) => {
+          const text = element.querySelector('[data-photo-caption-output]')!;
+          return text.getBoundingClientRect().bottom <= element.getBoundingClientRect().bottom + 1;
+        }),
+      )
+      .toBe(true);
+    expect(await page.evaluate(() => scrollY)).toBeCloseTo(background, 0);
+  });
+});
