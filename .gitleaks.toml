@@ -1,6 +1,6 @@
 # Purpose: Secret-scanning configuration for gitleaks (run by the security job in ci.yml).
 # Scope: gitleaks' default rules plus a narrow allow-list for known non-secrets: the lockfile's
-#   integrity hashes, which are public checksums that can look like keys.
+#   integrity hashes and the literal consent-storage name, which are public and grant no access.
 # Does NOT belong: Broad path ignores. Add an exact pattern with a reason instead.
 title = "wcarsonmcrae gitleaks config"
 
@@ -8,5 +8,7 @@ title = "wcarsonmcrae gitleaks config"
 useDefault = true
 
 [allowlist]
-description = "Lockfile integrity hashes are public checksums, not secrets."
+description = "Lockfile checksums and the literal daysforth.consent.v1 localStorage name are public, not credentials."
 paths = ['''(^|/)package-lock\.json$''']
+regexTarget = "secret"
+regexes = ['''^daysforth\.consent\.v1$''']

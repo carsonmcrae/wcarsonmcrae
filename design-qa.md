@@ -296,6 +296,10 @@ The production preflight found five real reactions. Release verification must pr
 increments, remove only its identified synthetic canary, and deploy the Worker before the frontend.
 Final Worker version, PR/Pages identifiers, and live outcomes belong in the release PR evidence.
 
+CI’s secret scanner classified the literal `daysforth.consent.v1` storage name as a generic API key.
+It grants no access and is shipped publicly in the browser code. An anchored exact-value exception
+documents that non-secret; default scanning remains enabled and no source path is excluded.
+
 NVDA remains off at Carson’s request. Fresh NVDA and VoiceOver review of these new controls is
 outstanding and disclosed publicly. This evidence does not establish complete accessibility
 conformance or provide a worldwide legal certification.
