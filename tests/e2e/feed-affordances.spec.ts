@@ -59,6 +59,15 @@ test('image corner visuals straddle the photograph while their hidden targets st
   await expect(expand).toHaveCSS('opacity', '1');
   await expand.focus();
   await expect(expand).toBeFocused();
+  // Native target scrolling must honor the same sticky-dock clearance as its parent card.
+  await expand.evaluate((element) =>
+    element.scrollIntoView({ block: 'start', behavior: 'instant' }),
+  );
+  const clearance = await expand.evaluate((element) => ({
+    top: element.getBoundingClientRect().top,
+    dockBottom: document.querySelector('.timeline-dock')!.getBoundingClientRect().bottom,
+  }));
+  expect(clearance.top).toBeGreaterThanOrEqual(clearance.dockBottom);
   const geometry = await expand.evaluate((element) => {
     const target = element.getBoundingClientRect();
     const photo = element.parentElement!.querySelector('[data-photo] img')!.getBoundingClientRect();
@@ -101,8 +110,33 @@ test('a first touch reveals the card, a second photo touch opens the viewer, and
   await expect(card.locator('.post-media__open')).toHaveCSS('opacity', '1');
   await photo.tap();
   await expect(page.locator('[data-photo-viewer]')).toBeVisible();
+  const position = await page.evaluate(() => scrollY);
   await page.keyboard.press('Escape');
-  await card.locator('.post-media__open').tap();
+  await expect(page.locator('[data-photo-viewer]')).toBeHidden();
+  expect(await page.evaluate(() => scrollY)).toBe(position);
+  const expand = card.locator('.post-media__open');
+  // The tall photo can retain its original position with its corner beneath the dock.
+  // Scroll it into the reading area with actual input before attempting the touch target.
+  for (let step = 0; step < 12; step++) {
+    const bounds = await expand.evaluate((element) => ({
+      top: element.getBoundingClientRect().top,
+      dockBottom: document.querySelector('.timeline-dock')!.getBoundingClientRect().bottom,
+    }));
+    if (bounds.top >= bounds.dockBottom) break;
+    await page.keyboard.press('ArrowUp');
+    await expect
+      .poll(() => expand.evaluate((element) => element.getBoundingClientRect().top))
+      .toBeGreaterThan(bounds.top);
+  }
+  expect(
+    await expand.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      return element.contains(
+        document.elementFromPoint(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2),
+      );
+    }),
+  ).toBe(true);
+  await expand.tap();
   await expect(page).toHaveURL(/\/posts\/vanderbilt-graduation\/$/);
   await page.goto('');
   await card.locator('h3 a').tap();

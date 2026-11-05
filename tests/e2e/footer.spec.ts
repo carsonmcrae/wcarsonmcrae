@@ -6,16 +6,14 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test } from '@playwright/test';
-import { expectNoViolations, horizontalOverflow } from './helpers';
+import { expectNoViolations, horizontalOverflow, openThemedHome } from './helpers';
 import { currentVersion } from '../../src/data/releases';
 
 for (const colorScheme of ['light', 'dark'] as const) {
   test(`compact footer preserves essentials and keyboard-safe More in ${colorScheme}`, async ({
     page,
   }) => {
-    await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
-    await page.goto('');
-    await expect(page.locator('html')).toHaveAttribute('data-site-ready', 'true');
+    await openThemedHome(page, colorScheme);
     const notice = page.getByRole('complementary', { name: 'Browser storage choice' });
     await expect(notice).toContainText('Remember this browser?');
     const firstVisitFooter = (await page.locator('.site-footer').boundingBox())!;

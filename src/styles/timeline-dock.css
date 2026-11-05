@@ -14,6 +14,7 @@
   border-bottom: 1px solid var(--rule);
 }
 section.timeline-feed {
+  --timeline-scroll-clearance: calc(var(--header-height) + 12rem);
   scroll-margin-top: var(--header-height);
 }
 .timeline-dock .date-rail {
@@ -32,8 +33,10 @@ section.timeline-feed {
 .timeline-feed .moment-group,
 .timeline-feed .moment-group > h2,
 .timeline-feed .post-card,
-.timeline-feed .timeline-empty {
-  scroll-margin-top: calc(var(--header-height) + 12rem);
+.timeline-feed .timeline-empty,
+.timeline-feed .photo-open,
+.timeline-feed .post-media__open {
+  scroll-margin-top: var(--timeline-scroll-clearance);
 }
 @media (max-width: 64rem) {
   .timeline-dock {
@@ -41,11 +44,8 @@ section.timeline-feed {
   }
 }
 @media (max-width: 48rem) {
-  .timeline-feed .moment-group,
-  .timeline-feed .moment-group > h2,
-  .timeline-feed .post-card,
-  .timeline-feed .timeline-empty {
-    scroll-margin-top: calc(var(--header-height) + 17rem);
+  section.timeline-feed {
+    --timeline-scroll-clearance: calc(var(--header-height) + 17rem);
   }
 }
 .date-rail input {
@@ -86,11 +86,8 @@ section.timeline-feed {
   .timeline-dock {
     position: relative;
   }
-  .timeline-feed .moment-group,
-  .timeline-feed .moment-group > h2,
-  .timeline-feed .post-card,
-  .timeline-feed .timeline-empty {
-    scroll-margin-top: 1rem;
+  section.timeline-feed {
+    --timeline-scroll-clearance: 1rem;
   }
 }
 @container timeline (max-width: 20em) {
