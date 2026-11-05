@@ -17,6 +17,15 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe('returning to the timeline', () => {
+  function nativeNavigation(
+    getState: () => Record<string, unknown> | undefined,
+  ): NonNullable<Parameters<typeof initPagePosition>[1]['navigation']> {
+    return Object.assign(new EventTarget(), {
+      currentEntry: { index: 0, getState },
+      entries: () => [],
+      updateCurrentEntry: vi.fn(),
+    });
+  }
   function positionContext(history: object) {
     const events = new EventTarget();
     const win = {
@@ -36,11 +45,7 @@ describe('returning to the timeline', () => {
       replaceState: vi.fn(),
     };
     const { events, win } = positionContext(history);
-    const navigation: NonNullable<typeof win.navigation> = Object.assign(new EventTarget(), {
-      currentEntry: { index: 2, getState: () => ({ unrelated: 'preserved' }) },
-      entries: () => [],
-      updateCurrentEntry: vi.fn(),
-    });
+    const navigation = nativeNavigation(() => ({ unrelated: 'preserved' }));
     win.navigation = navigation;
     const depart = (kind: NavigationType) => {
       const event = new Event('navigate');
@@ -91,9 +96,7 @@ describe('returning to the timeline', () => {
   it('prefers validated native entry state over an older explicit-click snapshot', () => {
     const { win } = positionContext({ state: { scrollY: 90 }, scrollRestoration: 'auto' });
     const getState = vi.fn<() => Record<string, unknown> | undefined>(() => ({ scrollY: 740 }));
-    win.navigation = {
-      currentEntry: { index: 0, getState },
-    } as NonNullable<typeof win.navigation>;
+    win.navigation = nativeNavigation(getState);
     expect(prepareTimelineRestore(win)).toBe(740);
     getState.mockReturnValue(undefined);
     expect(prepareTimelineRestore(win)).toBe(90);
