@@ -206,7 +206,9 @@ with 403. A finally-block cleanup deleted only the exact canary hash; SQL verifi
 and the affected total returned to zero. No fake engagement was retained.
 
 Pages is configured for GitHub Actions with the primary custom domain and public reactions URL.
-Both Cloudflare zones are active and validate with DNSSEC. The primary remains DNS-only for GitHub's
-automatic certificate checks and renewal; Cloudflare serves the Daysforth redirect and reaction API.
+Both Cloudflare zones are active and validate with DNSSEC. The canonical apex remains DNS-only for
+GitHub's automatic certificate checks and renewal. Cloudflare serves the Daysforth redirect,
+the primary's www-to-apex redirect, and the reaction API. Its active free Universal certificate
+handles www independently of GitHub's cached alternate-host eligibility check.
 The prepared optional primary-domain edge-header transform does not apply to DNS-only traffic.
 This is the pre-publication provisioning checkpoint; see release PR #1 for final live acceptance.
