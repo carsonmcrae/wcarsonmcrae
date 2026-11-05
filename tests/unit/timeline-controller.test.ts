@@ -38,6 +38,15 @@ describe('timeline interaction', () => {
     expect(history.pushState).toHaveBeenCalledTimes(before + 1);
     expect(controller.getState().date).toBe('2026-10');
   });
+  it('uses the selected date heading when an optional card id belongs to another month', () => {
+    const { controller, history, scrolling } = setup();
+    controller.goToDate('2022-05', true, 'none', 'married-nicole');
+    const heading = document.querySelector('[data-period="2022-05"] h2');
+    expect(document.activeElement).toBe(heading);
+    expect(scrolling.mock.instances.at(-1)).toBe(heading);
+    expect(controller.getState().date).toBe('2022-05');
+    expect(history.pushState).not.toHaveBeenCalled();
+  });
   it('restores and updates the selected category glyph from the rendered option, preserving its base path', () => {
     const { change, setUrl, events } = setup('?category=Work');
     const selected = document.querySelector('[data-category-icon] use')!;

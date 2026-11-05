@@ -1,6 +1,6 @@
 /**
  * Purpose: Starts optional Daysforth feed enhancements.
- * Scope: Native-menu dismissal, initial shared counts, and post actions loaded on intent.
+ * Scope: Feed navigation, media reveal, native-menu dismissal, and optional intent-loaded post actions.
  * Does NOT belong: Behavior implementations (src/lib).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -19,24 +19,24 @@ export function startTimeline() {
     initMediaAffordances(document, globalThis),
     initMomentNavigator(document, globalThis),
   ];
-  const destroy = () => {
+  if (document.querySelector('[data-action-notice]')) {
+    const endpoint = reactionEndpoint(import.meta.env['PUBLIC_REACTIONS_URL']);
+    const state = initPostActions(document, globalThis, endpoint);
+    const stopActions = deferControl(document, '[data-post-actions] button', async () => {
+      const [{ attachPostActionEvents }, { initActionNotice }] = await Promise.all([
+        import('../lib/post-action-events'),
+        import('../lib/notices'),
+      ]);
+      const notice = initActionNotice(document, globalThis);
+      const stop = attachPostActionEvents(document, globalThis, endpoint, state, notice.show);
+      return () => {
+        notice.destroy();
+        stop();
+      };
+    });
+    stops.push(stopActions, state.destroy);
+  }
+  return () => {
     for (const stop of stops) stop();
   };
-  if (!document.querySelector('[data-action-notice]')) return destroy;
-  const endpoint = reactionEndpoint(import.meta.env['PUBLIC_REACTIONS_URL']);
-  const state = initPostActions(document, globalThis, endpoint);
-  const stopActions = deferControl(document, '[data-post-actions] button', async () => {
-    const [{ attachPostActionEvents }, { initActionNotice }] = await Promise.all([
-      import('../lib/post-action-events'),
-      import('../lib/notices'),
-    ]);
-    const notice = initActionNotice(document, globalThis);
-    const stop = attachPostActionEvents(document, globalThis, endpoint, state, notice.show);
-    return () => {
-      notice.destroy();
-      stop();
-    };
-  });
-  stops.push(stopActions, state.destroy);
-  return destroy;
 }

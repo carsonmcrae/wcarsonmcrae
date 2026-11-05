@@ -48,9 +48,14 @@ function fixture() {
 }
 
 it('initializes harmlessly without the timeline or its optional rail', () => {
+  const listen = vi.spyOn(window, 'addEventListener');
+  const media = vi.spyOn(window, 'matchMedia');
   stops.push(initMomentNavigator(document, window));
   document.body.innerHTML = '<section data-timeline></section>';
   stops.push(initMomentNavigator(document, window));
+  expect(listen).not.toHaveBeenCalled();
+  expect(media).not.toHaveBeenCalled();
+  expect(document.querySelector('[data-moment-navigator]')).toBeNull();
 });
 
 it('keeps each rendered same-month moment distinct and follows the visible card', () => {

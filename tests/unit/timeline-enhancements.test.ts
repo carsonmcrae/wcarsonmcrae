@@ -81,9 +81,14 @@ it('shares geometry that excludes the profile, empty feed, footer and offscreen 
 });
 
 it('has no shortcuts to initialize on other pages or without their controls', () => {
+  const listen = vi.spyOn(window, 'addEventListener');
+  const input = vi.spyOn(document, 'addEventListener');
   stops.push(initTimelineJumps(document, window), initMediaAffordances(document, window));
   document.body.innerHTML = '<section data-timeline></section>';
   stops.push(initTimelineJumps(document, window));
+  expect(listen).not.toHaveBeenCalled();
+  expect(input).not.toHaveBeenCalled();
+  expect(document.querySelector('[data-timeline]')!.children).toHaveLength(0);
 });
 
 it('ignores layout/date jumps, qualifies actual scrolling, and suppresses useless edge directions', () => {

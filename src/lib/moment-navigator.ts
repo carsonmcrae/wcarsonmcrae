@@ -102,7 +102,7 @@ export function initMomentNavigator(doc: Document, win: NavigatorWindow): () => 
       link.dataset['jumpMoment'] = id;
       link.tabIndex = 0;
       const title = doc.createElement('strong');
-      title.textContent = card.querySelector('h3')!.textContent!.trim();
+      title.textContent = card.querySelector('h3')!.textContent.trim();
       const date = doc.createElement('span');
       date.textContent = dateLabel(card.dataset['date']!);
       link.append(title, date);
