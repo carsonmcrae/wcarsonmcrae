@@ -24,8 +24,11 @@ export const accessibility = {
     'No tracking, analytics, or third-party scripts',
   ],
   testing:
-    'Automated accessibility checks run on every page, in both themes, in Chromium and WebKit, every time the site changes, along with keyboard, zoom, and text-spacing checks. Core timeline controls and action feedback were also checked with NVDA on Windows.',
-  limitations: ['VoiceOver testing on macOS and iOS hasn’t been completed for this version yet.'],
+    'Automated accessibility checks run on every page, in both themes, in Chromium and WebKit, every time the site changes, along with keyboard, zoom, and text-spacing checks. Core timeline controls and action feedback in the initial release were also checked with NVDA on Windows.',
+  limitations: [
+    'The updated post browser, reaction options, and Saved collection still need a fresh NVDA review.',
+    'VoiceOver testing on macOS and iOS hasn’t been completed for this version yet.',
+  ],
   feedback:
     'If something doesn’t work for you, please tell me. A message on [LinkedIn](https://www.linkedin.com/in/carsonmcrae/) or an issue on [GitHub](https://github.com/carsonmcrae/wcarsonmcrae/issues) both reach me.',
   colophonTitle: 'About this site',

@@ -1,0 +1,38 @@
+---
+/**
+ * Purpose: Keep previously shared app-start URLs useful after consolidation.
+ * Scope: Accessible redirect documents with canonical metadata, noindex, and a native fallback link.
+ * Does NOT belong: New timeline events or reaction migration.
+ */
+import { postAliases } from '../data/post-aliases';
+import { timelinePosts } from '../data/timeline';
+import { absoluteUrl } from '../lib/paths';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from './Icon.astro';
+interface Props {
+  from: string;
+}
+const { from } = Astro.props;
+const post = timelinePosts.find((item) => item.id === postAliases[from])!;
+const path = `/posts/${post.id}/`;
+const target = absoluteUrl(path, Astro.site!.origin);
+const page = {
+  id: 'post' as const,
+  path,
+  title: `Post moved · ${post.title}`,
+  description:
+    'This earlier app event has been combined with its release. Continue to the permanent release post on the Daysforth timeline.',
+};
+---
+
+<BaseLayout page={page} noindex>
+  <meta slot="head" http-equiv="refresh" content={`0;url=${target}`} />
+  <section class="column section">
+    <h1>This event has moved.</h1>
+    <p>This event is now part of {post.title}.</p>
+    <a class="control" href={target}>
+      Continue to the post
+      <Icon name="arrowRight" />
+    </a>
+  </section>
+</BaseLayout>

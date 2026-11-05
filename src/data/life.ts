@@ -41,6 +41,7 @@ export const dogsIntro = {
 export const dogs: Dog[] = [
   {
     name: 'Margot',
+    postId: 'margot-arrives',
     breed: 'Doodle',
     coat: 'Golden apricot, wavy',
     title: 'Co-CEO (self-appointed)',
@@ -51,6 +52,7 @@ export const dogs: Dog[] = [
   },
   {
     name: 'Quinn',
+    postId: 'quinn-arrives',
     breed: 'Doodle',
     coat: 'Black and shaggy, with white markings',
     title: 'Co-CEO (also self-appointed)',

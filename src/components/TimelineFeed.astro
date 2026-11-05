@@ -9,6 +9,7 @@ import { groupMoments } from '../lib/timeline-model';
 import PostCard from './PostCard.astro';
 import TimelineControls from './TimelineControls.astro';
 import ActionNotice from './ActionNotice.astro';
+import DateRail from './DateRail.astro';
 const groups = groupMoments(timelinePosts, 'years');
 ---
 
@@ -19,7 +20,10 @@ const groups = groupMoments(timelinePosts, 'years');
   data-timeline
   data-view="timeline"
 >
-  <TimelineControls />
+  <div class="timeline-dock enhancement">
+    <DateRail />
+    <TimelineControls />
+  </div>
   <div class="timeline-empty" data-timeline-empty hidden tabindex="-1"></div>
   <div class="timeline-groups" data-timeline-groups>
     {groups.map((group) => (

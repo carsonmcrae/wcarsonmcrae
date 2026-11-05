@@ -3,17 +3,19 @@
 Everything personal lives in `src/data/`. Change a string there, run `npm run dev`, and every page that
 uses it updates. Pages and components contain no personal facts of their own.
 
-| File                        | What it holds                                                                                   |
-| --------------------------- | ----------------------------------------------------------------------------------------------- |
-| `src/data/profile.ts`       | Name, headline, portrait and email settings, social links, homepage intro, "What I actually do" |
-| `src/data/career.ts`        | Roles, education, skills, tools, the About page, timeline, principles, quick facts              |
-| `src/data/projects.ts`      | Projects, in display order                                                                      |
-| `src/data/life.ts`          | Nicole, Margot and Quinn, the org chart, interests, "Right now"                                 |
-| `src/data/site.ts`          | Navigation, page titles and descriptions, contact copy, footer, 404, achievement                |
-| `src/data/accessibility.ts` | The accessibility statement and colophon                                                        |
-| `src/data/timeline.ts`      | All 17 moments, confirmed dates, categories, pins, captions, and photo references               |
-| `src/data/photo-gallery.ts` | Approved wedding, dog, and hobby gallery photos                                                 |
-| `src/data/brand.ts`         | Daysforth name, domains, palette, typography, voice, and asset inventory                        |
+| File                               | What it holds                                                                                   |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `src/data/profile.ts`              | Name, headline, portrait and email settings, social links, homepage intro, "What I actually do" |
+| `src/data/career.ts`               | Roles, education, skills, tools, the About page, timeline, principles, quick facts              |
+| `src/data/projects.ts`             | Projects, in display order                                                                      |
+| `src/data/life.ts`                 | Nicole, Margot and Quinn, the org chart, interests, "Right now"                                 |
+| `src/data/site.ts`                 | Navigation, page titles and descriptions, contact copy, footer, 404, achievement                |
+| `src/data/accessibility.ts`        | The accessibility statement and colophon                                                        |
+| `src/data/timeline.ts`             | Core moments, confirmed dates, categories, pins, captions, and photo references                 |
+| `src/data/timeline-experiences.ts` | Confirmed education, awards, work, travel, and hobby additions                                  |
+| `src/data/post-aliases.ts`         | Permanent redirects from retired app-start events to their release events                       |
+| `src/data/photo-gallery.ts`        | Approved wedding, dog, and hobby gallery photos                                                 |
+| `src/data/brand.ts`                | Daysforth name, domains, palette, typography, voice, and asset inventory                        |
 
 ## Writing rules
 
@@ -27,7 +29,7 @@ uses it updates. Pages and components contain no personal facts of their own.
 
 ## Photos
 
-All 17 supplied photographs are approved for public use, including everyone pictured. Original
+All 39 supplied photographs are approved for public use, including everyone pictured. Original
 incoming files are ignored and protected by a verified external backup. Never replace them during
 an update. The imported, metadata-stripped copies live in `src/assets/photos/`.
 
@@ -59,10 +61,17 @@ Add an entry to `interests` in `src/data/life.ts`. Its `id` becomes a stable Lif
 
 ## Adding a moment
 
-Add an entry to `timelinePosts` in `src/data/timeline.ts`. Require `YYYY-MM`; use `YYYY-MM-DD` only
+Add an entry to the core moments in `src/data/timeline.ts` or the confirmed additions in
+`src/data/timeline-experiences.ts`. Require `YYYY-MM`; use `YYYY-MM-DD` only
 when the day is confirmed. The ID becomes `/posts/<id>/`, so keep it stable after publication.
 Choose Work, Projects, or Life. Keep exactly the three approved pins unless Carson changes them.
 Do not invent captions, dates, or reaction counts. Update tests for intentional content changes.
+
+Every event has a linked cover. Use `gallery` for distinct additional photos, with descriptive alt
+text and captions; do not repeat a cover or include color and black-and-white copies of the same
+wedding photograph. `imageKind: 'screen'` resolves a real interface capture from `src/assets/projects/`.
+Use `endDate` only when Carson confirms it. Each app has one release, launch, or beta event; preserve
+retired permalinks with `post-aliases.ts` and their accessible redirect pages.
 
 ## Keeping "Right now" fresh
 

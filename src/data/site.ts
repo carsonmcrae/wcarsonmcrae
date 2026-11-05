@@ -20,13 +20,13 @@ export const site = {
 };
 
 /** Primary navigation. Every page here must exist in `src/pages/`. */
-export const navigation: LinkItem[] = [
-  { label: 'Timeline', href: '/' },
-  { label: 'Work', href: '/work/' },
-  { label: 'Life', href: '/life/' },
-  { label: 'About', href: '/about/' },
-  { label: 'Contact', href: '/contact/' },
-];
+export const navigation = [
+  { label: 'Timeline', href: '/', icon: 'timeline' },
+  { label: 'Work', href: '/work/', icon: 'work' },
+  { label: 'Life', href: '/life/', icon: 'life' },
+  { label: 'About', href: '/about/', icon: 'about' },
+  { label: 'Contact', href: '/contact/', icon: 'contact' },
+] as const satisfies readonly LinkItem[];
 
 export type PageId = 'home' | 'about' | 'work' | 'life' | 'contact' | 'accessibility';
 

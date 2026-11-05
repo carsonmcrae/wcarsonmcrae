@@ -8,10 +8,14 @@ An outage or quota limit leaves the feed, Save, and Copy link usable.
 
 - `GET /reactions` returns a count for each approved moment.
 - `POST /reactions/<id>` accepts `{ "visitorId": "<browser UUID>" }` and returns `{ "count": 1 }`.
+- `DELETE /reactions/<id>` accepts the same identity and removes only that browser’s vote; repeated
+  removals are idempotent and return the remaining total.
+- Heart keys remain the published moment ID. Celebrate, Smile, and Applaud use the stable suffixes
+  `--celebrate`, `--laugh`, and `--support`. Each option is independently toggleable.
 - An existing browser/moment pair is idempotent. SQL uniqueness and insert/delete triggers keep
   totals consistent, including concurrent submissions and targeted operator cleanup.
 - New votes are limited to 20 per network per hour. Bodies are limited to 512 bytes.
-- POST requires an approved Origin and JSON content type. Production permits only the personal
+- POST and DELETE require an approved Origin and JSON content type. Production permits only the personal
   domain and its www host; local development origins must be explicitly configured locally.
 - Raw browser identifiers and network addresses are never stored. SHA-256 hashes use a private salt.
 - Expired rate-limit buckets are deleted hourly. Vote hashes remain to prevent duplicate votes.
@@ -42,6 +46,11 @@ For a fresh installation only:
 The production endpoint is `https://daysforth-reactions.wcarsonmcrae.workers.dev`. Version preview
 URLs are disabled. Request logs/observability are disabled, and rate buckets expire hourly. Keep the
 salt in Cloudflare secrets; changing it resets anonymous deduplication identities.
+
+For the profile update, deploy the updated Worker before publishing the four-reaction frontend.
+The existing schema and insert/delete triggers already support these keys; no migration, total reset,
+or salt change is needed. Preserve real votes. The three retired app-start events had zero votes when
+checked before consolidation; they remain accepted by the service for compatibility.
 
 ## Local verification
 

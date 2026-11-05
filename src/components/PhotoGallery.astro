@@ -6,6 +6,7 @@
  */
 import type { GalleryPhoto } from '../data/photo-gallery';
 import Photo from './Photo.astro';
+import { withBase } from '../lib/paths';
 interface Props {
   photos: GalleryPhoto[];
 }
@@ -14,7 +15,10 @@ const { photos } = Astro.props;
 
 <div class="photo-gallery">
   {photos.map((photo) => (
-    <Photo name={photo.name} alt={photo.alt} caption={photo.caption} />
+    <a href={withBase(`/posts/${photo.postId}/`)} class="photo-gallery__link">
+      <Photo name={photo.name} alt={photo.alt} caption={photo.caption} />
+      <span class="visually-hidden">View the post</span>
+    </a>
   ))}
 </div>
 <style>

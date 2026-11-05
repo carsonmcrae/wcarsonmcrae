@@ -8,10 +8,12 @@ import { brand } from '../data/brand';
 import { navigation } from '../data/site';
 import { isActivePath, withBase } from '../lib/paths';
 import Icon from './Icon.astro';
+import IconDefinitions from './IconDefinitions.astro';
 import ThemeToggle from './ThemeToggle.astro';
 const currentPath = Astro.url.pathname;
 ---
 
+<IconDefinitions />
 <header class="site-header">
   <div class="site-header__inner">
     <a class="site-header__name" href={withBase('/')}>
@@ -38,6 +40,7 @@ const currentPath = Astro.url.pathname;
                 tabindex="0"
                 aria-current={isActivePath(currentPath, item.href) ? 'page' : undefined}
               >
+                <Icon name={item.icon} />
                 {item.label}
               </a>
             </li>
@@ -101,6 +104,7 @@ const currentPath = Astro.url.pathname;
   nav a {
     display: inline-flex;
     align-items: center;
+    gap: 0.45rem;
     min-height: 3.5rem;
     min-width: 2.75rem;
     padding-inline: 0.65rem;

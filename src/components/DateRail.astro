@@ -1,0 +1,45 @@
+---
+/**
+ * Purpose: The shared date slider kept beside the feed browsing controls.
+ * Scope: Proportional pinned-date labels and native month navigation.
+ * Does NOT belong: Pinned photographs or browser interaction.
+ */
+import { timelinePosts } from '../data/timeline';
+import { dateLabel, monthIndex } from '../lib/timeline-dates';
+import { chronological } from '../lib/timeline-model';
+const pins = timelinePosts.filter((post) => post.pinned);
+const newest = chronological(timelinePosts)[0]!;
+const oldest = pins[0]!;
+---
+
+<div class="date-rail enhancement" data-date-rail>
+  <div class="date-rail__labels">
+    {pins.map((post, index) => (
+      <button
+        type="button"
+        class={`date-rail__label date-rail__label--${index}`}
+        data-jump-date={post.date}
+      >
+        <span class="visually-hidden">Go to {post.title}, </span>
+        <span class="date-rail__long">{dateLabel(post.date)}</span>
+        <span class="date-rail__short">{dateLabel(post.date, true)}</span>
+      </button>
+    ))}
+  </div>
+  <label class="visually-hidden" for="timeline-range">
+    Explore Carson’s timeline by date
+  </label>
+  <input
+    id="timeline-range"
+    type="range"
+    min={monthIndex(oldest.date)}
+    max={monthIndex(newest.date)}
+    value={monthIndex(newest.date)}
+    step="1"
+    aria-valuetext={dateLabel(newest.date)}
+    data-date-slider
+  />
+  <output class="date-rail__preview" for="timeline-range" data-date-preview hidden>
+    {dateLabel(newest.date)}
+  </output>
+</div>

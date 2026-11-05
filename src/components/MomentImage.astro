@@ -9,7 +9,7 @@ import { getPhoto, getProjectImage } from '../lib/images';
 interface Props {
   name: string;
   alt: string;
-  kind?: 'photo' | 'project';
+  kind?: 'photo' | 'project' | 'screen';
   eager?: boolean;
 }
 const { name, alt, kind = 'photo', eager = false } = Astro.props;
@@ -20,9 +20,9 @@ const source = kind === 'photo' ? getPhoto(name) : getProjectImage(name);
   <Image
     src={source}
     alt={alt}
-    width={kind === 'photo' ? 800 : 192}
-    widths={kind === 'photo' ? [320, 640, 800] : [96, 192, 288]}
-    sizes={kind === 'photo' ? '(min-width: 64rem) 800px, 95vw' : '96px'}
+    width={kind === 'project' ? 192 : 800}
+    widths={kind === 'project' ? [96, 192, 288] : [320, 640, 800]}
+    sizes={kind === 'project' ? '96px' : '(min-width: 64rem) 800px, 95vw'}
     format="webp"
     quality={78}
     loading={eager ? 'eager' : 'lazy'}

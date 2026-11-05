@@ -22,6 +22,7 @@ export const workIntro = {
 export const roles: Role[] = [
   {
     organization: 'Booz Allen Hamilton',
+    dates: 'September 2022 – Present',
     title: 'Technical program and product leadership',
     summary:
       'I support the Department of Veterans Affairs, coordinating software delivery across multiple engineering teams.',
@@ -57,9 +58,18 @@ export const roles: Role[] = [
   },
   {
     organization: 'InfoWorks',
+    dates: 'June 2021 – September 2022',
     title: 'Consulting and business analysis',
     summary:
       'Before Booz Allen, I worked in consulting and business analysis: learning how organizations actually operate, and turning what people need into requirements teams can build.',
+    groups: [],
+  },
+  {
+    organization: 'Apple',
+    title: 'Apple',
+    dates: 'July 2018 – May 2022',
+    summary:
+      'I worked at Apple from July 2018 until May 2022, including while studying abroad in Sydney.',
     groups: [],
   },
 ];

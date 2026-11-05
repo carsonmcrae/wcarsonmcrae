@@ -8,8 +8,8 @@ import { initTimeline } from '../lib/timeline-controller';
 import { initActionNotice } from '../lib/notices';
 import { initPostActions } from '../lib/post-actions';
 import { reactionEndpoint } from '../lib/reaction-api';
+import { initPostNavigation } from '../lib/post-navigation';
 initDisclosures(document);
-initTimeline(document, window);
 const notice = initActionNotice(document, window);
 void initPostActions(
   document,
@@ -17,3 +17,5 @@ void initPostActions(
   reactionEndpoint(import.meta.env['PUBLIC_REACTIONS_URL']),
   notice.show,
 );
+initTimeline(document, window);
+initPostNavigation(document, (href) => window.location.assign(href));

@@ -1,6 +1,6 @@
 # Daysforth design and verification review
 
-final result: passed
+Initial release result: passed. The subsequent profile update is recorded at the end of this file.
 
 The implementation and final visual comparisons passed. Carson authorized the agent to complete
 publication and infrastructure on November 4; live release checks are recorded below.
@@ -212,3 +212,45 @@ the primary's www-to-apex redirect, and the reaction API. Its active free Univer
 handles www independently of GitHub's cached alternate-host eligibility check.
 The prepared optional primary-domain edge-header transform does not apply to DNS-only traffic.
 This is the pre-publication provisioning checkpoint; see release PR #1 for final live acceptance.
+
+## Profile update — November 4, 2026
+
+Implementation is ready for owner review on `codex/profile-update-20261104`; it is not published.
+The current AGENTS.md reserves merging and deployment for Carson. The live Worker, DNS, Pages
+settings, and repository settings were not changed for this update. Deploy the updated Worker
+before publishing the frontend; no database migration or reaction reset is required.
+
+The [update record](docs/PROFILE-UPDATE.md) maps the content, photo, interaction, and page-design
+changes. All 24 moments have covers, including the May 2018 salutatorian milestone. Wedding,
+dogs, watches, graduation, Eagle Scout, and FBLA posts have distinct additional photos. The 39
+approved incoming originals remain unchanged in their three verified external backup batches.
+
+Validation completed with **243 unit tests, 100% per-file coverage across 46 files, 287 root and
+287 subpath build checks, 578 browser checks passed and 19 intentional skips**, plus zero production
+dependency vulnerabilities. The browser run includes desktop Chromium, mobile Chromium, and mobile
+WebKit; every current page is checked in both themes, with reflow, text enlargement/spacing, forced
+colors, keyboard, target-size, and no-JavaScript checks. The skips are existing platform-specific
+desktop responsive checks and non-desktop screenshot captures. No gate or budget was lowered.
+The initial sandbox attempt could not start OpenSSL; the authorized run outside the sandbox passed.
+
+The homepage HTML stays below the existing 80 KiB cap by sharing licensed SVG symbols and one
+optional-action template. Stories, dates, covers, albums, and permalinks remain server-rendered.
+The final singular-status wording was followed by a fresh `npm run validate` and focused browser
+verification. The Worker dry run bundled successfully with Wrangler 4.151.3 under the intended
+daysforth profile: 20.56 KiB uncompressed / 6.39 KiB gzip. This did not deploy or contact D1 for writes.
+
+Manual review on Windows in the in-app Chromium browser covered all four secondary-page openings,
+the high-school and wedding posts, post metadata, PC-card action alignment, full-subject covers,
+sticky rail/date alignment, milestone filtering, saving/retrieving/removing a moment, and keyboard
+Home/arrow navigation. The temporary saved bookmark was removed through the UI. Automated visual
+captures were inspected for desktop dark mode and mobile light mode. One manual finding was fixed:
+the scroll observer now reads below the sticky dock rather than choosing a partly obscured group.
+
+Evidence remains ignored under `screenshots/`, including `high-school-milestone.jpg`,
+`daysforth-mobile.png`, `daysforth-dark.png`, and the validation logs. The local preview is
+`http://127.0.0.1:4322/`.
+
+Fresh NVDA testing of the new post browser, reactions, and Saved collection was not performed;
+NVDA was left off after Carson’s TTS request. VoiceOver on macOS/iOS remains unavailable on this
+Windows machine. The public statement explicitly records both limitations. The prior NVDA results
+above apply only to the initial release; automated checks do not certify Section 508 conformance.

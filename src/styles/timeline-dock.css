@@ -1,0 +1,60 @@
+/**
+ * Purpose: Keep the date slider and browsing controls together while exploring the feed.
+ * Scope: Shared sticky dock, native range placement, safe reflow, and scroll clearance.
+ * Does NOT belong: Slider behavior, pinned photos, or menu content.
+ */
+.timeline-dock {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding-top: 0.5rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+}
+.timeline-dock .date-rail {
+  max-width: 50rem;
+  margin: 0 auto;
+}
+.timeline-dock .timeline-toolbar {
+  position: relative;
+  border-bottom: 0;
+  padding-top: 0.25rem;
+}
+.timeline-menu__panel {
+  max-height: 55dvh;
+}
+.moment-group,
+.moment-group > h2,
+.post-card,
+.timeline-empty {
+  scroll-margin-top: 12rem;
+}
+@media (max-width: 64rem) {
+  .timeline-dock {
+    padding-inline: 0.25rem;
+  }
+}
+@media (max-width: 48rem) {
+  .moment-group,
+  .moment-group > h2,
+  .post-card,
+  .timeline-empty {
+    scroll-margin-top: 17rem;
+  }
+}
+@media (max-height: 40rem) {
+  .timeline-dock {
+    position: relative;
+  }
+  .moment-group,
+  .moment-group > h2,
+  .post-card,
+  .timeline-empty {
+    scroll-margin-top: 1rem;
+  }
+}
+@container timeline (max-width: 20em) {
+  .timeline-dock {
+    position: relative;
+  }
+}

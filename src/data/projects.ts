@@ -27,6 +27,7 @@ export const projectsIntro = {
 export const projects: Project[] = [
   {
     id: 'ttsnative',
+    postId: 'ttsnative-1',
     name: 'TTSNative',
     icon: 'ttsnative',
     status: 'Open source',
@@ -43,6 +44,7 @@ export const projects: Project[] = [
   },
   {
     id: 'recalen',
+    postId: 'recalen-beta',
     name: 'Recalen',
     icon: 'recalen',
     status: 'Private beta',
@@ -58,6 +60,7 @@ export const projects: Project[] = [
   },
   {
     id: 'picpledge',
+    postId: 'picpledge-wedding',
     name: 'PicPledge',
     icon: 'picpledge',
     status: 'Live',
@@ -69,6 +72,22 @@ export const projects: Project[] = [
     links: [
       { label: 'picpledge.com', href: 'https://picpledge.com' },
       { label: 'the case study', href: 'https://carsonmcrae.github.io/picpledge/' },
+    ],
+  },
+  {
+    id: 'daysforth',
+    postId: 'built-daysforth',
+    name: 'Daysforth',
+    icon: 'daysforth',
+    status: 'Live',
+    tagline: 'Your life, as it unfolds.',
+    description:
+      'A timeline-first social profile for work, projects, and life. Switch between a chronological timeline and a photographic feed, and explore the moments along the way.',
+    note: 'You’re looking at it. Built with Astro, with shared reactions on Cloudflare.',
+    stack: ['Astro', 'TypeScript', 'Cloudflare Workers', 'D1'],
+    links: [
+      { label: 'Daysforth', href: 'https://wcarsonmcrae.com/' },
+      { label: 'the source on GitHub', href: 'https://github.com/carsonmcrae/wcarsonmcrae' },
     ],
   },
 ];

@@ -1,0 +1,184 @@
+/**
+ * Purpose: Photographic covers, clear post affordances, and consistent metadata.
+ * Scope: Linked image surfaces, app badges, photo counts, separators, and responsive card proportions.
+ * Does NOT belong: Feed grouping or interaction logic.
+ */
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.55rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  margin-bottom: 0.45rem;
+}
+.post-meta__dot {
+  color: var(--muted);
+}
+.post-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 15rem;
+  border-radius: 12px;
+  background: var(--wash);
+  color: var(--text);
+  text-decoration: none;
+}
+.post-media > img {
+  width: 100%;
+  height: 100%;
+  max-height: 29rem;
+  object-fit: contain;
+}
+.post-media--project > img {
+  width: 6rem;
+  height: 6rem;
+  padding: 0;
+  border-radius: 20px;
+}
+.post-media--screen {
+  padding: 1rem;
+}
+.post-media--screen > img {
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  object-fit: contain;
+}
+.post-media__open,
+.post-media__count {
+  position: absolute;
+  top: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  border: 1px solid var(--control);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+}
+.post-media__open {
+  right: 0.75rem;
+}
+.post-media__count {
+  left: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+.post-media__app {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0.35rem;
+  border: 1px solid var(--rule);
+  border-radius: 11px;
+  background: var(--surface);
+}
+.post-media__app img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+}
+.post-card {
+  padding-bottom: 0.6rem;
+  gap: 0.75rem 1.25rem;
+}
+.post-card > .post-actions {
+  align-self: end;
+}
+.post-actions {
+  gap: 0.25rem 0.85rem;
+}
+.reaction-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+}
+.reaction-options button {
+  gap: 0.3rem;
+  padding-inline: 0.25rem;
+}
+.reaction-options button[aria-pressed='true'] {
+  background: var(--selected);
+  border-radius: 9px;
+}
+.post-card__copy {
+  min-width: 0;
+}
+.post-card--milestone > .post-media {
+  min-height: 20rem;
+}
+[data-view='posts'] .post-media {
+  grid-row: 1;
+  grid-column: 1 / -1;
+  border-radius: 0;
+  height: 18rem;
+}
+[data-view='posts'] .post-card--milestone .post-media {
+  height: 26rem;
+}
+[data-view='posts'] .post-card {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+[data-view='posts'] .post-card--milestone {
+  grid-template-columns: minmax(0, 1fr);
+}
+[data-view='posts'] .post-card--milestone .post-card__copy {
+  flex-direction: column;
+  align-items: flex-start;
+}
+[data-view='posts'] .post-card--milestone .post-actions {
+  align-self: end;
+}
+@media (min-width: 48rem) {
+  [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) {
+    grid-template-columns: minmax(0, 1fr) 17rem;
+    grid-template-rows: auto minmax(2.75rem, 1fr);
+  }
+  [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) > .post-media {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    min-height: 16rem;
+    max-height: 23rem;
+  }
+  [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) > .post-actions {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
+@media (max-width: 40rem) {
+  .post-media {
+    min-height: 13rem;
+  }
+  .post-card--milestone > .post-media {
+    min-height: 16rem;
+  }
+  .post-meta {
+    font-size: 0.75rem;
+    gap: 0.2rem 0.35rem;
+  }
+  [data-view='posts'] .post-media,
+  [data-view='posts'] .post-card--milestone .post-media {
+    height: 20rem;
+  }
+}
+@media (hover: hover) {
+  .post-media:hover .post-media__open {
+    color: var(--link);
+    border-color: var(--link);
+  }
+}

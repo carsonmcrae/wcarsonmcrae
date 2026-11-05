@@ -45,9 +45,10 @@ export async function submitReaction(
   id: string,
   visitorId: string,
   fetcher: typeof fetch,
+  remove = false,
 ): Promise<number> {
   const response = await fetcher(`${endpoint}/reactions/${encodeURIComponent(id)}`, {
-    method: 'POST',
+    method: remove ? 'DELETE' : 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ visitorId }),
   });

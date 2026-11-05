@@ -26,8 +26,8 @@ import { railStyles } from '../../src/lib/timeline-rail';
 
 describe('approved timeline content', () => {
   it('publishes every approved moment with real month precision and unique IDs', () => {
-    expect(timelinePosts).toHaveLength(17);
-    expect(new Set(timelinePosts.map((post) => post.id)).size).toBe(17);
+    expect(timelinePosts).toHaveLength(24);
+    expect(new Set(timelinePosts.map((post) => post.id)).size).toBe(24);
     expect(timelinePosts.every((post) => isTimelineDate(post.date))).toBe(true);
     expect(timelineProfile.handle).toBe('carsonmcrae');
     expect(timelineProfile.bio).toContain('complicated things');
@@ -109,7 +109,7 @@ describe('chronology and discovery', () => {
         'joined-booz-allen',
       ]),
     );
-    expect(visible('All')).toHaveLength(17);
+    expect(visible('All')).toHaveLength(24);
     expect(visible('Projects').some((post) => post.id === 'margot-arrives')).toBe(false);
   });
   it('clusters matching periods and finds nearest dates including empty input', () => {
@@ -118,7 +118,7 @@ describe('chronology and discovery', () => {
     expect(
       groupMoments(timelinePosts, 'quarters').find((group) => group.key === '2026-Q4')!.items,
     ).toHaveLength(4);
-    expect(groupMoments(timelinePosts, 'years')[0]!.items).toHaveLength(8);
+    expect(groupMoments(timelinePosts, 'years')[0]!.items).toHaveLength(7);
     expect(groupMoments([], 'months')).toEqual([]);
     expect(nearestMoment([], '2020-01')).toBeUndefined();
     expect(nearestMoment(timelinePosts, '2019-01')!.id).toBe('started-vanderbilt');
@@ -137,7 +137,7 @@ describe('shareable browsing state', () => {
     );
     expect(readTimelineState('?date=', '2026-11')).toEqual(expected);
   });
-  it.each(['Work', 'Projects', 'Life'])(
+  it.each(['Work', 'Projects', 'Life', 'Milestones', 'Saved'])(
     'round-trips %s with presentation and date retained',
     (category) => {
       const state = readTimelineState(

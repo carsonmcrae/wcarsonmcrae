@@ -1,0 +1,429 @@
+/**
+ * Purpose: Editorial layouts for Work, Life, About, and Contact.
+ * Scope: Photographic openings, readable content panels, career and interest grids, and contact cards.
+ * Does NOT belong: Brand tokens, timeline controls, or post interaction.
+ */
+.secondary-page {
+  padding-top: 2.5rem;
+}
+.secondary-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
+  align-items: center;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+.page-eyebrow {
+  color: var(--link);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.secondary-hero h1 {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 750;
+  letter-spacing: -0.05em;
+  line-height: 1.12;
+}
+.secondary-hero .lede {
+  margin-top: 1.25rem;
+  font-size: 1.125rem;
+  color: var(--muted);
+}
+.secondary-hero__body {
+  margin-top: 1.5rem;
+  font-size: 0.9375rem;
+}
+.secondary-hero__media {
+  min-width: 0;
+}
+.secondary-hero__media .photo {
+  max-width: none;
+}
+.secondary-hero__media .photo img {
+  width: 100%;
+  max-height: 28rem;
+  object-fit: contain;
+  border-radius: 20px;
+}
+.secondary-hero__media .post-media {
+  min-height: 24rem;
+  border-radius: 20px;
+}
+.secondary-hero__media .post-media--photo > img {
+  height: 24rem;
+  object-fit: cover;
+  object-position: 65% 40%;
+}
+.secondary-page .section {
+  margin-top: 3.5rem;
+}
+.secondary-page .section > h2 {
+  margin-bottom: 1.25rem;
+  font-size: 1.625rem;
+  letter-spacing: -0.035em;
+}
+.surface-panel {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  background: var(--surface);
+}
+.surface-panel--soft {
+  background: var(--wash);
+}
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.content-grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.content-grid h3 {
+  margin-bottom: 0.75rem;
+  font-size: 1.0625rem;
+}
+.content-grid ul {
+  padding-left: 1.15rem;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+.content-grid li + li {
+  margin-top: 0.55rem;
+}
+.role-heading {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.role-heading h3 {
+  margin: 0;
+  font-size: 1.375rem;
+}
+.role-period {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--link);
+}
+.role-summary {
+  max-width: 45rem;
+  margin-bottom: 1.75rem;
+  color: var(--muted);
+}
+.role-cards {
+  margin-top: 1.25rem;
+}
+.role-cards > article {
+  border-top: 2px solid var(--selected);
+  padding-top: 1.25rem;
+}
+.earlier-roles {
+  display: grid;
+  gap: 0;
+}
+.earlier-role {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.earlier-role:first-child {
+  padding-top: 0;
+}
+.earlier-role:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.earlier-role > p + p {
+  margin-top: 0.5rem;
+}
+.page-note {
+  margin-top: 1.5rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.story-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: center;
+}
+.story-feature .post-media {
+  min-height: 24rem;
+}
+.story-feature__copy > p + p {
+  margin-top: 1rem;
+}
+.story-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  margin-top: 1rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+.secondary-page .dogs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+.secondary-page .dog {
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.secondary-page .dog h3 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+.secondary-page .dog .photo img {
+  width: 100%;
+  height: 17rem;
+  object-fit: contain;
+  background: var(--wash);
+  border-radius: 10px;
+}
+.secondary-page .dog dl {
+  font-size: 0.875rem;
+}
+.secondary-page .dog > p {
+  font-size: 0.875rem;
+}
+.interest-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.interest-cards > div {
+  padding: 1.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  scroll-margin-top: 2rem;
+}
+.interest-cards dt {
+  margin-bottom: 0.5rem;
+  font-size: 1.0625rem;
+}
+.interest-cards dd {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.now-panel {
+  padding: 1.5rem;
+  border-radius: 18px;
+  background: var(--wash);
+  border: 1px solid var(--rule);
+}
+.now-panel h2 {
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+.now-panel dl {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+.now-panel dt {
+  color: var(--link);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.now-panel dd {
+  margin-bottom: 0.65rem;
+  font-size: 0.875rem;
+}
+.household-details {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+}
+.household-details > summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+.story-timeline {
+  display: grid;
+  gap: 0;
+}
+.story-timeline > li {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+  margin: 0;
+  border-bottom: 1px solid var(--rule);
+}
+.story-timeline > li:last-child {
+  border: 0;
+  padding-bottom: 0;
+}
+.story-timeline__when {
+  color: var(--link);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+.story-timeline h3 {
+  margin-bottom: 0.45rem;
+  font-size: 1.125rem;
+}
+.story-timeline li > div > p {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.principle-card > p {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.facts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 2rem;
+}
+.facts-grid > div {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1rem;
+}
+.facts-grid dt {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+.facts-grid dd {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.contact-channels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.contact-channel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1rem;
+  padding: 1.75rem;
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  color: var(--text);
+  text-decoration: none;
+}
+.contact-channel:visited {
+  color: var(--text);
+}
+.contact-channel > .icon {
+  color: var(--link);
+  font-size: 1.75rem;
+}
+.contact-channel h3 {
+  font-size: 1.125rem;
+}
+.contact-channel p {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.contact-channel__action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: auto;
+  color: var(--link);
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+.topic-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.topic-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  font-size: 0.9375rem;
+}
+.topic-list .icon {
+  flex: 0 0 auto;
+  color: var(--link);
+  margin-top: 0.2rem;
+}
+.photo-gallery__link {
+  display: block;
+  text-decoration: none;
+}
+.photo-gallery__link figcaption {
+  color: var(--text);
+  font-weight: 550;
+}
+@media (max-width: 48rem) {
+  .secondary-hero {
+    gap: 1.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    margin-bottom: 3rem;
+  }
+  .secondary-hero__media {
+    max-width: 32rem;
+  }
+  .secondary-hero__media .photo img {
+    max-height: 26rem;
+  }
+  .secondary-hero__media .post-media {
+    min-height: 18rem;
+  }
+  .content-grid--three,
+  .contact-channels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .contact-channel {
+    padding: 1.5rem;
+  }
+}
+@media (max-width: 35rem) {
+  .secondary-page {
+    padding-top: 1.5rem;
+  }
+  .secondary-hero h1 {
+    font-size: 2.25rem;
+  }
+  .content-grid,
+  .interest-cards,
+  .secondary-page .dogs,
+  .story-feature,
+  .facts-grid,
+  .topic-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .story-timeline > li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.45rem;
+  }
+  .story-feature .post-media {
+    min-height: 18rem;
+  }
+}
+@media (hover: hover) {
+  .contact-channel:hover {
+    border-color: var(--link);
+    background: var(--wash);
+  }
+  .photo-gallery__link:hover figcaption {
+    color: var(--link);
+    text-decoration: underline;
+  }
+}

@@ -1,32 +1,59 @@
 ---
 /**
- * Purpose: Shows where a shared moment belongs in the complete life timeline.
- * Scope: A proportionally placed date point and a native link back to that exact month.
- * Does NOT belong: Slider behavior or chronological sorting.
+ * Purpose: Browse actual moments from within a permanent post page.
+ * Scope: Native event slider, title/date preview, and a link back to the full timeline.
+ * Does NOT belong: Navigation events (src/lib/post-navigation.ts) or content.
  */
 import { timelinePosts } from '../data/timeline';
-import { dateLabel } from '../lib/timeline-dates';
+import { dateLabel, monthIndex } from '../lib/timeline-dates';
 import { chronological } from '../lib/timeline-model';
 import { withBase } from '../lib/paths';
+import Icon from './Icon.astro';
 interface Props {
   id: string;
   date: string;
 }
 const { id, date } = Astro.props;
-const ordered = chronological(timelinePosts);
-const position = timelinePosts.findIndex((post) => post.id === id);
+const ordered = chronological(timelinePosts).toReversed();
+const index = ordered.findIndex((post) => post.id === id);
 ---
 
-<nav class="post-location" aria-label="Moment on the full timeline">
+<nav class="post-location" aria-label="Moment on the full timeline" data-post-browser={id}>
+  <label for="post-time" class="post-location__label">
+    Browse timeline moments
+  </label>
+  <div class="post-location__dates">
+    <span>{dateLabel(ordered[0]!.date)}</span>
+    <span>{dateLabel(ordered.at(-1)!.date)}</span>
+  </div>
+  <input
+    id="post-time"
+    type="range"
+    class="enhancement"
+    disabled
+    min={monthIndex(ordered[0]!.date)}
+    max={monthIndex(ordered.at(-1)!.date)}
+    step="1"
+    value={monthIndex(date)}
+    list="post-moments"
+    aria-label="Browse timeline moments"
+    aria-valuetext={`${ordered[index]!.title}, ${dateLabel(date)}`}
+  />
+  <datalist id="post-moments">
+    {ordered.map((post) => (
+      <option
+        value={monthIndex(post.date)}
+        label={`${post.title} · ${dateLabel(post.date)}`}
+        data-id={post.id}
+        data-href={withBase(`/posts/${post.id}/`)}
+      />
+    ))}
+  </datalist>
+  <output for="post-time">
+    {ordered[index]!.title} · {dateLabel(date)}
+  </output>
   <a href={withBase(`/?date=${date.slice(0, 7)}#moment-${id}`)}>
-    <span class="post-location__dates">
-      <span>{dateLabel(ordered.at(-1)!.date)}</span>
-      <strong>{dateLabel(date)}</strong>
-      <span>{dateLabel(ordered[0]!.date)}</span>
-    </span>
-    <span class="post-location__track" aria-hidden="true">
-      <span class={`post-location__point post-location__point--${position}`}></span>
-    </span>
-    <span class="visually-hidden">Return to this moment in the full timeline</span>
+    <Icon name="timeline" />
+    See this moment on the full timeline
   </a>
 </nav>

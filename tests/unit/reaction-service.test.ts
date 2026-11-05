@@ -45,6 +45,37 @@ const read = (origin?: string) =>
   });
 
 describe('shared totals', () => {
+  it('keeps reaction kinds independent and removes only the requesting visitor’s chosen reaction', async () => {
+    const kinds = ['born', 'born--celebrate', 'born--laugh', 'born--support'];
+    const visitor = randomUUID();
+    for (const kind of kinds) await handleReactions(vote(visitor, kind), env, kinds, now);
+    await handleReactions(vote(randomUUID(), 'born--celebrate'), env, kinds, now);
+    const remove = () =>
+      handleReactions(vote(visitor, 'born--celebrate', { method: 'DELETE' }), env, kinds, now);
+    expect(await (await remove()).json()).toEqual({ count: 1 });
+    expect(await (await remove()).json()).toEqual({ count: 1 });
+    expect(await (await handleReactions(read(), env, kinds, now)).json()).toEqual({
+      born: 1,
+      'born--celebrate': 1,
+      'born--laugh': 1,
+      'born--support': 1,
+    });
+    expect(
+      await (
+        await handleReactions(vote(visitor, 'graduation', { method: 'DELETE' }), env, ids, now)
+      ).json(),
+    ).toEqual({ count: 0 });
+    const blocked = await handleReactions(
+      vote(visitor, 'born', {
+        method: 'DELETE',
+        headers: { Origin: 'https://unapproved.example.com', 'Content-Type': 'application/json' },
+      }),
+      env,
+      kinds,
+      now,
+    );
+    expect(blocked.status).toBe(403);
+  });
   it('returns zeros only from the live database and exposes only approved moments', async () => {
     expect(await (await handleReactions(read(), env, ids, now)).json()).toEqual({
       born: 0,
@@ -178,6 +209,7 @@ describe('HTTP boundary', () => {
     );
     expect(preflight.status).toBe(204);
     expect(preflight.headers.get('Access-Control-Allow-Methods')).toContain('POST');
+    expect(preflight.headers.get('Access-Control-Allow-Methods')).toContain('DELETE');
     const bad = await handleReactions(read('https://unapproved.example.com'), env, ids, now);
     expect(bad.status).toBe(403);
     expect(bad.headers.has('Access-Control-Allow-Origin')).toBe(false);
@@ -200,7 +232,7 @@ describe('HTTP boundary', () => {
     ['/reactions/nope', 'POST', 404],
     ['/reactions/born', 'GET', 404],
     ['/reactions', 'POST', 404],
-    ['/reactions', 'DELETE', 405],
+    ['/reactions', 'DELETE', 404],
     ['/reactions/born', 'PUT', 405],
   ])('rejects %s %s with %s', async (path, method, status) => {
     expect(

@@ -1,66 +1,66 @@
 ---
 /**
- * Purpose: The Contact page: the public ways to reach Carson.
- * Scope: LinkedIn, GitHub, the product portfolio, and an email address only once one is approved
- *   (profile.email), plus good things to talk about and where he is based.
- * Does NOT belong: The copy (src/data/site.ts and src/data/profile.ts).
+ * Purpose: A clear, personal contact page with useful routes to reach Carson.
+ * Scope: Approved public channels, conversation topics, and location context.
+ * Does NOT belong: Private email addresses, a fake contact form, or tracking.
  */
-import PageIntro from '../components/PageIntro.astro';
+import SecondaryHero from '../components/SecondaryHero.astro';
 import Section from '../components/Section.astro';
+import Photo from '../components/Photo.astro';
+import Icon from '../components/Icon.astro';
 import { profile, socialLinks } from '../data/profile';
+import type { SocialLink } from '../data/types';
 import { contact, pages } from '../data/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
-
-const channels = profile.email
+import '../styles/secondary.css';
+const channels: SocialLink[] = profile.email
   ? [
       ...socialLinks,
       { id: 'email', label: profile.email, href: `mailto:${profile.email}`, description: 'Email.' },
     ]
   : socialLinks;
+const channelIcons = {
+  linkedin: 'linkedin',
+  github: 'github',
+  portfolio: 'portfolio',
+  email: 'contact',
+} as const;
 ---
 
 <BaseLayout page={pages.contact}>
-  <PageIntro title={contact.title} lede={contact.lede} />
-
-  <Section title="Where to find me" id="channels">
-    <dl class="channels">
-      {channels.map((channel) => (
-        <div>
-          <dt>
-            <a href={channel.href} rel="noopener">
-              {channel.label}
-              <span class="visually-hidden"> (external site)</span>
-            </a>
-          </dt>
-          <dd>{channel.description}</dd>
-        </div>
-      ))}
-    </dl>
-  </Section>
-
-  <Section title={contact.topicsTitle} id="topics">
-    <ul>
-      {contact.topics.map((topic) => (
-        <li>{topic}</li>
-      ))}
-    </ul>
-    <p class="based">I’m based in the Nashville area.</p>
-  </Section>
+  <div class="secondary-page">
+    <SecondaryHero label="Contact" title={contact.title} lede={contact.lede}>
+      <p class="role-period">
+        {profile.fullName} · {profile.location}
+      </p>
+      <Photo slot="media" name={profile.portrait} alt={profile.portraitAlt} />
+    </SecondaryHero>
+    <Section title="Where to find me" id="channels" wide>
+      <div class="contact-channels">
+        {channels.map((channel) => (
+          <a class="contact-channel" href={channel.href} rel="noopener">
+            <Icon name={channelIcons[channel.id]} />
+            <h3>{channel.label}</h3>
+            <p>{channel.description}</p>
+            <span class="contact-channel__action">
+              Visit {channel.label}
+              <Icon name="arrowRight" />
+            </span>
+            <span class="visually-hidden"> (external site)</span>
+          </a>
+        ))}
+      </div>
+    </Section>
+    <Section title={contact.topicsTitle} id="topics" wide>
+      <ul role="list" class="topic-list">
+        {contact.topics.map((topic) => (
+          <li>
+            <Icon name="contact" />
+            <span>{topic}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="page-note">I’m based in the Nashville area.</p>
+    </Section>
+  </div>
 </BaseLayout>
-
-<style>
-  .channels {
-    display: grid;
-    gap: 1rem;
-  }
-
-  .channels a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.75rem;
-  }
-
-  .based {
-    margin-top: 1.5rem;
-  }
-</style>

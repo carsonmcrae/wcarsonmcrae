@@ -1,0 +1,27 @@
+---
+/**
+ * Purpose: Give secondary pages the same photographic, spacious identity as the social profile.
+ * Scope: A clear page label, title, introduction, optional supporting copy, and a media slot.
+ * Does NOT belong: Personal facts or page-specific layout below the opening.
+ */
+interface Props {
+  label: string;
+  title: string;
+  lede: string;
+}
+const { label, title, lede } = Astro.props;
+---
+
+<header class="secondary-hero">
+  <div class="secondary-hero__copy">
+    <p class="page-eyebrow">{label}</p>
+    <h1>{title}</h1>
+    <p class="lede">{lede}</p>
+    <div class="flow secondary-hero__body">
+      <slot />
+    </div>
+  </div>
+  <div class="secondary-hero__media">
+    <slot name="media" />
+  </div>
+</header>

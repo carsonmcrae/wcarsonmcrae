@@ -4,6 +4,10 @@ Read [AGENTS.md](../AGENTS.md), [DAYSFORTH.md](DAYSFORTH.md), and
 [the approved wireframe notes](wireframes/approved/README.md). Carson chose and purchased
 **daysforth.com**. Naming research and the earlier Thenroll experiments are finished.
 
+The subsequent [profile update](PROFILE-UPDATE.md) adds the new photos and stories, albums,
+focused filters, additional reactions, and redesigned secondary pages. The initial launch record
+below is historical; use that update document and `design-qa.md` for the current branch.
+
 ## Checkout and release
 
 - Fast-forwarded the original checkout from `52a718b` to remote `c02ec77` before implementation.

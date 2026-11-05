@@ -4,12 +4,14 @@
  * Does NOT belong: HTTP, SQL, validation, or rate-limit logic (src/lib/reaction-service.ts).
  */
 import { timelinePosts } from '../../../src/data/timeline';
+import { postAliases } from '../../../src/data/post-aliases';
+import { reactionKeys } from '../../../src/lib/reaction-keys';
 import {
   cleanupReactionLimits,
   handleReactions,
   type ReactionEnvironment,
 } from '../../../src/lib/reaction-service';
-const ids = timelinePosts.map((post) => post.id);
+const ids = reactionKeys([...timelinePosts.map((post) => post.id), ...Object.keys(postAliases)]);
 export default {
   fetch(request: Request, env: ReactionEnvironment) {
     return handleReactions(request, env, ids);

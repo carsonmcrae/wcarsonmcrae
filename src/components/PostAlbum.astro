@@ -1,0 +1,22 @@
+---
+/**
+ * Purpose: Distinct photographs belonging to one moment.
+ * Scope: Lazy-loaded, uncropped album images with useful alternatives and individual captions.
+ * Does NOT belong: Choosing images or repeating the cover photograph.
+ */
+import type { PostPhoto } from '../data/timeline';
+import MomentImage from './MomentImage.astro';
+interface Props {
+  photos: PostPhoto[];
+}
+const { photos } = Astro.props;
+---
+
+<section class="post-album" aria-label="More photos from this moment">
+  {photos.map((photo) => (
+    <figure>
+      <MomentImage name={photo.name} alt={photo.alt} />
+      <figcaption>{photo.caption}</figcaption>
+    </figure>
+  ))}
+</section>

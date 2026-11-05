@@ -13,14 +13,7 @@ export function GET() {
       timelinePosts.filter((post) => post.pinned).map((post) => post.date),
       ordered.at(-1)!.date,
       ordered[0]!.date,
-    ) +
-      '\n' +
-      railStyles(
-        timelinePosts.map((post) => post.date),
-        ordered.at(-1)!.date,
-        ordered[0]!.date,
-        'post-location__point--',
-      ),
+    ),
     { headers: { 'Content-Type': 'text/css; charset=utf-8' } },
   );
 }

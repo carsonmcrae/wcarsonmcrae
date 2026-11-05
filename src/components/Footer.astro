@@ -1,72 +1,161 @@
 ---
 /**
- * Purpose: The site footer.
- * Scope: The sign-off, a single line of links (pages, accessibility, source), the copyright, and
- *   the date this build was made.
- * Does NOT belong: Primary navigation (Header.astro) or contact options (src/pages/contact.astro).
+ * Purpose: A clear footer with the Daysforth identity and organized navigation.
+ * Scope: Primary destinations, brand/accessibility/source resources, the sign-off, and build date.
+ * Does NOT belong: Main header navigation or private contact information.
  */
 import { footer, navigation, site } from '../data/site';
+import { profile } from '../data/profile';
+import { brand } from '../data/brand';
 import { withBase } from '../lib/paths';
 import { formatDate } from '../lib/text';
-
+import Icon from './Icon.astro';
 const built = new Date();
-const links = [
-  ...navigation,
-  { label: 'Accessibility', href: '/accessibility/' },
-  { label: 'Brand kit', href: '/brand/' },
-];
 ---
 
 <footer class="site-footer page">
-  <p class="site-footer__sign">{footer.signature}</p>
-  <nav aria-label="Footer">
-    <ul role="list">
-      {links.map((link) => (
+  <div class="site-footer__top">
+    <div class="site-footer__identity">
+      <a class="site-footer__brand" href={withBase('/')}>
+        <img src={withBase('/brand/daysforth-mark.svg')} alt="" width="28" height="28" />
+        {brand.name}
+      </a>
+      <p>{footer.signature}</p>
+    </div>
+    <nav aria-label="Footer">
+      <h2>Explore</h2>
+      <ul role="list">
+        {navigation.map((item) => (
+          <li>
+            <a href={withBase(item.href)} tabindex="0">
+              <Icon name={item.icon} />
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <nav aria-label="Resources">
+      <h2>More</h2>
+      <ul role="list">
         <li>
-          <a href={withBase(link.href)} tabindex="0">
-            {link.label}
+          <a href={withBase('/brand/')} tabindex="0">
+            Brand kit
+            <Icon name="arrowRight" />
           </a>
         </li>
-      ))}
-      <li>
-        <a href={site.repositoryUrl} tabindex="0">
-          Source<span class="visually-hidden"> on GitHub (external site)</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
-  <p class="small muted">
-    © {built.getFullYear()} Carson McRae. {footer.disclaimer}
-    {' Updated '}
-    <time datetime={built.toISOString().slice(0, 10)}>{formatDate(built)}</time>.
-  </p>
+        <li>
+          <a href={withBase('/accessibility/')} tabindex="0">
+            Accessibility
+            <Icon name="arrowRight" />
+          </a>
+        </li>
+        <li>
+          <a href={site.repositoryUrl} tabindex="0">
+            Source
+            <Icon name="github" />
+            <span class="visually-hidden"> on GitHub (external site)</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="site-footer__bottom">
+    <p>
+      © {built.getFullYear()} {profile.name}. {footer.disclaimer}
+    </p>
+    <p>
+      Updated <time datetime={built.toISOString().slice(0, 10)}>{formatDate(built)}</time>
+    </p>
+  </div>
 </footer>
-
 <style>
   .site-footer {
-    display: grid;
-    gap: 0.75rem;
     margin-top: var(--section);
-    padding-block: 1.75rem 2.5rem;
+    padding-block: 2.5rem 1.5rem;
     border-top: 1px solid var(--rule);
   }
-
-  .site-footer ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 0.25rem;
-    margin-inline: -0.5rem;
+  .site-footer__top {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 2rem;
+    padding-bottom: 2rem;
   }
-
-  .site-footer li + li {
-    margin-top: 0;
-  }
-
-  .site-footer a {
+  .site-footer__brand {
     display: inline-flex;
     align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    color: var(--text);
+    font-size: 1.25rem;
+    font-weight: 750;
+    text-decoration: none;
+    letter-spacing: -0.035em;
+  }
+  .site-footer__brand:visited {
+    color: var(--text);
+  }
+  .site-footer__brand img {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  .site-footer__identity p {
+    margin-top: 0.75rem;
+    max-width: 14rem;
+    color: var(--muted);
+    font-size: 0.8125rem;
+  }
+  nav h2 {
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+  nav ul {
+    display: grid;
+  }
+  nav li + li {
+    margin: 0;
+  }
+  nav a,
+  nav a:visited {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
     min-height: 2.75rem;
     min-width: 2.75rem;
-    padding-inline: 0.5rem;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8125rem;
+  }
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  @media (hover: hover) {
+    nav a:hover {
+      color: var(--link);
+      text-decoration: underline;
+    }
+  }
+  @media (max-width: 40rem) {
+    .site-footer__top {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+    .site-footer__identity {
+      grid-column: 1 / -1;
+    }
+    .site-footer__identity p {
+      max-width: none;
+    }
   }
 </style>

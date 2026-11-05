@@ -6,17 +6,36 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { initPostActions } from '../../src/lib/post-actions';
+import { fillActionRows } from '../../src/lib/action-template';
 import { memoryStorage, throwingStorage } from './helpers';
 const identity = '12345678-1234-4234-8234-123456789abc';
 const cleanups: (() => void)[] = [];
 function setup(
-  options: { endpoint?: string; storage?: Storage; fetcher?: typeof fetch; rows?: boolean } = {},
+  options: {
+    endpoint?: string;
+    storage?: Storage;
+    fetcher?: typeof fetch;
+    rows?: boolean;
+    multiple?: boolean;
+  } = {},
 ) {
   document.body.innerHTML =
     options.rows === false
       ? ''
       : '<div data-post-actions="born" data-post-title="Born" data-post-url="https://daysforth.com/posts/born/"><button data-react aria-pressed="false"><span data-reaction-count>—</span></button><button data-save aria-pressed="false"><span data-save-label>Save</span></button><button data-copy>Copy link</button></div><button id="outside">Outside</button>';
   const storage = options.storage ?? memoryStorage();
+  if (options.multiple) {
+    const first = document.querySelector('[data-react]')!;
+    first.setAttribute('data-react', 'heart');
+    for (const kind of ['celebrate', 'laugh', 'support']) {
+      const button = document.createElement('button');
+      button.dataset['react'] = kind;
+      button.dataset['reactionLabel'] = kind;
+      button.setAttribute('aria-pressed', 'false');
+      button.innerHTML = '<span data-reaction-count>—</span>';
+      first.parentElement!.append(button);
+    }
+  }
   const win = {
     localStorage: storage,
     location: { origin: 'https://daysforth.com' },
@@ -41,6 +60,23 @@ afterEach(() => {
 });
 
 describe('Save and Copy', () => {
+  it('hydrates shared controls with distinct safe labels for each story', () => {
+    document.body.innerHTML =
+      '<template id="post-action-template"><div role="group"><button data-react="heart" data-reaction-label="React to"></button></div><button data-save></button><button data-copy></button></template><div data-post-actions="one" data-post-title="One &amp; two"></div><div data-post-actions="two" data-post-title="Another"></div>';
+    fillActionRows(document);
+    expect(document.querySelector('[data-save]')!.getAttribute('aria-label')).toBe(
+      'Save One & two',
+    );
+    expect(document.querySelector('[data-copy]')!.getAttribute('aria-label')).toBe(
+      'Copy link to One & two',
+    );
+    expect(document.querySelector('[data-react]')!.getAttribute('aria-label')).toBe(
+      'React to One & two. Reaction count unavailable.',
+    );
+    expect(document.querySelectorAll('[role="group"]')[1]!.getAttribute('aria-label')).toBe(
+      'Reactions to Another',
+    );
+  });
   it('persists Save locally, restores its label, and supports removing it', () => {
     const first = setup();
     first.click('save');
@@ -106,7 +142,8 @@ describe('shared reactions', () => {
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({ born: 4 }))
-      .mockResolvedValueOnce(Response.json({ count: 5 }));
+      .mockResolvedValueOnce(Response.json({ count: 5 }))
+      .mockResolvedValueOnce(Response.json({ count: 4 }));
     const { click, button, storage, announce, win } = setup({
       endpoint: 'https://api.example.com',
       fetcher,
@@ -124,8 +161,12 @@ describe('shared reactions', () => {
     expect(storage.getItem('daysforth.reacted.born')).toBe('true');
     expect(win.crypto.randomUUID).toHaveBeenCalledTimes(1);
     click('react');
-    expect(fetcher).toHaveBeenCalledTimes(2);
-    expect(announce).toHaveBeenLastCalledWith('You’ve already reacted to this moment.');
+    await vi.waitFor(() => expect(announce).toHaveBeenLastCalledWith('Reaction removed.'));
+    expect(fetcher).toHaveBeenCalledTimes(3);
+    expect(fetcher.mock.calls[2]![1]!.method).toBe('DELETE');
+    expect(button('react').textContent).toBe('4');
+    expect(button('react').getAttribute('aria-pressed')).toBe('false');
+    expect(storage.getItem('daysforth.reacted.born')).toBe('false');
   });
   it('reuses a valid browser identity and repairs an invalid stored identity', async () => {
     const stored = memoryStorage({ 'daysforth.visitor': identity });
@@ -223,6 +264,36 @@ describe('shared reactions', () => {
   });
 });
 describe('lifecycle', () => {
+  it('keeps reaction choices independent and restores each choice from storage', async () => {
+    const stored = memoryStorage({ 'daysforth.reacted.born--support': 'true' });
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockImplementation(async (_url, options) =>
+        Response.json(
+          options
+            ? { count: options.method === 'DELETE' ? 0 : 1 }
+            : { born: 2, 'born--celebrate': 3, 'born--laugh': 0, 'born--support': 1 },
+        ),
+      );
+    const { storage, announce } = setup({
+      multiple: true,
+      storage: stored,
+      endpoint: 'https://api.example.com',
+      fetcher,
+    });
+    const celebrate = document.querySelector<HTMLButtonElement>('[data-react="celebrate"]')!;
+    const support = document.querySelector<HTMLButtonElement>('[data-react="support"]')!;
+    expect(support.getAttribute('aria-pressed')).toBe('true');
+    await vi.waitFor(() => expect(celebrate.textContent).toBe('3'));
+    celebrate.click();
+    await vi.waitFor(() => expect(celebrate.getAttribute('aria-pressed')).toBe('true'));
+    expect(storage.getItem('daysforth.reacted.born--celebrate')).toBe('true');
+    expect(fetcher.mock.calls[1]![0]).toBe('https://api.example.com/reactions/born--celebrate');
+    support.click();
+    await vi.waitFor(() => expect(announce).toHaveBeenLastCalledWith('Reaction removed.'));
+    expect(support.textContent).toBe('0');
+    expect(celebrate.getAttribute('aria-pressed')).toBe('true');
+  });
   it('handles missing rows, unrelated clicks, and detaches listeners', () => {
     const empty = setup({ endpoint: 'https://api.example.com', rows: false });
     expect(empty.win.fetch).not.toHaveBeenCalled();

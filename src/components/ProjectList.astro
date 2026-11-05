@@ -1,76 +1,168 @@
 ---
 /**
- * Purpose: Carson's software projects as a plain list.
- * Scope: Each project's app icon, name, tagline, description, and links written as a sentence; with
- *   `detailed`, also the personal note, status, and stack, and an id for in-page links.
- * Does NOT belong: Project facts (src/data/projects.ts) or link formatting (LinkSentence.astro).
+ * Purpose: A photographic overview of Carson’s software projects.
+ * Scope: Actual interface covers, app identities, statuses, details, and useful destination links.
+ * Does NOT belong: Project facts or timeline post definitions.
  */
 import { Image } from 'astro:assets';
 import { projects } from '../data/projects';
+import { timelinePosts } from '../data/timeline';
 import { getProjectImage } from '../lib/images';
 import { joinList } from '../lib/text';
-import LinkSentence from './LinkSentence.astro';
 import Markdown from './Markdown.astro';
-
+import PostMedia from './PostMedia.astro';
+import Icon from './Icon.astro';
 interface Props {
   detailed?: boolean;
 }
-
 const { detailed = false } = Astro.props;
 ---
 
 <ul role="list" class="projects">
   {projects.map((project) => {
     const icon = getProjectImage(project.icon);
+    const post = timelinePosts.find((moment) => moment.id === project.postId)!;
     return (
       <li class="project" id={detailed ? project.id : undefined}>
-        <h3 class="project__name">
-          {icon && <Image src={icon} alt="" width={32} height={32} class="project__icon" />}
-          {project.name}
-        </h3>
-        <p>
-          <strong>{project.tagline}</strong> <Markdown text={project.description} as="span" />
-        </p>
-        {detailed && project.note && <Markdown text={project.note} />}
-        {detailed && (
-          <p class="small muted">
-            {project.status}. Built with {joinList(project.stack)}.
-          </p>
-        )}
-        <p class="small">
-          See <LinkSentence links={project.links} />.
-        </p>
+        <PostMedia post={post} />
+        <div class="project__content">
+          <div class="project__identity">
+            <h3>
+              {icon && <Image src={icon} alt="" width={36} height={36} />}
+              <span>{project.name}</span>
+            </h3>
+            <span class="project__status">{project.status}</span>
+          </div>
+          <p class="project__tagline">{project.tagline}</p>
+          <Markdown text={project.description} />
+          {detailed && (
+            <details class="project__details">
+              <summary>More about {project.name}</summary>
+              {project.note && <Markdown text={project.note} />}
+              <p class="small muted">Built with {joinList(project.stack)}.</p>
+            </details>
+          )}
+          <ul class="project__links" role="list">
+            {project.links.map((link) => (
+              <li>
+                <a href={link.href}>
+                  {link.label}
+                  <Icon name="arrowRight" />
+                  <span class="visually-hidden"> (external site)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </li>
     );
   })}
 </ul>
-
 <style>
   .projects {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 2rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
   }
-
   .project {
-    display: grid;
-    gap: 0.4rem;
-    scroll-margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    margin: 0;
+    border: 1px solid var(--rule);
+    border-radius: 18px;
+    background: var(--surface);
+    scroll-margin-top: 2rem;
   }
-
   .project + .project {
     margin-top: 0;
   }
-
-  .project__name {
+  .project :global(> .post-media) {
+    min-height: 15rem;
+    height: 16rem;
+    border-radius: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .project__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1.5rem;
+  }
+  .project__identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .project__identity h3 {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.65rem;
+    font-size: 1.25rem;
+    margin: 0;
   }
-
-  .project__icon {
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 0.45rem;
+  .project__identity img {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9px;
+  }
+  .project__status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.55rem;
+    background: var(--selected);
+    color: var(--link);
+    border-radius: 6px;
+    font-size: 0.6875rem;
+    font-weight: 650;
+  }
+  .project__tagline {
+    font-size: 0.9375rem;
+    font-weight: 650;
+  }
+  .project__content :global(> p:not(.project__tagline)) {
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .project__details {
+    font-size: 0.875rem;
+  }
+  .project__details summary {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--link);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .project__details p {
+    margin-top: 0.65rem;
+  }
+  .project__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+  }
+  .project__links li + li {
+    margin: 0;
+  }
+  .project__links a {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    font-size: 0.8125rem;
+    font-weight: 550;
+  }
+  @media (max-width: 40rem) {
+    .projects {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 </style>
