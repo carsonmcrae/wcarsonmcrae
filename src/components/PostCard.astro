@@ -4,12 +4,11 @@
  * Scope: Semantic metadata, comfortable title/caption spacing, artwork, and shared actions.
  * Does NOT belong: Grouping, storage, or interaction controllers.
  */
-import { profile } from '../data/profile';
 import type { TimelinePost } from '../data/timeline';
-import { dateLabel } from '../lib/timeline-dates';
 import { withBase } from '../lib/paths';
-import MomentImage from './MomentImage.astro';
+import PostMedia from './PostMedia.astro';
 import PostActions from './PostActions.astro';
+import PostMeta from './PostMeta.astro';
 interface Props {
   post: TimelinePost;
 }
@@ -31,30 +30,12 @@ const { post } = Astro.props;
   data-milestone={String(Boolean(post.milestone))}
 >
   <div class="post-card__copy">
-    <p class="post-card__meta">
-      <span>{profile.name}</span>
-      <time datetime={post.date}>{dateLabel(post.date)}</time>
-      <span>{post.category}</span>
-      {post.milestone && <span class="milestone-label">Milestone</span>}
-    </p>
+    <PostMeta post={post} />
     <h3>
       <a href={withBase(`/posts/${post.id}/`)}>{post.title}</a>
     </h3>
     {post.caption && <p class="post-card__caption">{post.caption}</p>}
   </div>
-  {post.image && (
-    <div class="post-card__media">
-      <MomentImage name={post.image} alt={post.imageAlt!} />
-    </div>
-  )}
-  {!post.image && post.project && (
-    <a
-      class={`post-card__media project-art project-art--${post.project}`}
-      href={withBase(`/posts/${post.id}/`)}
-      aria-label={`Read ${post.title}`}
-    >
-      <MomentImage name={post.project} alt={`${post.project} app artwork`} kind="project" />
-    </a>
-  )}
+  <PostMedia post={post} />
   <PostActions id={post.id} title={post.title} />
 </article>

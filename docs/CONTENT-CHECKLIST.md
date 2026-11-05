@@ -34,8 +34,8 @@ the matching file in `src/data/`.
       for now (your call, 2026-11-03).
 - [x] **License.** All rights reserved (2026-11-03). The repository is public only so GitHub Pages can
       host it for free; no reuse is granted, and no `LICENSE` file is added.
-- [x] **Name and domains.** Daysforth is chosen and `daysforth.com` purchased. It is the canonical
-      destination; `wcarsonmcrae.com` and `www` should forward there (2026-11-04).
+- [x] **Name and domains.** Daysforth is chosen and `daysforth.com` purchased. Carson subsequently
+      chose `wcarsonmcrae.com` as canonical, with Daysforth and both www hosts forwarding there.
 - [x] **Timeline dates.** Month and year required; days optional. Born November 1999, PC December
       2015, Vanderbilt August 2018, InfoWorks June 2021, graduation May 2022, Margot July 2022,
       Booz Allen September 2022, Quinn July 2023, wedding October 2026. See `src/data/timeline.ts`.
@@ -51,6 +51,11 @@ the matching file in `src/data/`.
 - [x] Photos were imported with `npm run images:import`, which strips metadata and resizes.
 
 ## Optional details
+
+- [x] **Profile update (November 4).** Full homepage name, 39 supplied photos, high-school
+      salutatorian in May 2018, Eagle Scout in October 2016, and FBLA results in July 2017 approved.
+      Watch models, Apple July 2018–May 2022, InfoWorks end September 2022, and Sydney August 2019
+      confirmed in chat. See [profile update](PROFILE-UPDATE.md) for implementation and verification.
 
 - [ ] A public **email address** for the contact page (`profile.email` in `src/data/profile.ts`;
       currently none is shown).

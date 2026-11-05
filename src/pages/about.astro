@@ -1,123 +1,68 @@
 ---
 /**
- * Purpose: The About page: the longer version of Carson's story.
- * Scope: His name, background, a dated timeline, how he came to technology from Human &
- *   Organizational Development and Political Science, how he likes to work, and quick facts.
- * Does NOT belong: The copy (src/data/career.ts) or work history details (src/pages/work.astro).
+ * Purpose: Carson’s background with a clear story, portrait, principles, and facts.
+ * Scope: Preserves approved copy while organizing it into visual, readable sections.
+ * Does NOT belong: Personal facts or timeline interaction logic.
  */
 import Markdown from '../components/Markdown.astro';
-import PageIntro from '../components/PageIntro.astro';
+import SecondaryHero from '../components/SecondaryHero.astro';
 import Section from '../components/Section.astro';
 import Photo from '../components/Photo.astro';
 import { about, principles, quickFacts, timeline } from '../data/career';
+import { profile } from '../data/profile';
 import { pages } from '../data/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/secondary.css';
 ---
 
 <BaseLayout page={pages.about}>
-  <PageIntro title={about.title} lede={about.lede}>
-    <Photo name="carson-solo" alt="Carson McRae" />
-    {about.body.map((paragraph) => (
-      <Markdown text={paragraph} />
-    ))}
-  </PageIntro>
-
-  <Section title="How I got here" id="timeline">
-    <ol role="list" class="timeline">
-      {timeline.map((entry) => (
-        <li>
-          <p class="timeline__when">{entry.when}</p>
-          <div>
-            <h3>{entry.title}</h3>
-            <Markdown text={entry.detail} />
-          </div>
-        </li>
-      ))}
-    </ol>
-  </Section>
-
-  <Section title={about.path.title} id="path">
-    <div class="flow">
-      {about.path.body.map((paragraph) => (
+  <div class="secondary-page">
+    <SecondaryHero label="About" title={about.title} lede={about.lede}>
+      {about.body.map((paragraph) => (
         <Markdown text={paragraph} />
       ))}
-    </div>
-  </Section>
-
-  <Section title="How I like to work" id="principles">
-    <div class="flow">
-      {principles.map((principle) => (
-        <p>
-          <strong>{principle.title}</strong> <Markdown text={principle.detail} as="span" />
-        </p>
-      ))}
-    </div>
-  </Section>
-
-  <Section title="Quick facts" id="facts">
-    <dl class="facts">
-      {quickFacts.map((fact) => (
-        <>
-          <dt>{fact.label}</dt>
-          <dd>{fact.value}</dd>
-        </>
-      ))}
-    </dl>
-    <Markdown text="Next: [my work](/work/), or [life outside it](/life/)." class="next" />
-  </Section>
+      <Photo slot="media" name="carson-solo" alt={profile.name} />
+    </SecondaryHero>
+    <Section title="How I got here" id="timeline" wide>
+      <ol role="list" class="story-timeline">
+        {timeline.map((entry) => (
+          <li>
+            <p class="story-timeline__when">{entry.when}</p>
+            <div>
+              <h3>{entry.title}</h3>
+              <Markdown text={entry.detail} />
+            </div>
+          </li>
+        ))}
+      </ol>
+    </Section>
+    <Section title={about.path.title} id="path" wide>
+      <div class="surface-panel surface-panel--soft flow">
+        {about.path.body.map((paragraph) => (
+          <Markdown text={paragraph} />
+        ))}
+      </div>
+    </Section>
+    <Section title="How I like to work" id="principles" wide>
+      <div class="content-grid">
+        {principles.map((principle) => (
+          <article class="surface-panel principle-card">
+            <h3>{principle.title}</h3>
+            <Markdown text={principle.detail} />
+          </article>
+        ))}
+      </div>
+    </Section>
+    <Section title="Quick facts" id="facts" wide>
+      <dl class="facts-grid">
+        {quickFacts.map((fact) => (
+          <div>
+            <dt>{fact.label}</dt>
+            <dd>{fact.value}</dd>
+          </div>
+        ))}
+      </dl>
+      <Markdown text="Next: [my work](/work/), or [life outside it](/life/)." class="page-note" />
+    </Section>
+  </div>
 </BaseLayout>
-
-<style>
-  .timeline {
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  .timeline li {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.1rem 1.5rem;
-    margin: 0;
-  }
-
-  .timeline__when {
-    color: var(--muted);
-    font-variant-numeric: tabular-nums;
-  }
-
-  @media (min-width: 40rem) {
-    .timeline li {
-      grid-template-columns: 6rem minmax(0, 1fr);
-    }
-  }
-
-  .facts {
-    display: grid;
-    gap: 0.1rem 1.5rem;
-  }
-
-  .facts dd + dt {
-    margin-top: 0.6rem;
-  }
-
-  @media (min-width: 40rem) {
-    .facts {
-      grid-template-columns: max-content minmax(0, 1fr);
-      gap: 0.35rem 1.5rem;
-    }
-
-    .facts dd + dt {
-      margin-top: 0;
-    }
-  }
-
-  .facts dt {
-    color: var(--muted);
-    font-weight: 400;
-  }
-
-  /* Rendered by Markdown.astro, so the selector reaches into that component. */
-  :global(.next) {
-    margin-top: 2rem;
-  }
-</style>

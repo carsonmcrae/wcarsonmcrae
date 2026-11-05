@@ -7,11 +7,14 @@
 import PinnedMoments from '../components/PinnedMoments.astro';
 import ProfileSummary from '../components/ProfileSummary.astro';
 import TimelineFeed from '../components/TimelineFeed.astro';
+import PostActionTemplate from '../components/PostActionTemplate.astro';
 import { pages } from '../data/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/profile.css';
 import '../styles/timeline.css';
 import '../styles/timeline-controls.css';
+import '../styles/post-media.css';
+import '../styles/timeline-dock.css';
 ---
 
 <BaseLayout page={pages.home}>
@@ -20,4 +23,5 @@ import '../styles/timeline-controls.css';
     <PinnedMoments />
   </div>
   <TimelineFeed />
+  <PostActionTemplate />
 </BaseLayout>

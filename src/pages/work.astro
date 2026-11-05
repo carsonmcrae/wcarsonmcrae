@@ -1,111 +1,117 @@
 ---
 /**
- * Purpose: The Work page: what Carson does, where he has done it, and what he builds.
- * Scope: The current role with its responsibilities, earlier experience and education, skills,
- *   tools, every project in detail, and where to find the formal version.
- * Constraints: General, public-safe descriptions only; no client details or unconfirmed titles.
- * Does NOT belong: The copy (src/data/career.ts and src/data/projects.ts).
+ * Purpose: A visual Work page connecting Carson’s current work, products, and experience.
+ * Scope: Role context, the two-register explanation, project cards, career history, and capabilities.
+ * Does NOT belong: Personal facts, private client details, or application behavior.
  */
 import Markdown from '../components/Markdown.astro';
 import ExplainToggle from '../components/ExplainToggle.astro';
-import PageIntro from '../components/PageIntro.astro';
+import SecondaryHero from '../components/SecondaryHero.astro';
 import ProjectList from '../components/ProjectList.astro';
+import PostMedia from '../components/PostMedia.astro';
 import Section from '../components/Section.astro';
 import { capabilities, education, roles, tools, workIntro } from '../data/career';
 import { projectsIntro } from '../data/projects';
+import { timelinePosts } from '../data/timeline';
 import { pages } from '../data/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { joinList } from '../lib/text';
-
+import '../styles/secondary.css';
+import '../styles/post-media.css';
 const [current, ...earlier] = roles;
+const workMoment = timelinePosts.find((post) => post.id === 'joined-booz-allen')!;
 ---
 
 <BaseLayout page={pages.work}>
-  <PageIntro title={workIntro.title} lede={workIntro.lede}>
-    <Markdown
-      class="small"
-      text="On this page: [current role](#current-role), [background](#background), [skills](#skills), and [projects](#projects)."
-    />
-  </PageIntro>
-
-  <Section title="What I actually do" id="what-i-do">
-    <ExplainToggle />
-  </Section>
-
-  {current && (
-    <Section title={current.organization} id="current-role">
-      <p class="role-title">{current.title}</p>
-      <Markdown text={current.summary} />
-      {current.groups.map((group) => (
-        <>
-          <h3 class="group-title">{group.title}</h3>
-          <ul>
-            {group.items.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
-        </>
-      ))}
-      <p class="small muted note">
+  <div class="secondary-page">
+    <SecondaryHero label="Work" title={workIntro.title} lede={workIntro.lede}>
+      <p class="role-period">
+        {current!.organization} · {current!.dates}
+      </p>
+      <PostMedia slot="media" post={workMoment} />
+    </SecondaryHero>
+    <Section title="What I actually do" id="what-i-do" wide>
+      <div class="surface-panel surface-panel--soft">
+        <ExplainToggle />
+      </div>
+    </Section>
+    <Section title={current!.organization} id="current-role" wide>
+      <div class="role-heading">
+        <h3>{current!.title}</h3>
+        <p class="role-period">{current!.dates}</p>
+      </div>
+      <Markdown text={current!.summary} class="role-summary" />
+      <div class="content-grid content-grid--three role-cards">
+        {current!.groups.map((group) => (
+          <article>
+            <h3>{group.title}</h3>
+            <ul>
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+      <p class="page-note">
         I describe this work in general terms on purpose; the specifics of client projects stay at
         work. Views on this site are my own.
       </p>
     </Section>
-  )}
-
-  <Section title="Before that" id="background">
-    {earlier.map((role) => (
-      <>
-        <h3>{role.organization}</h3>
-        <p class="role-title">{role.title}</p>
-        <Markdown text={role.summary} />
-      </>
-    ))}
-    <h3 class="group-title">{education.school}</h3>
-    <p class="role-title">Class of {education.year}</p>
-    <p>{education.detail}.</p>
-  </Section>
-
-  <Section title="What I’m good at" id="skills">
-    {capabilities.map((group) => (
-      <>
-        <h3 class="group-title">{group.title}</h3>
-        <ul>
-          {group.items.map((item) => (
-            <li>{item}</li>
-          ))}
-        </ul>
-      </>
-    ))}
-    <p class="tools">On my own projects I mostly use {joinList(tools)}.</p>
-  </Section>
-
-  <Section title="Things I build on my own time" id="projects" lede={projectsIntro.body}>
-    <ProjectList detailed />
-    <p class="small after-list">
-      {projectsIntro.portfolioNote} <a href="https://carsonmcrae.github.io/">Visit the portfolio</a>
-      .
-    </p>
-  </Section>
-
-  <Section title="The formal version" id="formal">
-    <Markdown text="My full work history is on [LinkedIn](https://www.linkedin.com/in/carsonmcrae/). If you’d like a résumé, [ask me](/contact/)." />
-  </Section>
+    <Section title={projectsIntro.title} id="projects" lede={projectsIntro.body} wide>
+      <ProjectList detailed />
+      <p class="page-note">
+        {projectsIntro.portfolioNote}{' '}
+        <a href="https://carsonmcrae.github.io/">
+          Visit the portfolio<span class="visually-hidden"> (external site)</span>
+        </a>
+        .
+      </p>
+    </Section>
+    <Section title="Before that" id="background" wide>
+      <div class="surface-panel earlier-roles">
+        {earlier.map((role) => (
+          <article class="earlier-role">
+            <div class="role-heading">
+              <h3>{role.organization}</h3>
+              <p class="role-period">{role.dates}</p>
+            </div>
+            {role.title !== role.organization && (
+              <p>
+                <strong>{role.title}</strong>
+              </p>
+            )}
+            <Markdown text={role.summary} />
+          </article>
+        ))}
+        <article class="earlier-role">
+          <div class="role-heading">
+            <h3>{education.school}</h3>
+            <p class="role-period">Class of {education.year}</p>
+          </div>
+          <p>{education.detail}.</p>
+        </article>
+      </div>
+    </Section>
+    <Section title="What I’m good at" id="skills" wide>
+      <div class="content-grid">
+        {capabilities.map((group) => (
+          <article class="surface-panel">
+            <h3>{group.title}</h3>
+            <ul>
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+      <p class="page-note">On my own projects I mostly use {joinList(tools)}.</p>
+    </Section>
+    <Section title="The formal version" id="formal" wide>
+      <div class="surface-panel surface-panel--soft">
+        <Markdown text="My full work history is on [LinkedIn](https://www.linkedin.com/in/carsonmcrae/). If you’d like a résumé, [ask me](/contact/)." />
+      </div>
+    </Section>
+  </div>
 </BaseLayout>
-
-<style>
-  .role-title {
-    color: var(--muted);
-    margin: -0.4rem 0 0.75rem;
-  }
-
-  .group-title {
-    margin: 1.5rem 0 0.4rem;
-  }
-
-  .note,
-  .tools,
-  .after-list {
-    margin-top: 1.5rem;
-  }
-</style>

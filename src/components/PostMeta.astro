@@ -1,0 +1,44 @@
+---
+/**
+ * Purpose: Consistent author, date, category, and milestone metadata on posts.
+ * Scope: Explicit visual separators, confirmed date ranges, and an accessible milestone chip.
+ * Does NOT belong: Post copy, sorting, or navigation.
+ */
+import { profile } from '../data/profile';
+import type { TimelinePost } from '../data/timeline';
+import { dateLabel, fullDateLabel } from '../lib/timeline-dates';
+interface Props {
+  post: TimelinePost;
+  detail?: boolean;
+}
+const { post, detail = false } = Astro.props;
+const label = detail ? fullDateLabel : dateLabel;
+---
+
+<p class="post-meta">
+  <span>{profile.name}</span>
+  <span class="post-meta__dot" aria-hidden="true">
+    ·
+  </span>
+  <span>
+    <time datetime={post.date}>{label(post.date)}</time>
+    {post.endDate && (
+      <>
+        {' '}
+        – <time datetime={post.endDate}>{dateLabel(post.endDate)}</time>
+      </>
+    )}
+  </span>
+  <span class="post-meta__dot" aria-hidden="true">
+    ·
+  </span>
+  <span>{post.category}</span>
+  {post.milestone && (
+    <>
+      <span class="post-meta__dot" aria-hidden="true">
+        ·
+      </span>
+      <span class="milestone-label">Milestone</span>
+    </>
+  )}
+</p>

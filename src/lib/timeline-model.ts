@@ -17,10 +17,11 @@ export interface Moment {
   date: string;
   category: Category;
   milestone?: boolean;
+  saved?: boolean;
 }
 export interface TimelineState {
   view: 'timeline' | 'posts';
-  category: 'All' | Category;
+  category: 'All' | 'Milestones' | 'Saved' | Category;
   detail: DateDetail;
   date: string;
 }
@@ -44,7 +45,11 @@ export function visibleMoments<T extends Moment>(
   category: TimelineState['category'],
 ): T[] {
   return chronological(
-    posts.filter((post) => category === 'All' || post.category === category || post.milestone),
+    posts.filter((post) => {
+      if (category === 'Milestones') return Boolean(post.milestone);
+      if (category === 'Saved') return Boolean(post.saved);
+      return category === 'All' || post.category === category || post.milestone;
+    }),
   );
 }
 
@@ -81,7 +86,13 @@ export function readTimelineState(search: string, latest: string): TimelineState
   return {
     view: params.get('view') === 'posts' ? 'posts' : 'timeline',
     category:
-      category === 'Work' || category === 'Projects' || category === 'Life' ? category : 'All',
+      category === 'Work' ||
+      category === 'Projects' ||
+      category === 'Life' ||
+      category === 'Milestones' ||
+      category === 'Saved'
+        ? category
+        : 'All',
     detail: detail === 'years' || detail === 'quarters' ? detail : 'months',
     date: date && isTimelineDate(date) ? date.slice(0, 7) : latest.slice(0, 7),
   };

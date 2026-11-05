@@ -1,6 +1,6 @@
 /**
  * Purpose: Finds optional source images by filename at build time.
- * Scope: Photos in src/assets/photos/ and project art in src/assets/projects/; never import in browser code.
+ * Scope: Photographs, project icons, and interface captures in local asset folders; never import in browser code.
  * Does NOT belong: Image optimization (Astro's Picture and Image components) or stripping photo
  *   metadata (scripts/strip-image-metadata.ts).
  */

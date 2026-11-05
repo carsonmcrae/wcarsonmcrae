@@ -71,21 +71,21 @@ export async function handleReactions(
     new Response(JSON.stringify(data), { status, headers });
   if (origin && !allowed.includes(origin)) return json({ error: 'Origin not allowed' }, 403);
   if (origin) headers['Access-Control-Allow-Origin'] = origin;
-  headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
+  headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, OPTIONS';
   headers['Access-Control-Allow-Headers'] = 'Content-Type';
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
   const path = new URL(request.url).pathname.replace(/\/$/, '');
   const postId = /^\/reactions\/([a-z0-9-]+)$/.exec(path)?.[1];
   if (path !== '/reactions' && (!postId || !postIds.includes(postId)))
     return json({ error: 'Moment not found' }, 404);
-  if (request.method !== 'GET' && request.method !== 'POST') {
-    headers['Allow'] = 'GET, POST, OPTIONS';
+  if (request.method !== 'GET' && request.method !== 'POST' && request.method !== 'DELETE') {
+    headers['Allow'] = 'GET, POST, DELETE, OPTIONS';
     return json({ error: 'Method not allowed' }, 405);
   }
   if (request.method === 'GET' && path !== '/reactions')
     return json({ error: 'Route not found' }, 404);
-  if (request.method === 'POST' && !postId) return json({ error: 'Moment not found' }, 404);
-  if (request.method === 'POST' && !origin) return json({ error: 'Origin required' }, 403);
+  if (request.method !== 'GET' && !postId) return json({ error: 'Moment not found' }, 404);
+  if (request.method !== 'GET' && !origin) return json({ error: 'Origin required' }, 403);
   const db = env.DB;
   if (!db) return json({ error: 'Reactions are unavailable' }, 503);
   try {
@@ -118,39 +118,46 @@ export async function handleReactions(
     )
       return json({ error: 'Invalid visitor identity' }, 400);
     const visitor = await hashIdentity(payload.visitorId, salt);
-    const existing = await db
-      .prepare('SELECT post_id FROM reactions WHERE post_id = ? AND visitor_hash = ?')
-      .bind(postId!, visitor)
-      .first<{ post_id: string }>();
-    if (!existing) {
-      const hour = Math.floor(now / 3_600_000);
-      const bucket = await hashIdentity(
-        `${request.headers.get('CF-Connecting-IP') ?? 'local'}:${hour}`,
-        salt,
-      );
-      const rate = await db
-        .prepare(
-          'INSERT INTO reaction_limits (bucket, hits, expires) VALUES (?, 1, ?) ON CONFLICT(bucket) DO UPDATE SET hits = hits + 1 WHERE hits < 20 RETURNING hits',
-        )
-        .bind(bucket, (hour + 1) * 3_600_000)
-        .first<{ hits: number }>();
-      if (!rate) {
-        headers['Retry-After'] = '3600';
-        return json({ error: 'Too many reactions. Try again later.' }, 429);
-      }
+    if (request.method === 'DELETE') {
       await db
-        .prepare(
-          'INSERT OR IGNORE INTO reactions (post_id, visitor_hash, created_at) VALUES (?, ?, ?)',
-        )
-        .bind(postId!, visitor, now)
+        .prepare('DELETE FROM reactions WHERE post_id = ? AND visitor_hash = ?')
+        .bind(postId!, visitor)
         .run();
+    } else {
+      const existing = await db
+        .prepare('SELECT post_id FROM reactions WHERE post_id = ? AND visitor_hash = ?')
+        .bind(postId!, visitor)
+        .first<{ post_id: string }>();
+      if (!existing) {
+        const hour = Math.floor(now / 3_600_000);
+        const bucket = await hashIdentity(
+          `${request.headers.get('CF-Connecting-IP') ?? 'local'}:${hour}`,
+          salt,
+        );
+        const rate = await db
+          .prepare(
+            'INSERT INTO reaction_limits (bucket, hits, expires) VALUES (?, 1, ?) ON CONFLICT(bucket) DO UPDATE SET hits = hits + 1 WHERE hits < 20 RETURNING hits',
+          )
+          .bind(bucket, (hour + 1) * 3_600_000)
+          .first<{ hits: number }>();
+        if (!rate) {
+          headers['Retry-After'] = '3600';
+          return json({ error: 'Too many reactions. Try again later.' }, 429);
+        }
+        await db
+          .prepare(
+            'INSERT OR IGNORE INTO reactions (post_id, visitor_hash, created_at) VALUES (?, ?, ?)',
+          )
+          .bind(postId!, visitor, now)
+          .run();
+      }
     }
     const total = await db
       .prepare('SELECT count FROM reaction_totals WHERE post_id = ?')
       .bind(postId!)
       .first<{ count: number }>();
-    if (!total) throw new Error('Missing reaction total');
-    return json({ count: total.count });
+    if (!total && request.method === 'POST') throw new Error('Missing reaction total');
+    return json({ count: total?.count ?? 0 });
   } catch {
     return json({ error: 'Reactions are unavailable' }, 503);
   }

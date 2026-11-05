@@ -15,6 +15,9 @@ export function readMomentCards(root: ParentNode): MomentCard[] {
     date: element.dataset['date']!,
     category: element.dataset['category'] as Moment['category'],
     milestone: element.dataset['milestone'] === 'true',
+    get saved() {
+      return element.querySelector('[data-save]')?.getAttribute('aria-pressed') === 'true';
+    },
   }));
 }
 

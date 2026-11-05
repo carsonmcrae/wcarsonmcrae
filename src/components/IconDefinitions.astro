@@ -1,0 +1,30 @@
+---
+/**
+ * Purpose: Define each licensed interface glyph once instead of repeating its paths on every post.
+ * Scope: Invisible, noninteractive symbols referenced by Icon.astro throughout the document.
+ * Does NOT belong: Visible controls or branded artwork.
+ */
+import { icons, iconBody } from '../lib/icons';
+---
+
+<svg
+  class="icon-definitions"
+  aria-hidden="true"
+  focusable="false"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {Object.entries(icons).map(([name, svg]) => (
+    <symbol id={`icon-${name}`} viewBox="0 0 256 256">
+      <Fragment set:html={iconBody(svg)} />
+    </symbol>
+  ))}
+</svg>
+<style>
+  .icon-definitions {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+</style>

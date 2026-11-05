@@ -94,7 +94,7 @@
 }
 .pinned-moments__grid img {
   width: 100%;
-  aspect-ratio: 2.85;
+  aspect-ratio: 2.1;
   object-fit: cover;
   border-radius: 12px;
 }
@@ -117,6 +117,9 @@
 }
 [data-moment-image='2022-vanderbilt-graduation'] {
   object-position: 50% 49%;
+}
+[data-moment-image='2022-carson-vandy-graduation'] {
+  object-position: 50% 42%;
 }
 [data-moment-image='nicole-carson-2'] {
   object-position: 66% 31%;

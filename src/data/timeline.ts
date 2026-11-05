@@ -1,10 +1,17 @@
 /**
  * Purpose: Approved posts for Carson’s Daysforth profile.
- * Scope: Seventeen confirmed public moments, month-precise dates, and pinned milestones.
+ * Scope: Confirmed public moments, photo albums, month-precise dates, and pinned milestones.
  * Constraints: Dates preserve their supplied precision; a photograph never supplies an event date.
  * Does NOT belong: Grouping, filtering, navigation, or rendering (src/lib/timeline-*).
  */
+import { experiencePosts } from './timeline-experiences';
+import { margotPhotos, quinnPhotos, weddingPhotos } from './photo-gallery';
 export type Category = 'Work' | 'Projects' | 'Life';
+export interface PostPhoto {
+  name: string;
+  alt: string;
+  caption: string;
+}
 
 export interface TimelinePost {
   id: string;
@@ -17,6 +24,9 @@ export interface TimelinePost {
   pinned?: boolean;
   image?: string;
   imageAlt?: string;
+  imageKind?: 'photo' | 'screen';
+  gallery?: PostPhoto[];
+  endDate?: string;
   project?: string;
   links?: { label: string; href: string }[];
 }
@@ -28,7 +38,7 @@ export const timelineProfile = {
     'Booz Allen Hamilton by day; TTSNative, Recalen and PicPledge on nights and weekends.',
 };
 
-export const timelinePosts: TimelinePost[] = [
+const corePosts: TimelinePost[] = [
   {
     id: 'born',
     date: '1999-11',
@@ -50,6 +60,14 @@ export const timelinePosts: TimelinePost[] = [
       'I built a Minecraft server called Minetrocity, working with developers. It caught the attention of the creators of Mineplex.',
     ],
     category: 'Projects',
+    image: 'minetrocity-server',
+    imageAlt: 'The Minetrocity Minecraft server lobby',
+    links: [
+      {
+        label: 'Minetrocity on Planet Minecraft',
+        href: 'https://www.planetminecraft.com/server/minetrocity/',
+      },
+    ],
   },
   {
     id: 'first-pc',
@@ -68,6 +86,9 @@ export const timelinePosts: TimelinePost[] = [
     caption: 'The beginning of my Vanderbilt chapter.',
     body: ['Started at Vanderbilt University in August 2018.'],
     category: 'Life',
+    endDate: '2022-05',
+    image: '2018-vanderblilt-carson',
+    imageAlt: 'Carson on the Vanderbilt campus in 2018',
   },
   {
     id: 'infoworks',
@@ -76,6 +97,9 @@ export const timelinePosts: TimelinePost[] = [
     caption: 'Consulting and business analysis.',
     body: ['Joined InfoWorks in June 2021, working in consulting and business analysis.'],
     category: 'Work',
+    endDate: '2022-09',
+    image: 'infoworks-headshot',
+    imageAlt: 'Carson’s headshot when he joined InfoWorks',
   },
   {
     id: 'vanderbilt-graduation',
@@ -86,8 +110,15 @@ export const timelinePosts: TimelinePost[] = [
     category: 'Work',
     milestone: true,
     pinned: true,
-    image: '2022-vanderbilt-graduation',
-    imageAlt: 'Carson in a graduation gown, tossing his cap outside Warren College at Vanderbilt',
+    image: '2022-carson-vandy-graduation',
+    imageAlt: 'Carson in his graduation gown outside Warren College at Vanderbilt',
+    gallery: [
+      {
+        name: '2022-vanderbilt-graduation',
+        alt: 'Carson tossing his graduation cap at Vanderbilt',
+        caption: 'Vanderbilt University · May 2022',
+      },
+    ],
   },
   {
     id: 'margot-arrives',
@@ -96,8 +127,9 @@ export const timelinePosts: TimelinePost[] = [
     caption: 'A golden apricot doodle joins the household.',
     body: [],
     category: 'Life',
-    image: 'margot-1',
-    imageAlt: 'Margot, a golden apricot doodle',
+    image: 'margot-puppy',
+    imageAlt: 'Margot as a golden apricot puppy',
+    gallery: margotPhotos,
   },
   {
     id: 'joined-booz-allen',
@@ -108,6 +140,8 @@ export const timelinePosts: TimelinePost[] = [
       'Supporting software delivery for the Department of Veterans Affairs. Views on this site are my own.',
     ],
     category: 'Work',
+    image: 'bah-headshot',
+    imageAlt: 'Carson’s Booz Allen Hamilton headshot with the Nashville skyline',
   },
   {
     id: 'quinn-arrives',
@@ -116,32 +150,9 @@ export const timelinePosts: TimelinePost[] = [
     caption: 'A black doodle with white markings joins the household.',
     body: [],
     category: 'Life',
-    image: 'quinn-1',
-    imageAlt: 'Quinn, a black doodle with white markings',
-  },
-  {
-    id: 'ttsnative-started',
-    date: '2026-03-24',
-    title: 'Started building TTSNative',
-    caption: 'Text-to-speech that runs on your own computer.',
-    body: [
-      'The first commit of TTSNative, an app for reading documents aloud while keeping documents, voices, and audio on your computer.',
-    ],
-    category: 'Projects',
-    project: 'ttsnative',
-    links: [{ label: 'TTSNative', href: 'https://ttsnative.com' }],
-  },
-  {
-    id: 'recalen-started',
-    date: '2026-04',
-    title: 'Started building Recalen',
-    caption: 'Dump now. Recall later.',
-    body: [
-      'A capture-and-recall app for thoughts, links, files, and voice notes, with organization, search, reminders, and calendar views.',
-    ],
-    category: 'Projects',
-    project: 'recalen',
-    links: [{ label: 'Recalen', href: 'https://recalen.com' }],
+    image: 'quinn-puppy',
+    imageAlt: 'Quinn as a black puppy with white markings, on the grass',
+    gallery: quinnPhotos,
   },
   {
     id: 'recalen-beta',
@@ -151,17 +162,10 @@ export const timelinePosts: TimelinePost[] = [
     body: ['Recalen entered its private beta in July 2026.'],
     category: 'Projects',
     project: 'recalen',
+    image: 'recalen-interface',
+    imageKind: 'screen',
+    imageAlt: 'The Recalen capture feed interface',
     links: [{ label: 'Recalen', href: 'https://recalen.com' }],
-  },
-  {
-    id: 'picpledge-started',
-    date: '2026-09-17',
-    title: 'Started building PicPledge',
-    caption: 'Private photo sharing for events.',
-    body: ['Guests add photos to a shared album and download the moments they want to keep.'],
-    category: 'Projects',
-    project: 'picpledge',
-    links: [{ label: 'PicPledge', href: 'https://picpledge.com' }],
   },
   {
     id: 'ttsnative-1',
@@ -173,6 +177,9 @@ export const timelinePosts: TimelinePost[] = [
     ],
     category: 'Projects',
     project: 'ttsnative',
+    image: 'ttsnative-interface',
+    imageKind: 'screen',
+    imageAlt: 'The TTSNative document reader interface',
     links: [
       { label: 'TTSNative', href: 'https://ttsnative.com' },
       { label: 'Source on GitHub', href: 'https://github.com/carsonmcrae/ttsnative' },
@@ -191,6 +198,7 @@ export const timelinePosts: TimelinePost[] = [
     pinned: true,
     image: 'nicole-carson-2',
     imageAlt: 'Nicole and Carson together on their wedding day',
+    gallery: weddingPhotos,
   },
   {
     id: 'picpledge-wedding',
@@ -200,6 +208,9 @@ export const timelinePosts: TimelinePost[] = [
     body: ['I built PicPledge so our wedding guests could share photos as the day happened.'],
     category: 'Projects',
     project: 'picpledge',
+    image: 'picpledge-interface',
+    imageKind: 'screen',
+    imageAlt: 'The PicPledge event photo gallery interface',
     links: [{ label: 'PicPledge', href: 'https://picpledge.com' }],
   },
   {
@@ -211,6 +222,13 @@ export const timelinePosts: TimelinePost[] = [
       'A profile that is a timeline. Work, projects, and life, placed at the moments they happened. Built with Astro and hosted on GitHub Pages.',
     ],
     category: 'Projects',
+    project: 'daysforth',
+    image: 'daysforth-interface',
+    imageKind: 'screen',
+    imageAlt: 'The Daysforth profile with pinned photographs and the timeline controls',
     links: [{ label: 'Source on GitHub', href: 'https://github.com/carsonmcrae/wcarsonmcrae' }],
   },
 ];
+export const timelinePosts = [...corePosts, ...experiencePosts].toSorted((a, b) =>
+  a.date.slice(0, 7).localeCompare(b.date.slice(0, 7)),
+);

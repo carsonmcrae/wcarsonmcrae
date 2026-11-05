@@ -5,9 +5,10 @@ to that address. GitHub Pages hosts and serves the static frontend directly; Clo
 supplies signed DNS, redirects, and the Worker/D1 reactions service. GoDaddy remains the registrar.
 No paid upgrade or usage plan is authorized.
 
-On November 4, 2026, Carson explicitly authorized the agent to merge, enable Pages, deploy,
-configure Cloudflare/reactions, and update DNS. This overrides the standing owner-only rule for
-this release. The separate `carsonmcrae.github.io` portfolio repository remains unchanged.
+On November 4, 2026, Carson explicitly authorized the initial launch: merge, enable Pages, deploy,
+configure Cloudflare/reactions, and update DNS. That launch is complete. The current repository
+instructions reserve subsequent merges and deployment for Carson. The separate
+`carsonmcrae.github.io` portfolio repository remains unchanged.
 
 ## Configuration
 

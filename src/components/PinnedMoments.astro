@@ -1,16 +1,14 @@
 ---
 /**
  * Purpose: Three photographic milestones above the main timeline.
- * Scope: Approved pin dates, accessible jump links, and the continuous native date slider.
+ * Scope: Approved pin dates and photographic links to their moments.
  * Does NOT belong: Slider behavior (src/lib/timeline-controller.ts) or event content.
  */
 import { timelinePosts } from '../data/timeline';
-import { dateLabel, monthIndex } from '../lib/timeline-dates';
-import { chronological } from '../lib/timeline-model';
+import { dateLabel } from '../lib/timeline-dates';
 import { withBase } from '../lib/paths';
 import MomentImage from './MomentImage.astro';
 const pins = timelinePosts.filter((post) => post.pinned);
-const newest = chronological(timelinePosts)[0]!;
 const oldest = pins[0]!;
 ---
 
@@ -32,35 +30,4 @@ const oldest = pins[0]!;
       </li>
     ))}
   </ul>
-  <div class="date-rail enhancement" data-date-rail>
-    <div class="date-rail__labels">
-      {pins.map((post, index) => (
-        <button
-          type="button"
-          class={`date-rail__label date-rail__label--${index}`}
-          data-jump-date={post.date}
-        >
-          <span class="visually-hidden">Go to {post.title}, </span>
-          <span class="date-rail__long">{dateLabel(post.date)}</span>
-          <span class="date-rail__short">{dateLabel(post.date, true)}</span>
-        </button>
-      ))}
-    </div>
-    <label class="visually-hidden" for="timeline-range">
-      Explore Carson’s timeline by date
-    </label>
-    <input
-      id="timeline-range"
-      type="range"
-      min={monthIndex(oldest.date)}
-      max={monthIndex(newest.date)}
-      value={monthIndex(newest.date)}
-      step="1"
-      aria-valuetext={dateLabel(newest.date)}
-      data-date-slider
-    />
-    <output class="date-rail__preview" for="timeline-range" data-date-preview hidden>
-      {dateLabel(newest.date)}
-    </output>
-  </div>
 </section>

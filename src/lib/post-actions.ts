@@ -1,12 +1,15 @@
 /**
  * Purpose: Working social actions shared by feed cards and post permalinks.
- * Scope: Local Save, canonical Copy link, shared reactions, and failure feedback without fake totals.
- * Constraints: Only a successful server vote marks a reaction; unavailable storage never fabricates persistence.
+ * Scope: Local Save, canonical Copy, independent shared reactions, removal, and honest failure feedback.
+ * Constraints: Only server-confirmed votes affect totals; existing heart identities remain compatible.
  * Does NOT belong: Notice timing, API validation, or backend rate limiting.
  */
 import { loadReactionCounts, submitReaction } from './reaction-api';
+import { reactionKey } from './reaction-keys';
+import { fillActionRows } from './action-template';
+import type { ReactionKind } from '../data/reactions';
+import { migrateSavedMoments } from './saved-moments';
 import { readItem, safeStorage, writeItem, type StorageLike } from './storage';
-
 interface ActionWindow {
   localStorage: Storage;
   location: Pick<Location, 'origin'>;
@@ -20,40 +23,47 @@ function visitorIdentity(storage: StorageLike | null, randomId: () => string): s
   const id = randomId();
   return writeItem(storage, 'daysforth.visitor', id) ? id : null;
 }
-
+function buttonKey(row: HTMLElement, button: HTMLButtonElement) {
+  return reactionKey(
+    row.dataset['postActions']!,
+    (button.dataset['react'] || 'heart') as ReactionKind,
+  );
+}
 export function initPostActions(
   doc: Document,
   win: ActionWindow,
   endpoint: string,
   announce: (message: string) => void,
 ) {
+  fillActionRows(doc);
   const storage = safeStorage(win);
+  migrateSavedMoments(storage);
   const rows = Array.from(doc.querySelectorAll<HTMLElement>('[data-post-actions]'));
+  const changed = new Set<string>();
   const identity = () => visitorIdentity(storage, () => win.crypto.randomUUID());
   for (const row of rows) {
     const id = row.dataset['postActions']!;
     const saved = readItem(storage, `daysforth.saved.${id}`) === 'true';
     row.querySelector('[data-save]')!.setAttribute('aria-pressed', String(saved));
     row.querySelector('[data-save-label]')!.textContent = saved ? 'Saved' : 'Save';
-    row
-      .querySelector('[data-react]')!
-      .setAttribute(
+    for (const button of row.querySelectorAll<HTMLButtonElement>('[data-react]'))
+      button.setAttribute(
         'aria-pressed',
-        String(readItem(storage, `daysforth.reacted.${id}`) === 'true'),
+        String(readItem(storage, `daysforth.reacted.${buttonKey(row, button)}`) === 'true'),
       );
   }
-  const updateCounts = (counts: Record<string, number>) => {
+  const updateCounts = (counts: Record<string, number>, initial = false) => {
     for (const row of rows) {
-      const count = counts[row.dataset['postActions']!];
-      if (count !== undefined) {
-        const label = row.querySelector('[data-reaction-count]')!;
-        label.textContent = String(Math.max(count, Number(label.textContent) || 0));
-        row
-          .querySelector('[data-react]')!
-          .setAttribute(
+      for (const button of row.querySelectorAll<HTMLButtonElement>('[data-react]')) {
+        const key = buttonKey(row, button);
+        const count = counts[key];
+        if (count !== undefined && !(initial && changed.has(key))) {
+          button.querySelector('[data-reaction-count]')!.textContent = String(count);
+          button.setAttribute(
             'aria-label',
-            `React to ${row.dataset['postTitle']!}. Reactions: ${label.textContent}.`,
+            `${button.dataset['reactionLabel'] ?? 'React to'} ${row.dataset['postTitle']!}. Reactions: ${count}.`,
           );
+        }
       }
     }
   };
@@ -71,6 +81,7 @@ export function initPostActions(
       }
       button.setAttribute('aria-pressed', String(saved));
       button.querySelector('[data-save-label]')!.textContent = saved ? 'Saved' : 'Save';
+      doc.dispatchEvent(new CustomEvent('daysforth:saved'));
       announce(saved ? 'Saved in this browser.' : 'Removed from saved moments.');
     }
     if (button.hasAttribute('data-copy')) {
@@ -88,22 +99,21 @@ export function initPostActions(
         announce('Reactions are unavailable right now. Please try again later.');
         return;
       }
-      if (button.getAttribute('aria-pressed') === 'true') {
-        announce('You’ve already reacted to this moment.');
-        return;
-      }
       const visitorId = identity();
       if (!visitorId) {
         announce('Reactions need browser storage to prevent duplicate votes.');
         return;
       }
+      const remove = button.getAttribute('aria-pressed') === 'true';
+      const key = buttonKey(row, button);
       button.disabled = true;
       try {
-        const count = await submitReaction(endpoint, id, visitorId, win.fetch);
-        updateCounts({ [id]: count });
-        button.setAttribute('aria-pressed', 'true');
-        writeItem(storage, `daysforth.reacted.${id}`, 'true');
-        announce('Reaction added.');
+        const count = await submitReaction(endpoint, key, visitorId, win.fetch, remove);
+        changed.add(key);
+        updateCounts({ [key]: count });
+        button.setAttribute('aria-pressed', String(!remove));
+        writeItem(storage, `daysforth.reacted.${key}`, String(!remove));
+        announce(remove ? 'Reaction removed.' : 'Reaction added.');
       } catch {
         announce('Your reaction couldn’t be saved. Please try again.');
       } finally {
@@ -114,12 +124,11 @@ export function initPostActions(
   doc.addEventListener('click', onClick);
   if (endpoint && rows.length > 0) {
     void loadReactionCounts(endpoint, win.fetch)
-      .then(updateCounts)
+      .then((counts) => updateCounts(counts, true))
       .catch(() => {
         for (const row of rows)
-          row
-            .querySelector('[data-react]')!
-            .setAttribute('title', 'Reactions temporarily unavailable');
+          for (const button of row.querySelectorAll('[data-react]'))
+            button.setAttribute('title', 'Reactions temporarily unavailable');
       });
   }
   return () => doc.removeEventListener('click', onClick);

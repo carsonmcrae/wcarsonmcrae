@@ -1,0 +1,34 @@
+---
+/**
+ * Purpose: Ship the optional social controls once per page, keeping long timelines lightweight.
+ * Scope: Shared native reaction, Save, and Copy markup hydrated with each post’s own labels.
+ * Does NOT belong: Storage, network requests, or post-specific content.
+ */
+import Icon from './Icon.astro';
+import { reactions } from '../data/reactions';
+---
+
+<template id="post-action-template">
+  <div class="reaction-options" role="group">
+    {reactions.map((reaction) => (
+      <button
+        type="button"
+        data-react={reaction.id}
+        data-reaction-label={reaction.action}
+        aria-pressed="false"
+        title={reaction.label}
+      >
+        <Icon name={reaction.icon} />
+        <span data-reaction-count>—</span>
+      </button>
+    ))}
+  </div>
+  <button type="button" data-save aria-pressed="false">
+    <Icon name="bookmark" />
+    <span data-save-label>Save</span>
+  </button>
+  <button type="button" data-copy>
+    <Icon name="link" />
+    <span>Copy link</span>
+  </button>
+</template>

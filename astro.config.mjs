@@ -11,6 +11,7 @@ import sitemap from '@astrojs/sitemap';
 import { resolveDeployConfig } from './src/lib/deploy-config.ts';
 import { reactionOrigin } from './src/lib/reaction-api.ts';
 import { readFileSync } from 'node:fs';
+import { postAliases } from './src/data/post-aliases.ts';
 
 const { site, base } = resolveDeployConfig(process.env);
 
@@ -38,7 +39,9 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !/\/404\/?$/.test(page),
+      filter: (page) =>
+        !/\/404\/?$/.test(page) &&
+        !Object.keys(postAliases).some((id) => page.endsWith(`/posts/${id}/`)),
     }),
   ],
   security: {

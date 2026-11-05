@@ -8,7 +8,8 @@ domain. The source remains in `carsonmcrae/wcarsonmcrae`.
 
 The [approved images](wireframes/approved/README.md) are the visual reference. The centered profile
 and pins share the same center as the main feed. Timeline and Posts reuse the same card elements,
-so switching mode preserves their action state. Category selection always retains milestones.
+so switching mode preserves their action state. Ordinary categories retain milestones; Milestones
+and Saved are dedicated focused collections.
 
 The date menu combines month/year navigation with Years, Quarters, and Months detail. Coarser views
 group posts into expandable periods. The overview slider continuously previews months and jumps
@@ -16,22 +17,24 @@ when its value is committed. The three permanent overview labels belong only to 
 Scrolling the feed updates the displayed date. View, category, detail, and selected date are encoded
 in the URL; Back/Forward restores them.
 
-Every moment has its own `/posts/<id>/` page, true date precision, neighboring moments, and a link
+Every moment has its own `/posts/<id>/` page, true date precision, neighboring moments, albums, and a link
 back to its place in the full timeline. Without JavaScript the home page is a complete list grouped
 by year. Secondary pages retain Carson’s approved personal-site content in the Daysforth shell.
 
 ## Content
 
-All 17 moments have confirmed months. The three pins are November 1999, May 2022, and October 2026.
+All 24 moments have confirmed months. The three pins are November 1999, May 2022, and October 2026.
 Carson supplied the remaining months on November 4: PC build December 2015, Vanderbilt August 2018,
 InfoWorks June 2021, Booz Allen September 2022, Margot July 2022, and Quinn July 2023.
 
 The more precise app-history dates and the Minetrocity date follow the earlier owner handoff.
 Southern Surface Company stays off the site. A month-only event is never assigned a fictional day.
 
-The 17 incoming original photographs were backed up outside the checkout and verified with SHA-256
+The 39 incoming original photographs were backed up outside the checkout and verified with SHA-256
 before pulling. `photos-incoming/` remains ignored and unchanged. Approved, metadata-stripped copies
 already existed in `src/assets/photos/`; a separate square crop supplies the profile portrait.
+The [profile update](PROFILE-UPDATE.md) records the added stories, confirmed dates, galleries,
+app interface captures, and accessible compatibility redirects for retired app-start events.
 
 ## Brand kit
 
@@ -52,7 +55,9 @@ The browser font comes from pinned `@fontsource-variable/inter`. Font and icon l
 
 ## Reactions and local actions
 
-Save and theme preferences stay in browser storage. Copy link uses the published address. Shared
+Save and theme preferences stay in browser storage; the Saved filter retrieves saved moments.
+Copy link uses the published address. Love, Celebrate, Smile, and Applaud are independently
+toggleable shared reactions. Shared
 reaction totals use the [small Worker](../workers/reactions/README.md); the static site stays on
 GitHub Pages. An unset or unreachable service shows an unknown total, never an invented count.
 Save and Copy continue working while a reaction read is pending or fails.
@@ -64,9 +69,8 @@ identifiers, prevents duplicate votes in SQL, and rate-limits new reactions. It 
 ## Release
 
 Run `npm run validate:full`, then follow [DEPLOYMENT.md](DEPLOYMENT.md). Carson explicitly authorized
-the agent to perform this release, including merges, GitHub Pages, Cloudflare, and domain settings,
-on November 4, 2026. This authorization overrides the owner-only rule for this release; it does not
-change the repository's standing rules for future work.
+the initial launch, including merges, GitHub Pages, Cloudflare, and domain settings, on November 4, 2026. The current repository instructions reserve subsequent merges and deployment for Carson.
+For the profile update, deploy the updated reactions Worker before publishing the frontend.
 
 Automated accessibility results do not replace the required NVDA and VoiceOver evaluation. Record
 the actual browser/platform findings in `design-qa.md` and the release review.

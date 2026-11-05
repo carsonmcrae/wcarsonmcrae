@@ -28,7 +28,14 @@ and wireframe experiments are historical. Preserve the approved composition when
 - The blue thumb supports dragging and keyboard input. Do not add “Drag to explore” hint text.
 - Keep Timeline and Posts visible. Consolidate categories into one menu and date navigation plus
   date detail into a second. Keep native, labeled forms inside those menus.
-- Years and quarters can collapse groups. Milestones remain visible through category filtering.
+- Years and quarters can collapse groups. Ordinary categories retain milestones; Milestones shows
+  only milestones and Saved shows only browser-local bookmarks.
+- Keep the date rail with the sticky browsing controls. Unstick them on short or heavily enlarged
+  viewports so content remains usable.
+- All covers open the matching post, with an expand icon and a photo count for albums. Preserve
+  full subjects and use distinct album photos. Actual app interfaces carry their approved app icons.
+- Post pages have a proportional date slider; keyboard arrows traverse actual events sharing a month.
+  Earlier goes left and Newer goes right.
 - Separate post metadata, title, caption, and actions with deliberate spacing. Both presentations
   share content and actions without duplicating state.
 - URL state supports refresh and Back/Forward. Every moment has a permanent, shareable page.

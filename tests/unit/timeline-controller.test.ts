@@ -20,6 +20,41 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe('timeline interaction', () => {
+  it('filters live saved state, handles an empty collection, and refreshes after a bookmark changes', () => {
+    const { controller, change, history } = setup();
+    const born = document.querySelector<HTMLElement>('#moment-born')!;
+    const save = document.createElement('button');
+    save.dataset['save'] = '';
+    save.setAttribute('aria-pressed', 'true');
+    born.append(save);
+    document.dispatchEvent(new CustomEvent('daysforth:saved'));
+    expect(document.querySelectorAll('[data-moment]')).toHaveLength(24);
+    change('category', 'Saved');
+    expect(document.querySelectorAll('[data-moment]')).toHaveLength(1);
+    expect(document.querySelector('[data-timeline-status]')!.textContent).toBe(
+      '1 moment. Timeline view. Saved.',
+    );
+    save.setAttribute('aria-pressed', 'false');
+    document.dispatchEvent(new CustomEvent('daysforth:saved'));
+    expect(document.querySelectorAll('[data-moment]')).toHaveLength(0);
+    expect(document.querySelector('[data-timeline-empty]')!.textContent).toBe(
+      'No saved moments in this browser yet.',
+    );
+    controller.goToDate('2020-01');
+    expect(document.activeElement).toBe(document.querySelector('[data-timeline-empty]'));
+    const calls = history.pushState.mock.calls.length;
+    controller.goToDate('2021-01', false, 'none');
+    expect(history.pushState).toHaveBeenCalledTimes(calls);
+    controller.goToDate('2022-01', false, 'replace');
+    expect(history.replaceState).toHaveBeenCalled();
+    save.setAttribute('aria-pressed', 'true');
+    document.dispatchEvent(new CustomEvent('daysforth:saved'));
+    expect(document.querySelectorAll('[data-moment]')).toHaveLength(1);
+    controller.destroy();
+    save.setAttribute('aria-pressed', 'false');
+    document.dispatchEvent(new CustomEvent('daysforth:saved'));
+    expect(document.querySelectorAll('[data-moment]')).toHaveLength(1);
+  });
   it('leaves unrelated pages alone and progressively groups the full feed by month', () => {
     expect(initTimeline(document, window)).toBeNull();
     const { controller } = setup();
@@ -29,8 +64,8 @@ describe('timeline interaction', () => {
       detail: 'months',
       date: '2026-11',
     });
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(17);
-    expect(document.querySelector('[data-timeline-status]')!.textContent).toContain('17 moments');
+    expect(document.querySelectorAll('[data-moment]')).toHaveLength(24);
+    expect(document.querySelector('[data-timeline-status]')!.textContent).toContain('24 moments');
     expect(
       document.querySelector('[data-period="2026-10"]')!.querySelectorAll('article'),
     ).toHaveLength(3);
@@ -59,7 +94,7 @@ describe('timeline interaction', () => {
   it('filters categories, retains milestones, and exposes the requested month’s empty state', () => {
     const { controller, change } = setup();
     change('category', 'Work');
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(5);
+    expect(document.querySelectorAll('[data-moment]')).toHaveLength(9);
     expect(document.querySelector('#moment-born')).not.toBeNull();
     expect(document.querySelector('[data-category-label]')!.textContent).toBe('Work');
     expect(document.querySelector('[data-timeline-empty]')!.textContent).toContain(
@@ -70,7 +105,7 @@ describe('timeline interaction', () => {
     expect(controller.getState().date).toBe('2026-10');
     expect(document.querySelector<HTMLElement>('[data-timeline-empty]')!.hidden).toBe(true);
     change('category', 'All');
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(17);
+    expect(document.querySelectorAll('[data-moment]')).toHaveLength(24);
   });
   it('opens a date’s period cluster and keeps native disclosure summaries usable', () => {
     const { controller, change } = setup();
@@ -80,7 +115,7 @@ describe('timeline interaction', () => {
     );
     const cluster = document.querySelector<HTMLDetailsElement>('[data-period="2026"] details')!;
     expect(cluster.open).toBe(true);
-    expect(cluster.querySelector('summary')!.textContent).toContain('8 moments');
+    expect(cluster.querySelector('summary')!.textContent).toContain('7 moments');
     cluster.open = false;
     controller.goToDate('2026-10');
     expect(cluster.open).toBe(true);

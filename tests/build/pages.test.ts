@@ -9,6 +9,7 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { BASE, htmlPages, parse, resolveInternal, SITE, urlPathFor } from './dist';
+import { postAliases } from '../../src/data/post-aliases';
 
 const pages = htmlPages.map((file) => ({ file, document: parse(file) }));
 const meta = (document: Document, key: string) =>
@@ -33,6 +34,7 @@ describe('the build', () => {
 
 describe.each(pages)('$file', ({ file, document }) => {
   const isErrorPage = file === '404.html';
+  const alias = postAliases[file.split('/')[1] ?? ''];
 
   it('has a unique title, a useful description, and English as its language', () => {
     expect(document.documentElement.getAttribute('lang')).toBe('en');
@@ -46,16 +48,21 @@ describe.each(pages)('$file', ({ file, document }) => {
 
   it('points canonical and social tags at the published address', () => {
     const canonical = document.querySelector('link[rel="canonical"]')?.getAttribute('href');
-    const expected = `${SITE}${urlPathFor(file)}`;
+    const expected = alias ? `${SITE}${BASE}posts/${alias}/` : `${SITE}${urlPathFor(file)}`;
     expect(canonical).toBe(expected);
     expect(meta(document, 'og:url')).toBe(canonical);
     expect(meta(document, 'og:image')).toBe(`${SITE}${BASE}og-image.png`);
     expect(meta(document, 'twitter:card')).toBe('summary_large_image');
     expect(meta(document, 'og:image:alt').length).toBeGreaterThan(10);
+    const refresh = document.querySelector('meta[http-equiv="refresh"]');
+    if (alias) {
+      expect(refresh?.getAttribute('content')).toBe(`0;url=${expected}`);
+      expect(document.querySelector(`main a[href="${expected}"]`)).not.toBeNull();
+    } else expect(refresh).toBeNull();
   });
 
-  it('keeps search engines away from the error page only', () => {
-    expect(meta(document, 'robots').includes('noindex')).toBe(isErrorPage);
+  it('keeps search engines away from errors and consolidated event URLs', () => {
+    expect(meta(document, 'robots').includes('noindex')).toBe(isErrorPage || Boolean(alias));
   });
 
   it('allows zoom and ships a strict Content-Security-Policy', () => {
@@ -111,7 +118,7 @@ describe.each(pages)('$file', ({ file, document }) => {
 
   it('only links to internal files that exist and external sites over https', () => {
     const urls = [
-      ...Array.from(document.querySelectorAll('a[href], link[href]'), (element) =>
+      ...Array.from(document.querySelectorAll('a[href], link[href], use[href]'), (element) =>
         element.getAttribute('href')!,
       ),
       ...Array.from(document.querySelectorAll('script[src], img[src]'), (element) =>

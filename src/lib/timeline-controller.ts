@@ -58,7 +58,8 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
       '[name="category"], [name="detail"]',
     ))
       input.checked = input.value === state[input.name as 'category' | 'detail'];
-    empty.hidden = true;
+    empty.hidden = visible.length > 0;
+    if (!empty.hidden) empty.textContent = 'No saved moments in this browser yet.';
     syncDate();
     observer?.disconnect();
     if (win.IntersectionObserver) {
@@ -72,11 +73,11 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
             }
           }
         },
-        { rootMargin: '-18% 0px -65% 0px' },
+        { rootMargin: '-35% 0px -60% 0px' },
       );
       for (const group of container.children) observer.observe(group);
     }
-    status.textContent = `${visible.length} moments. ${state.view === 'timeline' ? 'Timeline' : 'Posts'} view. ${state.category === 'All' ? 'All categories' : state.category}.`;
+    status.textContent = `${visible.length} ${visible.length === 1 ? 'moment' : 'moments'}. ${state.view === 'timeline' ? 'Timeline' : 'Posts'} view. ${state.category === 'All' ? 'All categories' : state.category}.`;
   };
   const closeMenus = () => {
     for (const menu of root.querySelectorAll<HTMLDetailsElement>('[data-timeline-menu]'))
@@ -88,6 +89,13 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
     historyMode: 'push' | 'replace' | 'none' = 'push',
   ) => {
     state.date = date.slice(0, 7);
+    if (visible.length === 0) {
+      syncDate();
+      if (historyMode !== 'none') saveUrl(historyMode === 'push');
+      closeMenus();
+      if (focus) empty.focus();
+      return;
+    }
     const exact = visible.filter((card) => card.date.startsWith(state.date));
     empty.hidden = exact.length > 0;
     let destination: HTMLElement;
@@ -164,6 +172,12 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
     render();
     goToDate(state.date, false, 'none');
   };
+  const onSaved = () => {
+    if (state.category === 'Saved') {
+      render();
+      doc.querySelector<HTMLElement>('[data-category-label]')!.closest('summary')!.focus();
+    }
+  };
   render();
   doc.addEventListener('click', onClick);
   root.addEventListener('change', onChange);
@@ -171,6 +185,7 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
   slider.addEventListener('input', onInput);
   form.addEventListener('submit', onSubmit);
   win.addEventListener('popstate', onPopState);
+  doc.addEventListener('daysforth:saved', onSaved);
   if (new URLSearchParams(win.location.search).has('date')) goToDate(state.date, false, 'replace');
   return {
     getState: () => ({ ...state }),
@@ -183,6 +198,7 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
       slider.removeEventListener('input', onInput);
       form.removeEventListener('submit', onSubmit);
       win.removeEventListener('popstate', onPopState);
+      doc.removeEventListener('daysforth:saved', onSaved);
     },
   };
 }

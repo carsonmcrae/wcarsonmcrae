@@ -27,6 +27,7 @@ const trackedPages = Object.keys(pages).join(',');
 <html lang={site.language} id="top">
   <head>
     <SiteHead page={page} noindex={noindex} includePerson={page.id === 'home'} />
+    <slot name="head" />
   </head>
   <body data-page-id={page.id} data-all-pages={trackedPages}>
     <a class="skip-link" href="#main" tabindex="0">

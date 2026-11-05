@@ -10,6 +10,7 @@ export interface LinkItem {
   href: string;
   /** Optional short description shown next to the link. */
   description?: string;
+  icon?: string;
 }
 
 type SocialId = 'github' | 'linkedin' | 'portfolio' | 'email';
@@ -40,6 +41,7 @@ type ProjectStatus =
 
 export interface Project {
   id: string;
+  postId: string;
   name: string;
   /** Key of an app icon in src/assets/projects/ (filename without extension). */
   icon: string;
@@ -86,6 +88,7 @@ export interface Interest {
 
 export interface Dog {
   name: string;
+  postId: string;
   breed: string;
   coat: string;
   title: string;

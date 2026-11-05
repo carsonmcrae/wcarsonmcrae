@@ -45,7 +45,16 @@ describe('findImage', () => {
 
 describe('bundled image lookups', () => {
   it('finds every project icon', () => {
-    for (const name of ['ttsnative', 'recalen', 'picpledge']) {
+    for (const name of [
+      'ttsnative',
+      'recalen',
+      'picpledge',
+      'daysforth',
+      'ttsnative-interface',
+      'recalen-interface',
+      'picpledge-interface',
+      'daysforth-interface',
+    ]) {
       expect(getProjectImage(name), name).toBeDefined();
       expect(availableProjectImages()).toContain(name);
     }

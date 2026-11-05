@@ -9,6 +9,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { BASE, DIST, files, htmlPages, SITE, urlPathFor } from './dist';
+import { postAliases } from '../../src/data/post-aliases';
 
 const read = (file: string) => readFileSync(join(DIST, file), 'utf8');
 
@@ -16,10 +17,13 @@ describe('site files', () => {
   it('lists every public page in the sitemap at the published address', () => {
     expect(read('sitemap-index.xml')).toContain(`${SITE}${BASE}sitemap-0.xml`);
     const sitemap = read('sitemap-0.xml');
-    for (const page of htmlPages.filter((file) => file !== '404.html')) {
+    for (const page of htmlPages.filter(
+      (file) => file !== '404.html' && !postAliases[file.split('/')[1] ?? ''],
+    )) {
       expect(sitemap, page).toContain(`<loc>${SITE}${urlPathFor(page)}</loc>`);
     }
     expect(sitemap).not.toContain('404');
+    for (const alias of Object.keys(postAliases)) expect(sitemap).not.toContain(`/posts/${alias}/`);
   });
 
   it('points robots.txt at the sitemap', () => {
