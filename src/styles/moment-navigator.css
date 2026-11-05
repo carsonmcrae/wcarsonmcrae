@@ -1,0 +1,115 @@
+/**
+ * Purpose: Keep a compact desktop moment rail and readable previews in the feed's outer gutter.
+ * Scope: A 44px rail target, passive active ticks, scrollable preview links, and theme/reflow safety.
+ * Does NOT belong: Feed geometry, event content, or navigation behavior.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+.moment-navigator {
+  position: fixed;
+  top: 50dvh;
+  right: max(0.5rem, env(safe-area-inset-right));
+  z-index: 12;
+  transform: translateY(-50%);
+}
+.moment-navigator::before {
+  content: '';
+  position: absolute;
+  inset: 0 100% 0 auto;
+  width: 0.5rem;
+}
+.moment-navigator > button {
+  display: block;
+  width: 44px;
+  min-width: 44px;
+  height: min(40dvh, 18rem);
+  min-height: 44px;
+  padding: 0.6rem 0.5rem;
+  border: 0;
+  border-radius: 12px;
+  background: var(--bg);
+}
+.moment-navigator__ticks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  pointer-events: none;
+}
+.moment-navigator__ticks > span {
+  width: 0.4rem;
+  height: 2px;
+  background: var(--muted);
+}
+.moment-navigator__ticks > [data-active='true'] {
+  width: 1rem;
+  height: 3px;
+  background: var(--link);
+}
+.moment-navigator__ticks > [data-preview='true'] {
+  width: 1rem;
+  outline: 1px solid var(--text);
+  outline-offset: 2px;
+}
+.moment-navigator__panel {
+  position: absolute;
+  right: calc(100% + 0.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(22rem, calc(100vw - 5rem));
+  max-height: 60dvh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 4px 20px #09101d1a;
+}
+.moment-navigator__panel > p {
+  padding: 0.5rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.moment-navigator__panel li + li {
+  margin: 0;
+}
+.moment-navigator__panel a {
+  display: grid;
+  gap: 0.2rem;
+  min-height: 44px;
+  padding: 0.6rem;
+  border-left: 3px solid transparent;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+.moment-navigator__panel a:visited {
+  color: var(--text);
+}
+.moment-navigator__panel a[aria-current='true'] {
+  border-color: var(--link);
+  background: var(--selected);
+}
+.moment-navigator__panel a[data-preview='true'] {
+  outline: 1px solid var(--control);
+  outline-offset: -1px;
+  background: var(--wash);
+}
+.moment-navigator__panel a > span {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+@media (max-width: 69.99rem) {
+  .moment-navigator {
+    display: none;
+  }
+}
+@media (hover: hover) {
+  .moment-navigator__panel a:hover {
+    background: var(--wash);
+  }
+}

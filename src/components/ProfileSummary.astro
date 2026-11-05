@@ -22,10 +22,15 @@ import Icon from './Icon.astro';
   />
   <div class="profile-summary__identity">
     <h1 id="profile-name">{profile.fullName}</h1>
-    <p class="profile-summary__handle">
-      @{timelineProfile.handle}
-      <span class="profile-summary__location"> · {profile.location}</span>
-    </p>
+    <div class="profile-summary__details">
+      <span class="profile-summary__handle profile-chip">
+        <Icon name="about" />@{timelineProfile.handle}
+      </span>
+      <span class="profile-summary__location profile-chip">
+        <Icon name="location" />
+        {profile.location}
+      </span>
+    </div>
     <p class="profile-summary__headline">{profile.headline}</p>
     <div class="profile-summary__bio">
       <p>{timelineProfile.bio}</p>

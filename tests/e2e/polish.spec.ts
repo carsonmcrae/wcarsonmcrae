@@ -74,7 +74,7 @@ test('photos enlarge everywhere and keyboard dismissal restores the trigger', as
     ['', '.profile-summary [data-photo]'],
     ['', '.pinned-moments [data-photo]'],
     ['posts/watch-collecting/', '.post-album [data-photo]'],
-    ['life/', '.photo-gallery [data-photo]'],
+    ['life/', '.photo-gallery [data-photo]:visible'],
   ]) {
     await page.goto(path!);
     const photo = page.locator(selector!).first();
@@ -102,6 +102,7 @@ test('sticky slider keeps empty-date guidance until chosen and shortcuts reach b
   await expect(nearest).toBeAttached();
   await nearest.click();
   await expect(page.locator('[data-timeline-empty]')).toBeHidden();
+  await page.keyboard.press('PageDown');
   await page.getByRole('button', { name: 'Bottom of timeline, oldest moment' }).click();
   await expect(page.locator('#moment-born')).toBeInViewport();
   await page.getByRole('button', { name: 'Top of timeline, newest moment' }).click();

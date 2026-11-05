@@ -10,7 +10,7 @@ import Markdown from '../components/Markdown.astro';
 import SecondaryHero from '../components/SecondaryHero.astro';
 import Section from '../components/Section.astro';
 import Photo from '../components/Photo.astro';
-import PhotoGallery from '../components/PhotoGallery.astro';
+import AlbumPreview from '../components/AlbumPreview.astro';
 import { carsonGallery } from '../data/photo-gallery';
 import { about, principles, quickFacts, timeline } from '../data/career';
 import { profile } from '../data/profile';
@@ -27,9 +27,6 @@ import '../styles/secondary.css';
       ))}
       <Photo slot="media" name="carson-solo" alt={profile.name} />
     </SecondaryHero>
-    <Section title={carsonGallery.title} id="photos" wide>
-      <PhotoGallery photos={carsonGallery.photos} />
-    </Section>
     <Section title="How I got here" id="timeline" wide>
       <ol role="list" class="story-timeline">
         {timeline.map((entry) => (
@@ -70,6 +67,9 @@ import '../styles/secondary.css';
         ))}
       </dl>
       <Markdown text="Next: [my work](/work/), or [life outside it](/life/)." class="page-note" />
+    </Section>
+    <Section title={carsonGallery.title} id="photos" wide>
+      <AlbumPreview id="carson-photos" photos={carsonGallery.photos} label="View Carson’s photos" />
     </Section>
   </div>
 </BaseLayout>

@@ -41,12 +41,29 @@ and wireframe experiments are historical. Preserve the approved composition when
   viewports so content remains usable.
 - All covers open the matching post, with an expand icon and a photo count for albums. Preserve
   full subjects and use distinct album photos. Actual app interfaces carry their approved app icons.
+- Corner controls follow the actual photo edge and slightly overlap it. Keep their visual badges
+  small and interactive targets usable; reveal on event hover, keyboard focus, or deliberate touch.
+  Titles and actions retain their ordinary first-click behavior.
+- Newest/oldest shortcuts stay hidden above the story. Show them only after meaningful scrolling
+  into the timeline and suppress a direction when that end is already reached.
+- Work, Projects, and Life use matching icon/color chips in metadata and category choices. Labels
+  carry the meaning independently of color. Profile identity and standalone destinations use quiet
+  outlined chips, including on mobile.
 - Post pages have a proportional date slider; keyboard arrows traverse actual events sharing a month.
   Earlier goes left and Newer goes right.
 - Separate post metadata, title, caption, and actions with deliberate spacing. Both presentations
   share content and actions without duplicating state.
 - URL state supports refresh and Back/Forward. Every moment has a permanent, shareable page.
 - Without JavaScript, show a chronological, year-grouped story with ordinary permalink navigation.
+
+## Personal albums
+
+Life’s dog cards lead into their respective photo albums. Keep the existing primary portrait and
+breed details. About’s additional-photo preview follows Quick facts, with its main portrait retained
+in the introduction. Compact previews identify an album; do not repeat a long caption and link
+block under each thumbnail. The opened viewer provides the larger image, caption, album position,
+previous/next controls, arrow-key and swipe navigation, and a clearly labelled related moment when
+one exists. Do not autoplay. Closing returns to the trigger without moving the background.
 
 ## Restraint and accessibility
 

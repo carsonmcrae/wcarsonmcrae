@@ -16,12 +16,13 @@ import PostLocation from '../../components/PostLocation.astro';
 import Icon from '../../components/Icon.astro';
 import PostMeta from '../../components/PostMeta.astro';
 import PostAlbum from '../../components/PostAlbum.astro';
+import DestinationLink from '../../components/DestinationLink.astro';
 import { profile } from '../../data/profile';
 import { timelinePosts, type TimelinePost } from '../../data/timeline';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { postMedia } from '../../lib/post-media';
 import { chronological } from '../../lib/timeline-model';
-import { withBase, isExternalUrl } from '../../lib/paths';
+import { withBase } from '../../lib/paths';
 import '../../styles/timeline.css';
 import '../../styles/post-detail.css';
 import '../../styles/post-media.css';
@@ -76,17 +77,7 @@ const page = {
       <ul class="post-detail__links" role="list">
         {post.links.map((link) => (
           <li>
-            <a
-              class="destination-link"
-              href={isExternalUrl(link.href) ? link.href : withBase(link.href)}
-              target={isExternalUrl(link.href) ? '_blank' : undefined}
-              rel={isExternalUrl(link.href) ? 'noopener noreferrer' : undefined}
-            >
-              {link.label}
-              {isExternalUrl(link.href) && (
-                <span class="visually-hidden"> (external site, opens in a new tab)</span>
-              )}
-            </a>
+            <DestinationLink href={link.href} label={link.label} />
           </li>
         ))}
       </ul>

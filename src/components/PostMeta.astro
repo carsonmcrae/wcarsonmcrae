@@ -1,7 +1,7 @@
 ---
 /**
  * Purpose: Consistent author, date, category, and milestone metadata on posts.
- * Scope: Explicit visual separators, confirmed date ranges, and an accessible milestone chip.
+ * Scope: Compact category chips, explicit separators, confirmed dates, and milestone metadata.
  * Does NOT belong: Post copy, sorting, or navigation.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -9,6 +9,7 @@
 import { profile } from '../data/profile';
 import type { TimelinePost } from '../data/timeline';
 import { dateLabel, fullDateLabel } from '../lib/timeline-dates';
+import CategoryLabel from './CategoryLabel.astro';
 interface Props {
   post: TimelinePost;
   detail?: boolean;
@@ -18,10 +19,8 @@ const label = detail ? fullDateLabel : dateLabel;
 ---
 
 <p class="post-meta">
-  <span>{profile.name}</span>
-  <span class="post-meta__dot" aria-hidden="true">
-    ·
-  </span>
+  {profile.name}
+  <i aria-hidden="true">·</i>
   <span>
     <time datetime={post.date}>{label(post.date)}</time>
     {post.endDate && (
@@ -31,15 +30,11 @@ const label = detail ? fullDateLabel : dateLabel;
       </>
     )}
   </span>
-  <span class="post-meta__dot" aria-hidden="true">
-    ·
-  </span>
-  <span>{post.category}</span>
+  <i aria-hidden="true">·</i>
+  <CategoryLabel category={post.category} />
   {post.milestone && (
     <>
-      <span class="post-meta__dot" aria-hidden="true">
-        ·
-      </span>
+      <i aria-hidden="true">·</i>
       <span class="milestone-label">Milestone</span>
     </>
   )}

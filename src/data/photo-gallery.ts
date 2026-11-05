@@ -52,6 +52,7 @@ export const dogGalleries = [
     id: 'margot-gallery',
     title: 'More of Margot',
     photos: [
+      margotPhotos[0]!,
       margotPhotos[1]!,
       ...galleryPhotos({
         gardenSwing: [
@@ -91,6 +92,7 @@ export const dogGalleries = [
     id: 'quinn-gallery',
     title: 'More of Quinn',
     photos: [
+      quinnPhotos[0]!,
       quinnPhotos[1]!,
       ...galleryPhotos({
         bed: [

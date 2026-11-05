@@ -11,13 +11,15 @@
 import type { Dog } from '../data/types';
 import Markdown from './Markdown.astro';
 import Photo from './Photo.astro';
-import { withBase } from '../lib/paths';
+import AlbumPreview from './AlbumPreview.astro';
+import type { GalleryPhoto } from '../data/photo-gallery';
 
 interface Props {
   dog: Dog;
+  album: { id: string; photos: GalleryPhoto[] };
 }
 
-const { dog } = Astro.props;
+const { dog, album } = Astro.props;
 ---
 
 <article class="dog" aria-labelledby={`dog-${dog.swatch}`}>
@@ -25,10 +27,13 @@ const { dog } = Astro.props;
     <span class:list={['swatch', `swatch--${dog.swatch}`]} aria-hidden="true"></span>
     {dog.name}
   </h3>
-  <Photo name={dog.photo} alt={dog.photoAlt} postId={dog.postId} />
-  <a class="destination-link" href={withBase(`/posts/${dog.postId}/`)}>
-    Meet {dog.name}
-  </a>
+  <Photo
+    name={dog.photo}
+    alt={album.photos[0]!.alt}
+    postId={dog.postId}
+    album={album.id}
+    viewerCaption={album.photos[0]!.caption}
+  />
   <dl>
     <dt>Breed</dt>
     <dd>{dog.breed}</dd>
@@ -38,6 +43,7 @@ const { dog } = Astro.props;
     <dd>{dog.title}</dd>
   </dl>
   <Markdown text={dog.detail} />
+  <AlbumPreview id={album.id} photos={album.photos} label={`View ${dog.name}’s photos`} skipCover />
 </article>
 
 <style>

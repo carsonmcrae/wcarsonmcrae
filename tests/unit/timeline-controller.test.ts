@@ -22,6 +22,39 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe('timeline interaction', () => {
+  it('delegates exact same-month card jumps without adding another history owner', () => {
+    const { controller, history, change, scrolling } = setup();
+    change('detail', 'years');
+    const target = document.querySelector<HTMLElement>('[data-moment="married-nicole"]')!;
+    const link = document.createElement('a');
+    link.dataset['jumpDate'] = target.dataset['date'];
+    link.dataset['jumpMoment'] = 'married-nicole';
+    document.body.append(link);
+    const before = history.pushState.mock.calls.length;
+    link.click();
+    expect(document.activeElement).toBe(target.querySelector('h3 a'));
+    expect(scrolling.mock.instances.at(-1)).toBe(target);
+    expect(target.closest('details')!.open).toBe(true);
+    expect(history.pushState).toHaveBeenCalledTimes(before + 1);
+    expect(controller.getState().date).toBe('2026-10');
+  });
+  it('restores and updates the selected category glyph from the rendered option, preserving its base path', () => {
+    const { change, setUrl, events } = setup('?category=Work');
+    const selected = document.querySelector('[data-category-icon] use')!;
+    expect(selected.getAttribute('href')).toBe('/icons.svg#icon-work');
+    change('category', 'Projects');
+    expect(selected.getAttribute('href')).toBe('/icons.svg#icon-portfolio');
+    const life = document
+      .querySelector('[name="category"][value="Life"]')!
+      .closest('label')!
+      .querySelector('use')!;
+    life.setAttribute('href', '/wcarsonmcrae/icons.svg#icon-life');
+    change('category', 'Life');
+    expect(selected.getAttribute('href')).toBe('/wcarsonmcrae/icons.svg#icon-life');
+    setUrl('?category=Saved');
+    events.dispatchEvent(new Event('popstate'));
+    expect(selected.getAttribute('href')).toBe('/icons.svg#icon-bookmark');
+  });
   it('restores captured history positions instead of replacing them with a date jump', () => {
     const { controller, events, win, history, scrolling } = timelineFixture(
       '?date=2022-05',

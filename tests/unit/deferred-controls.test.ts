@@ -8,12 +8,9 @@
  */
 import { afterEach, expect, it, vi } from 'vitest';
 import { deferControl } from '../../src/lib/deferred-controls';
+import { disposeDocument } from './helpers';
 const stops: (() => void)[] = [];
-afterEach(() => {
-  for (const stop of stops.splice(0)) stop();
-  document.body.innerHTML = '';
-  vi.restoreAllMocks();
-});
+afterEach(() => disposeDocument(stops));
 function pending() {
   let resolve!: (stop: () => void) => void;
   let reject!: () => void;

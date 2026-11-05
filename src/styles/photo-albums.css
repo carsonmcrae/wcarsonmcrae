@@ -1,0 +1,131 @@
+/**
+ * Purpose: Compact personal albums and their shared photo carousel.
+ * Scope: Preview composition, native viewer controls, full-subject imagery, and responsive caption layout.
+ * Does NOT belong: Shared dialog foundations, navigation, or content facts.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+.album-preview {
+  min-width: 0;
+}
+.album-preview__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.album-preview .album-preview__action {
+  font-weight: 600;
+  cursor: pointer;
+}
+.album-preview__count {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.album-preview .photo-gallery.photo-gallery--preview {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.album-preview .photo-gallery.photo-gallery--preview .photo img {
+  height: clamp(5rem, 14vw, 9rem);
+  border-radius: 10px;
+}
+.photo-gallery--preview > li {
+  position: relative;
+}
+.js .photo-gallery--preview > li:nth-child(n + 4) {
+  display: none;
+}
+.js .photo-gallery--after-cover > li:nth-child(4) {
+  display: list-item;
+}
+.js .photo-gallery--after-cover > li:first-child {
+  display: none;
+}
+.album-preview__remaining {
+  display: none;
+}
+.js .album-preview__remaining {
+  display: block;
+  position: absolute;
+  right: 0.4rem;
+  bottom: 0.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 1rem;
+  padding: 0.1rem 0.5rem;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  pointer-events: none;
+}
+.photo-viewer {
+  width: min(94vw, 65rem);
+  padding: clamp(0.75rem, 2vw, 1.5rem);
+}
+.photo-viewer figure {
+  margin: 0;
+  min-width: 0;
+}
+.photo-viewer img {
+  display: block;
+  width: 100%;
+  height: min(66dvh, 42rem);
+  object-fit: contain;
+  background: var(--wash);
+  border-radius: 12px;
+  touch-action: pan-y pinch-zoom;
+}
+.photo-viewer figcaption {
+  margin: 1rem auto 0;
+  max-width: 40rem;
+  color: var(--text);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+.photo-viewer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+.photo-viewer .photo-viewer__close {
+  order: 1;
+  margin-left: auto;
+}
+.photo-viewer__position {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  margin: 0;
+}
+.photo-viewer__navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.photo-viewer__navigation .control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+}
+.photo-viewer [data-photo-related] {
+  margin-top: 1rem;
+}
+@media (max-width: 30rem) {
+  .photo-viewer img {
+    height: 55dvh;
+  }
+  .photo-viewer figcaption {
+    font-size: 0.875rem;
+  }
+}
+@media (forced-colors: active) {
+  .album-preview__remaining {
+    border-color: CanvasText;
+  }
+}

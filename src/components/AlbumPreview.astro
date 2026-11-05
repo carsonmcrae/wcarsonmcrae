@@ -1,0 +1,36 @@
+---
+/**
+ * Purpose: A compact entry into an approved personal photo album.
+ * Scope: Clear album action, photo count, and three preview photographs with full native-link fallback.
+ * Does NOT belong: Album facts, carousel behavior, or image processing.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+import type { GalleryPhoto } from '../data/photo-gallery';
+import PhotoLink from './PhotoLink.astro';
+import PhotoGallery from './PhotoGallery.astro';
+interface Props {
+  id: string;
+  photos: GalleryPhoto[];
+  label: string;
+  skipCover?: boolean;
+}
+const { id, photos, label, skipCover = false } = Astro.props;
+const first = photos[0]!;
+---
+
+<div class="album-preview" id={id}>
+  <div class="album-preview__heading">
+    <PhotoLink
+      name={first.name}
+      alt={first.alt}
+      caption={first.caption}
+      album={id}
+      label={label}
+      class="album-preview__action destination-link"
+      {...(first.postId ? { postId: first.postId } : {})}
+    />
+    <span class="album-preview__count">{photos.length} photos</span>
+  </div>
+  <PhotoGallery photos={photos} id={id} preview skipCover={skipCover} />
+</div>

@@ -29,6 +29,13 @@ these public records. Routine copy edits and tests do not need a new decision do
 
 ## Current release changes
 
+Version 1.0.1 changes album presentation from long page grids to compact entries and a grouped
+carousel in the shared native photo viewer. The viewer continues to load on intent, keeps its
+selection in memory, and retains ordinary original-photo links without JavaScript. No service,
+storage, consent, reaction key, or Worker deployment contract changes. Timeline shortcut/reveal
+state is scoped to the current document; category chips and filter options share their presentation
+mapping instead of maintaining separate icon identities.
+
 Version 1.0.0 adds a public release index and permanent version pages, reading one canonical
 package version and one history data source. Privacy policy copy remains centralized while its page
 now has a contents navigation and measured sections that reflow into one column. These are static
