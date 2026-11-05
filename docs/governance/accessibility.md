@@ -31,6 +31,12 @@ and [WCAG 2.2](https://www.w3.org/TR/WCAG22/) extends the web criteria.
   be dismissed by hand.
 - External links say so to screen readers. Nothing auto-plays.
 
+The photo viewer’s named caption scroll region has `tabindex="0"`: mobile WebKit at 200% text
+otherwise clips caption content that native Tab and scrolling keys cannot reach. The ESLint
+allowance is limited to `role="region"` in `src/components/PhotoViewer.astro`; the rule remains an
+error, positive tab order is still prohibited, and noninteractive tab stops elsewhere stay strict.
+Keep the caption’s accessible name and visible focus, and retain the real keyboard-scroll regression.
+
 ## Required verification
 
 1. `npm run validate:full`: axe (WCAG 2.0, 2.1, and 2.2 A/AA rules) on every page in both themes on

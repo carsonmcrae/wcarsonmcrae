@@ -13,14 +13,23 @@ function releaseSection(id: string, title: string, items: readonly string[]) {
   return { id, title, items: [...items] };
 }
 
+function release(
+  version: string,
+  date: string,
+  title: string,
+  summary: string,
+  sections: readonly ReturnType<typeof releaseSection>[],
+) {
+  return { version, date, title, summary, sections: Array.from(sections) } as const;
+}
+
 export const releases = [
-  {
-    version: '1.1.0',
-    date: '2026-11-05',
-    title: 'A closer look, and a reaction for every photograph',
-    summary:
-      'Enjoy a steadier photo viewer with a thumbnail strip, react to individual photographs, and find more of the people and stories behind the albums.',
-    sections: [
+  release(
+    '1.1.0',
+    '2026-11-05',
+    'A closer look, and a reaction for every photograph',
+    'Enjoy a steadier photo viewer with a thumbnail strip, react to individual photographs, and find more of the people and stories behind the albums.',
+    [
       releaseSection('viewer', 'Stay with the photograph', [
         'Browse a fixed photo viewer with a thumbnail strip that keeps the rest of the album within reach.',
         'Move between photographs with buttons, arrow keys, or a swipe, then return to your place when you close the viewer.',
@@ -36,14 +45,13 @@ export const releases = [
         'Catch up on watch collecting, golf, pickleball, and travel in Life’s Out and about section.',
       ]),
     ],
-  },
-  {
-    version: '1.0.1',
-    date: '2026-11-05',
-    title: 'More room for the photos, less clutter along the way',
-    summary:
-      'Browse personal albums in a carousel, recognize moment categories at a glance, and use quieter timeline controls that appear when you need them.',
-    sections: [
+  ),
+  release(
+    '1.0.1',
+    '2026-11-05',
+    'More room for the photos, less clutter along the way',
+    'Browse personal albums in a carousel, recognize moment categories at a glance, and use quieter timeline controls that appear when you need them.',
+    [
       releaseSection('albums', 'Step into an album', [
         'Open Margot’s and Quinn’s photo albums directly from their cards on Life.',
         'Find Carson’s photo preview below Quick facts on About.',
@@ -61,14 +69,13 @@ export const releases = [
         'The compact footer keeps privacy, browser settings, accessibility, and releases visible, with other destinations in More. The first-visit storage banner still disappears after either choice.',
       ]),
     ],
-  },
-  {
-    version: '1.0.0',
-    date: '2026-11-03',
-    title: 'A place for the moments along the way',
-    summary:
-      'The first version of Daysforth brings a personal timeline, photographs, and projects together in one place.',
-    sections: [
+  ),
+  release(
+    '1.0.0',
+    '2026-11-03',
+    'A place for the moments along the way',
+    'The first version of Daysforth brings a personal timeline, photographs, and projects together in one place.',
+    [
       releaseSection('explore', 'Explore at your own pace', [
         'Switch between Timeline and Posts, browse by category, and jump to a month or year with the date controls.',
         'Open any moment on its own permanent page, then move to earlier or newer moments.',
@@ -89,5 +96,5 @@ export const releases = [
         'Read the privacy notice and accessibility statement for how the site works and the evaluation still to be completed.',
       ]),
     ],
-  },
+  ),
 ];
