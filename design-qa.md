@@ -181,8 +181,9 @@ The scoped checks above do not establish full Section 508 or WCAG conformance.
 - [x] Final normalized visual comparison, full validation, and focused post-fix checks recorded.
 - [ ] Owner accessibility sign-off and remaining copy review.
 - [x] Carson enabled Dependency graph; the rerun of Dependency review passed.
-- [ ] Authorized release: establish reviewed `main`, publish Pages at `wcarsonmcrae.com`, finish
-      Cloudflare edge settings, and forward `daysforth.com`. See `docs/DEPLOYMENT.md`.
+- [x] Reviewed `main` established and protected; Pages and shared reactions configured; signed DNS
+      and Daysforth forwarding verified. Final live frontend acceptance is recorded in
+      [release PR #1](https://github.com/carsonmcrae/wcarsonmcrae/pull/1).
 
 The standing owner-only release rule is overridden by Carson's explicit authorization for this
 release. The separate GitHub portfolio remains unchanged.
@@ -205,5 +206,7 @@ with 403. A finally-block cleanup deleted only the exact canary hash; SQL verifi
 and the affected total returned to zero. No fake engagement was retained.
 
 Pages is configured for GitHub Actions with the primary custom domain and public reactions URL.
-The primary Cloudflare zone is active. Frontend publication and edge/redirect acceptance checks
-are in progress at this checkpoint.
+Both Cloudflare zones are active and validate with DNSSEC. The primary remains DNS-only for GitHub's
+automatic certificate checks and renewal; Cloudflare serves the Daysforth redirect and reaction API.
+The prepared optional primary-domain edge-header transform does not apply to DNS-only traffic.
+This is the pre-publication provisioning checkpoint; see release PR #1 for final live acceptance.

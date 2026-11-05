@@ -1,8 +1,8 @@
 # Deploying Daysforth for free
 
 The canonical address is **https://wcarsonmcrae.com/**. **daysforth.com** and its `www` host forward
-to that address. GitHub Pages hosts the static frontend; Cloudflare Free supplies DNS, edge
-protection, redirects, and the Worker/D1 reactions service. GoDaddy remains the registrar.
+to that address. GitHub Pages hosts and serves the static frontend directly; Cloudflare Free
+supplies signed DNS, redirects, and the Worker/D1 reactions service. GoDaddy remains the registrar.
 No paid upgrade or usage plan is authorized.
 
 On November 4, 2026, Carson explicitly authorized the agent to merge, enable Pages, deploy,
@@ -42,9 +42,10 @@ Use the exact pair assigned to each zone in GoDaddy's custom nameservers.
 | A     | @            | 185.199.111.153       |
 | CNAME | www          | carsonmcrae.github.io |
 
-Start these records DNS-only for GitHub's domain validation and certificate issuance. Once its
-certificate is valid, enforce HTTPS in Pages and proxy the web records through Cloudflare.
-Use **Full (strict)** encryption, never Flexible. Leave Domain Connect DNS-only.
+Keep the primary records **DNS-only**, including after enabling HTTPS in Pages. GitHub's certificate
+checks expect its own addresses; proxying can prevent automatic renewal. GitHub already serves the
+site through its CDN. Cloudflare's Full (strict) setting is retained as a safe default, but the
+primary does not send web traffic through that proxy. Domain Connect also stays DNS-only.
 
 Daysforth uses proxied redirect-only records with reserved documentation addresses. A single 301
 rule matches its apex and www over HTTP/HTTPS, redirects to `https://wcarsonmcrae.com` plus the
@@ -52,10 +53,11 @@ original path, and preserves the query string. It serves no origin content. Veri
 
 ## Hardening and release checks
 
-Keep the app's hashed-script/style CSP in HTML. Add edge headers for `frame-ancestors 'none'`,
-`X-Frame-Options: DENY`, nosniff, a strict referrer policy, and disabled camera/microphone/geolocation.
-Set HSTS only after HTTPS works, without includeSubDomains or preload. Keep script/HTML rewriting
-and analytics features off so CSP hashes match and the privacy statement stays accurate.
+Keep the app's hashed-script/style CSP and strict referrer policy in HTML. GitHub controls the
+primary's HTTP response headers; inspect the actual published response rather than claiming custom
+Cloudflare headers apply. An optional header transform was prepared in Cloudflare, but has no effect
+on the DNS-only primary. Do not enable proxying merely to activate it. The static primary has no
+third-party scripts or analytics, and does not depend on a Worker request allowance to serve pages.
 
 Reactions require an approved Origin and JSON for writes, cap bodies at 512 bytes, deduplicate in
 SQL, hash browser/network identifiers with a private salt, and limit new votes to 20/network/hour.
@@ -90,6 +92,8 @@ rollback must remain compatible with its schema.
 ## Official references
 
 - [GitHub custom domains](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)
+- [GitHub HTTPS and certificate checks](https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https)
+- [Open proxy/certificate-renewal issue](https://github.com/github/pages-health-check/issues/153)
 - [Cloudflare nameserver setup](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/)
 - [Free redirect quotas](https://developers.cloudflare.com/rules/url-forwarding/)
 - [Response header rules](https://developers.cloudflare.com/rules/transform/response-header-modification/)

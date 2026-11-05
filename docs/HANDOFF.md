@@ -53,6 +53,11 @@ The frontend uses free GitHub Pages. The free Cloudflare Worker/D1 implementatio
 `workers/reactions`; a separate backend repository is unnecessary. Save is browser-only; shared
 counts require the deployed API and `PUBLIC_REACTIONS_URL`.
 
+Keep the primary's four A records and www CNAME DNS-only for automatic GitHub certificate checks
+and renewal. Cloudflare proxies the Daysforth redirect, not the primary frontend. Both zones use
+DNSSEC with matching registrar DS records. Final live acceptance is recorded in
+[release PR #1](https://github.com/carsonmcrae/wcarsonmcrae/pull/1).
+
 The standing owner-only release rule is overridden by Carson's explicit authorization for this
 release. Commits use his GitHub noreply identity
 `65742229+carsonmcrae@users.noreply.github.com`, without co-author or generated trailers.
