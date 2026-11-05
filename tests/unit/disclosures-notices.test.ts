@@ -15,6 +15,25 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe('native disclosure menus', () => {
+  it('coordinates a generic footer disclosure with timeline menus and restores focus on Escape', () => {
+    document.body.innerHTML =
+      '<details data-timeline-menu><summary>Category</summary></details><details data-disclosure-menu><summary>More</summary><a href="/about/">About</a></details><button id="outside">Outside</button>';
+    const destroy = initDisclosures(document);
+    const timeline = document.querySelector<HTMLDetailsElement>('[data-timeline-menu]')!;
+    const footer = document.querySelector<HTMLDetailsElement>('[data-disclosure-menu]')!;
+    timeline.open = true;
+    footer.open = true;
+    footer.dispatchEvent(new Event('toggle'));
+    expect(timeline.open).toBe(false);
+    footer.querySelector('a')!.focus();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(footer.open).toBe(false);
+    expect(document.activeElement).toBe(footer.querySelector('summary'));
+    footer.open = true;
+    document.getElementById('outside')!.click();
+    expect(footer.open).toBe(false);
+    destroy();
+  });
   it('keeps one menu open, ignores unrelated toggles, and dismisses with Escape or outside clicks', () => {
     document.body.innerHTML =
       '<details data-timeline-menu><summary>Categories</summary><button>Life</button></details><details data-timeline-menu><summary>Date</summary></details><details id="cluster"><summary>Cluster</summary></details><button id="outside">Outside</button>';

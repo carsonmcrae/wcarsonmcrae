@@ -15,14 +15,22 @@ interface Props {
   caption?: string;
   size?: 'avatar' | 'medium';
   postId?: string;
+  album?: string;
+  viewerCaption?: string;
 }
 
-const { name, alt, caption, postId, size = 'medium' } = Astro.props;
+const { name, alt, caption, postId, album, viewerCaption, size = 'medium' } = Astro.props;
 ---
 
 {
   <figure class:list={['photo', `photo--${size}`]} data-image-frame>
-    <PhotoLink name={name} alt={alt} {...(postId ? { postId } : {})} />
+    <PhotoLink
+      name={name}
+      alt={alt}
+      {...(postId ? { postId } : {})}
+      {...(album ? { album } : {})}
+      {...(viewerCaption ? { caption: viewerCaption } : {})}
+    />
     {caption && <figcaption class="small muted">{caption}</figcaption>}
   </figure>
 }

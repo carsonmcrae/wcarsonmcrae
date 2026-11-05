@@ -53,8 +53,8 @@ test('offscreen screenshot covers have usable targets before loading and keep th
       };
     });
     expect(geometry.aspect).toBeCloseTo(geometry.expectedAspect, 1);
-    expect(geometry.top).toBeCloseTo(4, 0);
-    expect(geometry.right).toBeCloseTo(4, 0);
+    expect(geometry.top).toBeCloseTo(-18, 0);
+    expect(geometry.right).toBeCloseTo(-18, 0);
   }
   const first = covers.first();
   const post = await first.evaluate((element) =>

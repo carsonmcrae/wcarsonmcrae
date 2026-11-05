@@ -10,6 +10,7 @@ import { getImage } from 'astro:assets';
 import { getPhoto, getProjectImage } from '../lib/images';
 import { withBase } from '../lib/paths';
 import MomentImage from './MomentImage.astro';
+import Icon from './Icon.astro';
 interface Props {
   name: string;
   alt: string;
@@ -18,6 +19,8 @@ interface Props {
   postId?: string;
   caption?: string;
   class?: string;
+  album?: string;
+  label?: string;
 }
 const {
   name,
@@ -27,6 +30,8 @@ const {
   postId,
   caption = alt,
   class: className,
+  album,
+  label,
 } = Astro.props;
 const source = kind === 'photo' ? getPhoto(name) : getProjectImage(name);
 const large = source
@@ -44,10 +49,21 @@ const large = source
     href={large.src}
     class:list={['photo-open', className]}
     data-photo
+    data-photo-album={album}
+    data-photo-alt={label ? alt : undefined}
     data-photo-caption={caption === alt ? undefined : caption}
     data-photo-post={postId ? withBase(`/posts/${postId}/`) : undefined}
   >
-    <span class="visually-hidden">Enlarge photo: </span>
-    <MomentImage name={name} alt={alt} kind={kind} eager={eager} />
+    {label ? (
+      <>
+        <Icon name="images" />
+        <span>{label}</span>
+      </>
+    ) : (
+      <>
+        <span class="visually-hidden">Enlarge photo: </span>
+        <MomentImage name={name} alt={alt} kind={kind} eager={eager} />
+      </>
+    )}
   </a>
 )}

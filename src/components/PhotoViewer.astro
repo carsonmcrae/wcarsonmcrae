@@ -1,31 +1,49 @@
 ---
 /**
  * Purpose: A native, keyboard-accessible large-photo viewer shared across the app.
- * Scope: Photo, caption, related-post destination, and visible close action.
- * Does NOT belong: Album selection or storage.
+ * Scope: Photo, album controls, caption, related-post destination, and visible close action.
+ * Does NOT belong: Album content, navigation behavior, or storage.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import Icon from './Icon.astro';
 import { withBase } from '../lib/paths';
+import '../styles/photo-albums.css';
 ---
 
 <dialog class="photo-viewer" data-photo-viewer aria-labelledby="photo-viewer-title">
   <p id="photo-viewer-title" class="visually-hidden">
     Photo viewer
   </p>
-  <button
-    type="button"
-    class="photo-viewer__close control"
-    data-photo-close
-    aria-label="Close photo viewer"
-  >
-    Close <span aria-hidden="true">×</span>
-  </button>
-  <figure>
+  <div class="photo-viewer__header">
+    <button
+      type="button"
+      class="photo-viewer__close control"
+      data-photo-close
+      aria-label="Close photo viewer"
+    >
+      Close <span aria-hidden="true">×</span>
+    </button>
+    <p
+      class="photo-viewer__position"
+      data-photo-count
+      aria-live="polite"
+      aria-atomic="true"
+      hidden
+    ></p>
+  </div>
+  <figure data-photo-stage>
     <img data-photo-large alt="" />
     <figcaption data-photo-caption-output></figcaption>
   </figure>
+  <div class="photo-viewer__navigation">
+    <button type="button" class="control" data-photo-previous hidden>
+      <Icon name="arrow" /> Previous
+    </button>
+    <button type="button" class="control" data-photo-next hidden>
+      Next <Icon name="arrowRight" />
+    </button>
+  </div>
   <a href={withBase('/')} class="destination-link" data-photo-related hidden>
     <Icon name="arrowRight" />
     View this moment

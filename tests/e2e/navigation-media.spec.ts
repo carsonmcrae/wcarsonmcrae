@@ -56,8 +56,8 @@ test('a post overlay follows the actual portrait or screenshot rather than its s
       image: element.querySelector('[data-photo] img')!.getBoundingClientRect().toJSON(),
       overlay: element.querySelector('.post-media__open')!.getBoundingClientRect().toJSON(),
     }));
-    expect(Math.abs(overlay.x + overlay.width - (image.x + image.width - 4))).toBeLessThan(2);
-    expect(Math.abs(overlay.y - (image.y + 4))).toBeLessThan(2);
+    expect(Math.abs(overlay.x + overlay.width - (image.x + image.width + 18))).toBeLessThan(2);
+    expect(Math.abs(overlay.y - (image.y - 18))).toBeLessThan(2);
     expect(overlay.width).toBeGreaterThanOrEqual(44);
     expect(overlay.height).toBeGreaterThanOrEqual(44);
   }
@@ -93,16 +93,31 @@ test('photo dialogs lock background scrolling and restore the page when dismisse
   expect(await page.evaluate(() => scrollY)).toBe(position);
 });
 
-test('footer destinations remain visible with compact navigation and versioned release history', async ({
+test('footer essentials stay visible while More retains the remaining destinations', async ({
   page,
 }) => {
   await page.goto('');
   const footer = page.locator('footer');
   await footer.scrollIntoViewIfNeeded();
-  await expect(footer.getByRole('link', { name: /Releases · v/ })).toHaveAttribute(
+  await expect(footer.getByRole('link', { name: /Releases v/ })).toHaveAttribute(
     'href',
     /\/releases\/$/,
   );
+  for (const label of ['Privacy', 'Accessibility']) {
+    await expect(
+      footer.getByRole('link', { name: `${label} (opens in a new tab)`, exact: true }),
+    ).toBeVisible();
+  }
+  const settings = footer.getByRole('button', {
+    name: 'Settings for browser storage',
+    exact: true,
+  });
+  const target = (await settings.boundingBox())!;
+  expect(target.height).toBeGreaterThanOrEqual(44);
+  expect(target.width).toBeLessThan(200);
+  const more = footer.locator('[data-disclosure-menu]');
+  await expect(more).not.toHaveAttribute('open', '');
+  await more.locator('summary').click();
   for (const label of [
     'Timeline',
     'Work',
@@ -110,15 +125,13 @@ test('footer destinations remain visible with compact navigation and versioned r
     'About',
     'Contact',
     'Brand kit',
-    'Accessibility',
-  ]) {
-    await expect(
-      footer.getByRole('link', { name: `${label} (opens in a new tab)`, exact: true }),
-    ).toBeVisible();
-  }
-  const target = (await footer.getByRole('button', { name: 'Storage settings' }).boundingBox())!;
-  expect(target.height).toBeGreaterThanOrEqual(44);
-  expect(target.width).toBeLessThan(200);
+    'Source on GitHub',
+  ])
+    await expect(more.getByRole('link', { name: new RegExp(label) })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(more).not.toHaveAttribute('open', '');
+  await settings.click();
+  await expect(page.getByRole('dialog', { name: 'Browser storage', exact: true })).toBeVisible();
 });
 
 test('timeline shortcuts sit at opposite screen edges with room for sticky browsing controls', async ({
@@ -127,6 +140,8 @@ test('timeline shortcuts sit at opposite screen edges with room for sticky brows
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('?date=2022-05');
   await page.locator('html[data-site-ready="true"]').waitFor();
+  await page.keyboard.press('PageDown');
+  await expect(page.locator('[data-timeline-edge="newest"]')).toBeVisible();
   const top = (await page.locator('[data-timeline-edge="newest"]').boundingBox())!;
   const bottom = (await page.locator('[data-timeline-edge="oldest"]').boundingBox())!;
   const header = (await page.locator('.site-header').boundingBox())!;

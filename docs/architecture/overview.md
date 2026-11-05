@@ -75,6 +75,32 @@ state, and restore the visitor’s place. Query state is shareable; `history.sta
 belong to a browser entry. They are not a server browsing profile. Dialog and action code loads on
 intent to control the script budget.
 
+Personal albums use the same native photo dialog as individual photographs. Compact previews on
+Life and About expose approved photo links grouped in the rendered page; the viewer reads that
+group when opened and owns only the current photo index, previous/next actions, keyboard/swipe
+navigation, and related moment destination. It does not create browser history entries, network
+profiles, or persistent album state. Closing preserves the background position and returns focus
+to the original trigger, even after navigating to another photograph. Original image links remain
+usable without JavaScript. Visible captions belong inside the viewer, while the preview identifies
+the album as a whole.
+
+Timeline shortcut visibility and touch media affordances are transient browsing presentation.
+Shortcuts qualify only after scrolling into the feed and suppress directions that have no remaining
+content; profile/pinned content does not activate them. Hover, keyboard focus, or a deliberate touch
+reveals media-corner controls without changing a post’s permanent URL or its reaction state. Shared
+category presentation supplies the same icon/label contract to post metadata and filtering.
+The desktop moment navigator reads the currently rendered cards and refreshes after regrouping or
+filtering. Its compact rail reveals a full preview list, highlights the reading position, and jumps
+to the exact card, including multiple events in the same month. It shares the feed viewport geometry
+with shortcuts and does not become a second owner of date/history state. Narrow/touch viewports keep
+the existing date and category controls instead of adding another navigation surface.
+
+The footer keeps essential privacy/settings/accessibility/release destinations visible and groups
+the remaining links in a native More disclosure. Its Escape/outside-click dismissal shares the
+existing disclosure controller through a generic menu attribute; it does not borrow timeline state.
+Footer layout has one external, feature-prefixed stylesheet rather than per-node scoped attributes.
+The separate storage-choice banner and consent controller remain unchanged.
+
 ## Persistence and trust
 
 `consent.ts` separates a necessary expiring consent record from optional preferences. Theme, saves,

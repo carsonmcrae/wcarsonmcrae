@@ -58,20 +58,14 @@ const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
     </Section>
     <Section title={dogsIntro.title} id="dogs" lede={dogsIntro.lede} wide>
       <div class="dogs content-grid">
-        {dogs.map((dog) => (
-          <DogEntry dog={dog} />
+        {dogs.map((dog, index) => (
+          <DogEntry dog={dog} album={dogGalleries[index]!} />
         ))}
       </div>
-      {dogGalleries.map((gallery) => (
-        <section class="dog-album" id={gallery.id} aria-labelledby={`${gallery.id}-title`}>
-          <h3 id={`${gallery.id}-title`}>{gallery.title}</h3>
-          <PhotoGallery photos={gallery.photos} />
-        </section>
-      ))}
       <OrgChart />
     </Section>
     <Section title="Out and about" id="photos" wide>
-      <PhotoGallery photos={lifePhotos} layout="pairs" />
+      <PhotoGallery photos={lifePhotos} id="life-photos" layout="pairs" />
     </Section>
     <Section title={interestsIntro.title} id="interests" lede={interestsIntro.lede} wide>
       <dl class="interest-cards">
@@ -85,15 +79,3 @@ const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
     </Section>
   </div>
 </BaseLayout>
-
-<style>
-  .dog-album {
-    margin-top: 2.5rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--rule);
-  }
-  .dog-album h3 {
-    font-size: 1.25rem;
-    letter-spacing: -0.025em;
-  }
-</style>

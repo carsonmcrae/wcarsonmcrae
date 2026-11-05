@@ -16,7 +16,7 @@ export const profile: Profile = {
   fullName: 'William Carson McRae',
   firstName: 'Carson',
   headline: 'Technical Program & Product Leader',
-  location: 'Nashville, Tennessee',
+  location: 'Nashville, TN',
   employer: 'Booz Allen Hamilton',
   summary:
     'Carson McRae is a technical program and product leader in Nashville who helps engineering teams deliver complicated software, then goes home and builds more of it.',

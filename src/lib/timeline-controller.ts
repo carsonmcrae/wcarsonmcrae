@@ -73,6 +73,13 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
       '[name="category"], [name="detail"]',
     ))
       input.checked = input.value === state[input.name as 'category' | 'detail'];
+    const categorySymbol = root
+      .querySelector('[name="category"]:checked')!
+      .closest('label')!
+      .querySelector('use')!;
+    doc
+      .querySelector('[data-category-icon] use')!
+      .setAttribute('href', categorySymbol.getAttribute('href')!);
     empty.hidden = visible.length > 0;
     if (!empty.hidden) empty.textContent = 'No saved moments in this browser yet.';
     syncDate();
@@ -108,6 +115,7 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
     date: string,
     focus = true,
     historyMode: 'push' | 'replace' | 'none' = 'push',
+    momentId?: string,
   ) => {
     followingScroll = false;
     state.date = date.slice(0, 7);
@@ -121,13 +129,16 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
     const exact = visible.filter((card) => card.date.startsWith(state.date));
     empty.hidden = exact.length > 0;
     let destination: HTMLElement;
+    let focusTarget: HTMLElement | null = null;
     if (exact.length > 0) {
       const group = container.querySelector<HTMLElement>(
         `[data-period="${periodKey(state.date, state.detail)}"]`,
       )!;
       const cluster = group.querySelector('details');
       if (cluster) cluster.open = true;
-      destination = group.querySelector('h2')!;
+      const target = exact.find((card) => card.id === momentId);
+      destination = target?.element ?? group.querySelector('h2')!;
+      focusTarget = target ? target.element.querySelector<HTMLElement>('h3 a')! : null;
     } else {
       const message = doc.createElement('p');
       const category = state.category === 'All' ? '' : ` for ${state.category}`;
@@ -145,9 +156,10 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
     if (historyMode !== 'none') saveUrl(historyMode === 'push');
     closeMenus();
     const atStart =
-      destination === empty || destination.closest('.moment-group') === container.firstElementChild;
+      destination === empty ||
+      (!focusTarget && destination.closest('.moment-group') === container.firstElementChild);
     (atStart ? root : destination).scrollIntoView({ block: 'start', behavior: 'instant' });
-    if (focus) destination.focus({ preventScroll: true });
+    if (focus) (focusTarget ?? destination).focus({ preventScroll: true });
   };
   const onClick = (event: MouseEvent) => {
     if (!(event.target instanceof Element)) return;
@@ -158,7 +170,12 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
         newest: visible[0],
         oldest: visible.at(-1),
       };
-      goToDate(edges[jump.dataset['timelineEdge'] ?? '']?.date ?? jump.dataset['jumpDate']!);
+      goToDate(
+        edges[jump.dataset['timelineEdge'] ?? '']?.date ?? jump.dataset['jumpDate']!,
+        true,
+        'push',
+        jump.dataset['jumpMoment'],
+      );
       return;
     }
     const button = event.target.closest<HTMLButtonElement>('button[data-view]');

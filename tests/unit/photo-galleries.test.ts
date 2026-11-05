@@ -14,7 +14,7 @@ import { carsonGallery, dogGalleries, lifePhotos } from '../../src/data/photo-ga
 
 const importedNames = [
   ...carsonGallery.photos,
-  ...dogGalleries.flatMap((gallery) => gallery.photos.slice(1)),
+  ...dogGalleries.flatMap((gallery) => gallery.photos.slice(2)),
   lifePhotos.find((photo) => photo.postId === 'watch-collecting')!,
 ].map((photo) => photo.name);
 
@@ -28,10 +28,11 @@ describe('approved personal albums', () => {
       const dog = dogs[index]!;
       expect(gallery.id).toBe(`${dog.swatch}-gallery`);
       expect(gallery.photos.map((photo) => photo.name)).toEqual([
+        `${dog.swatch}-1`,
         `${dog.swatch}-2`,
         ...Array.from({ length: 6 }, (_, number) => `${dog.swatch}-gallery-${number + 1}`),
       ]);
-      expect(gallery.photos.map((photo) => photo.name)).not.toContain(dog.photo);
+      expect(gallery.photos.filter((photo) => photo.name === dog.photo)).toHaveLength(1);
     }
   });
 

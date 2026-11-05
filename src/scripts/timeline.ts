@@ -9,9 +9,20 @@ import { initDisclosures } from '../lib/disclosures';
 import { initPostActions } from '../lib/post-actions';
 import { reactionEndpoint } from '../lib/reaction-api';
 import { deferControl } from '../lib/deferred-controls';
+import { initTimelineJumps } from '../lib/timeline-jumps';
+import { initMediaAffordances } from '../lib/media-affordances';
+import { initMomentNavigator } from '../lib/moment-navigator';
 export function startTimeline() {
-  const stopMenus = initDisclosures(document);
-  if (!document.querySelector('[data-action-notice]')) return stopMenus;
+  const stops = [
+    initDisclosures(document),
+    initTimelineJumps(document, globalThis),
+    initMediaAffordances(document, globalThis),
+    initMomentNavigator(document, globalThis),
+  ];
+  const destroy = () => {
+    for (const stop of stops) stop();
+  };
+  if (!document.querySelector('[data-action-notice]')) return destroy;
   const endpoint = reactionEndpoint(import.meta.env['PUBLIC_REACTIONS_URL']);
   const state = initPostActions(document, globalThis, endpoint);
   const stopActions = deferControl(document, '[data-post-actions] button', async () => {
@@ -26,9 +37,6 @@ export function startTimeline() {
       stop();
     };
   });
-  return () => {
-    stopMenus();
-    stopActions();
-    state.destroy();
-  };
+  stops.push(stopActions, state.destroy);
+  return destroy;
 }

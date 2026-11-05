@@ -29,6 +29,12 @@ import images from '@phosphor-icons/core/assets/regular/images.svg?raw';
 import celebrate from '@phosphor-icons/core/assets/regular/confetti.svg?raw';
 import laugh from '@phosphor-icons/core/assets/regular/smiley.svg?raw';
 import support from '@phosphor-icons/core/assets/regular/hands-clapping.svg?raw';
+import location from '@phosphor-icons/core/assets/regular/map-pin.svg?raw';
+import youtube from '@phosphor-icons/core/assets/regular/youtube-logo.svg?raw';
+import privacy from '@phosphor-icons/core/assets/regular/shield-check.svg?raw';
+import storage from '@phosphor-icons/core/assets/regular/database.svg?raw';
+import accessibility from '@phosphor-icons/core/assets/regular/person-arms-spread.svg?raw';
+import release from '@phosphor-icons/core/assets/regular/tag.svg?raw';
 export const icons = {
   heart,
   bookmark,
@@ -54,6 +60,12 @@ export const icons = {
   celebrate,
   laugh,
   support,
+  location,
+  youtube,
+  privacy,
+  storage,
+  accessibility,
+  release,
 };
 
 export type IconName = keyof typeof icons;

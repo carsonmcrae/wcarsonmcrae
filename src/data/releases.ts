@@ -11,6 +11,42 @@ export const currentVersion = manifest.version;
 
 export const releases = [
   {
+    version: '1.0.1',
+    title: 'More room for the photos, less clutter along the way',
+    summary:
+      'Browse personal albums in a carousel, recognize moment categories at a glance, and use quieter timeline controls that appear when you need them.',
+    sections: [
+      {
+        id: 'albums',
+        title: 'Step into an album',
+        items: [
+          'Open Margot’s and Quinn’s photo albums directly from their cards on Life.',
+          'Find Carson’s photo preview below Quick facts on About.',
+          'Move through album photographs with previous and next buttons, arrow keys, or a swipe. Close the viewer to return to your place.',
+        ],
+      },
+      {
+        id: 'timeline',
+        title: 'A calmer timeline',
+        items: [
+          'Timeline shortcuts appear after you scroll into the story, with only the useful direction shown at either end.',
+          'Use the compact desktop moment navigator beside the scrollbar to preview events and jump directly to one.',
+          'Photo counts and post controls sit at the photo corners and appear when you hover, focus, or tap a moment.',
+          'Work, Projects, and Life have matching category icons and colored chips on moments and in the category menu.',
+        ],
+      },
+      {
+        id: 'profile',
+        title: 'A little more social',
+        items: [
+          'The profile’s handle, Nashville, TN location, and destination links now use compact chips on desktop and mobile.',
+          'Video destinations carry a YouTube play icon and open only when you choose their links.',
+          'The compact footer keeps privacy, browser settings, accessibility, and releases visible, with other destinations in More. The first-visit storage banner still disappears after either choice.',
+        ],
+      },
+    ],
+  },
+  {
     version: '1.0.0',
     title: 'A place for the moments along the way',
     summary:

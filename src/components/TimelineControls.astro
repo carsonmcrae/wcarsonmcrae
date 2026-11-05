@@ -10,6 +10,8 @@ import { timelinePosts } from '../data/timeline';
 import { chronological } from '../lib/timeline-model';
 import { dateLabel, MONTHS } from '../lib/timeline-dates';
 import Icon from './Icon.astro';
+import CategoryLabel from './CategoryLabel.astro';
+import { categoryPresentation } from '../data/categories';
 const latest = chronological(timelinePosts)[0]!.date;
 const years = Array.from(
   { length: Number(latest.slice(0, 4)) - 1999 + 1 },
@@ -31,19 +33,23 @@ const years = Array.from(
   <div class="timeline-toolbar__menus">
     <details class="timeline-menu" data-timeline-menu>
       <summary class="control">
-        <Icon name="filter" />
+        <span data-category-icon>
+          <Icon name="filter" />
+        </span>
         <span data-category-label>All categories</span>
         <Icon name="chevron" />
       </summary>
       <div class="timeline-menu__panel timeline-menu__panel--category">
         <fieldset>
           <legend>Show posts</legend>
-          {['All', 'Work', 'Projects', 'Life', 'Milestones', 'Saved'].map((category) => (
-            <label>
-              <input type="radio" name="category" value={category} checked={category === 'All'} />
-              <span>{category === 'All' ? 'All categories' : category}</span>
-            </label>
-          ))}
+          {(Object.keys(categoryPresentation) as (keyof typeof categoryPresentation)[]).map(
+            (category) => (
+              <label>
+                <input type="radio" name="category" value={category} checked={category === 'All'} />
+                <CategoryLabel category={category} />
+              </label>
+            ),
+          )}
         </fieldset>
         <p class="timeline-menu__note">Allow storage to keep saved moments between visits.</p>
       </div>

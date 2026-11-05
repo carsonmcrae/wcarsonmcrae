@@ -1,0 +1,30 @@
+---
+/**
+ * Purpose: Pair an approved standalone destination with its recognizable decorative icon.
+ * Scope: Destination text, local glyphs, and clear external/new-tab disclosure.
+ * Does NOT belong: Inline prose links, remote embeds, or video loading.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+import { destinationLink } from '../lib/destination-links';
+import Icon from './Icon.astro';
+interface Props {
+  href: string;
+  label: string;
+}
+const { href, label } = Astro.props;
+const destination = destinationLink(href);
+---
+
+<a
+  class="destination-link"
+  href={destination.href}
+  target={destination.target}
+  rel={destination.rel}
+>
+  <Icon name={destination.icon} />
+  {label}
+  {destination.external && (
+    <span class="visually-hidden"> (external site, opens in a new tab)</span>
+  )}
+</a>

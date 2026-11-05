@@ -1,13 +1,18 @@
 /**
  * Purpose: Shared fakes for the unit tests.
  * Scope: Controllable matchMedia results, in-memory storage, and storage that throws like a
- *   blocked browser.
+ *   blocked browser, plus shared disposal of DOM interaction fixtures.
  * Does NOT belong: Assertions or test cases (the *.test.ts files beside it).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { vi } from 'vitest';
 import { CONSENT_KEY } from '../../src/lib/consent';
+export function disposeDocument(stops: (() => void)[]) {
+  for (const stop of stops.splice(0)) stop();
+  document.body.innerHTML = '';
+  vi.restoreAllMocks();
+}
 export function consentingStorage(initial: Record<string, string> = {}) {
   return memoryStorage({
     [CONSENT_KEY]: JSON.stringify({ allowed: true, expires: Number.MAX_SAFE_INTEGER }),

@@ -1,0 +1,155 @@
+/**
+ * Purpose: Match the approved compact footer while keeping its destinations usable.
+ * Scope: One top divider, quiet identity/legal text, and native More with desktop popup/mobile flow.
+ * Does NOT belong: Consent-banner styling, header navigation, or disclosure event handling.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  width: min(100% - 2 * var(--gutter), 112rem);
+  margin: var(--section) auto 0;
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+.site-footer__identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 1.25rem;
+}
+.site-footer__brand,
+.site-footer__brand:visited {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  color: var(--text);
+  font-size: 1.25rem;
+  font-weight: 750;
+  text-decoration: none;
+  letter-spacing: -0.035em;
+}
+.site-footer__brand img {
+  width: 2rem;
+  height: 2rem;
+}
+.site-footer__identity p {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.site-footer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem 0.75rem;
+}
+.site-footer__actions a,
+.site-footer__actions a:visited,
+.site-footer__actions button,
+.site-footer__more summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.2rem;
+  color: var(--text);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.site-footer__more {
+  position: relative;
+}
+.site-footer__more summary {
+  padding-inline: 0.75rem;
+  border: 1px solid var(--control);
+  border-radius: 10px;
+  background: var(--wash);
+  color: var(--link);
+  font-weight: 650;
+  list-style: none;
+  cursor: pointer;
+}
+.site-footer__more summary::-webkit-details-marker {
+  display: none;
+}
+.site-footer__menu-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.5rem);
+  z-index: 30;
+  width: 15rem;
+  max-width: calc(100vw - 2 * var(--gutter));
+  max-height: min(26rem, 70dvh);
+  overflow-y: auto;
+  padding: 0.4rem;
+  border: 1px solid var(--control);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+}
+.site-footer__menu-panel li + li {
+  margin: 0;
+}
+.site-footer__menu-panel a {
+  display: flex;
+  width: 100%;
+  padding-inline: 0.6rem;
+  border-radius: 6px;
+}
+.site-footer__menu-panel a > span:first-of-type {
+  flex: 1;
+}
+.site-footer__legal {
+  display: flex;
+  flex: 1 0 100%;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+@media (hover: hover) {
+  .site-footer__actions a:hover,
+  .site-footer__actions button:hover {
+    color: var(--link);
+  }
+  .site-footer__menu-panel a:hover {
+    background: var(--wash);
+  }
+}
+@media (max-width: 50rem) {
+  .site-footer__actions {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.25rem 0.65rem;
+  }
+  .site-footer__more {
+    margin-left: auto;
+  }
+}
+@media (max-width: 40rem) {
+  .site-footer__more[open] {
+    flex: 1 0 100%;
+    margin-left: 0;
+  }
+  .site-footer__more[open] > summary {
+    display: flex;
+    width: max-content;
+    margin-left: auto;
+  }
+  .site-footer__menu-panel {
+    position: static;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    margin-top: 0.5rem;
+  }
+}

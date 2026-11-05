@@ -7,6 +7,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { basename } from 'node:path';
+import { currentVersion } from '../../src/data/releases';
 
 const io = vi.hoisted(() => ({
   read: vi.fn(),
@@ -37,19 +38,22 @@ afterEach(() => {
 });
 
 describe('release CLI', () => {
-  const lock = (version = '1.0.0') => JSON.stringify({ version, packages: { '': { version } } });
+  const lock = (version = currentVersion) =>
+    JSON.stringify({ version, packages: { '': { version } } });
   it('checks actual release notes against both lock versions and reports missing comparison context', async () => {
     io.read.mockReturnValue(lock());
     await import('../../scripts/check-release.ts');
     expect(io.read).toHaveBeenCalledWith(expect.any(URL), 'utf8');
     expect(io.git).not.toHaveBeenCalled();
-    expect(console.info).toHaveBeenCalledWith(expect.stringContaining('Release 1.0.0: manifests'));
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining(`Release ${currentVersion}: manifests`),
+    );
     expect(console.info).toHaveBeenCalledWith(expect.stringContaining('No RELEASE_BASE_SHA'));
     expect(process.exitCode).toBeUndefined();
   });
   it('includes working and untracked changes while retaining the initial release bootstrap', async () => {
     vi.stubEnv('RELEASE_BASE_SHA', 'base-sha');
-    vi.stubEnv('RELEASE_TAG', 'v1.0.0');
+    vi.stubEnv('RELEASE_TAG', `v${currentVersion}`);
     io.read.mockReturnValue(lock());
     io.git.mockImplementation((_command, args: string[]) => {
       if (args[0] === 'ls-tree') return '';
@@ -67,14 +71,14 @@ describe('release CLI', () => {
     io.read.mockReturnValue(lock('0.9.0'));
     io.git.mockImplementation((_command, args: string[]) => {
       if (args[0] === 'ls-tree') return 'src/data/releases.ts';
-      if (args[0] === 'show') return '{"version":"1.0.0"}';
+      if (args[0] === 'show') return JSON.stringify({ version: currentVersion });
       if (args[0] === 'diff') return 'M\tsrc/pages/index.astro\n';
       return '';
     });
     await import('../../scripts/check-release.ts');
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining('lock.json versions'));
     expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining('Release tag must be v1.0.0'),
+      expect.stringContaining(`Release tag must be v${currentVersion}`),
     );
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Product changes require'));
     expect(process.exitCode).toBe(1);

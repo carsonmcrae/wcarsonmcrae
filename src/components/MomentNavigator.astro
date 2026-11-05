@@ -1,0 +1,31 @@
+---
+/**
+ * Purpose: A quiet desktop rail for browsing the currently rendered timeline moments.
+ * Scope: One accessible rail trigger, passive ticks, and a keyboard-friendly preview list.
+ * Does NOT belong: Timeline dates, filtering, or scroll/history ownership.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+import '../styles/moment-navigator.css';
+---
+
+<nav
+  class="moment-navigator enhancement"
+  aria-label="Timeline moments"
+  data-moment-navigator
+  hidden
+>
+  <button
+    type="button"
+    data-moment-rail
+    aria-label="Browse timeline moments"
+    aria-controls="moment-previews"
+    aria-expanded="false"
+  >
+    <span class="moment-navigator__ticks" data-moment-ticks aria-hidden="true"></span>
+  </button>
+  <div id="moment-previews" class="moment-navigator__panel" data-moment-previews hidden>
+    <p>Timeline moments</p>
+    <ol role="list" data-moment-links></ol>
+  </div>
+</nav>

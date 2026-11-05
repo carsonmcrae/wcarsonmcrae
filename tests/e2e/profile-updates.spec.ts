@@ -39,10 +39,12 @@ test('a cover opens its distinct album and the post slider visits other post pag
   await page.goto('');
   const cover = page.locator('#moment-married-nicole .post-media__open');
   await expect(cover).toHaveAccessibleName('View post: Married Nicole');
-  await cover.click();
+  // Card focus reveals the intentionally quiet overlay and exercises its keyboard entry.
+  await cover.focus();
+  await cover.press('Enter');
   await expect(page.locator('h1')).toHaveText('Married Nicole');
   await expect(page.locator('.post-album img')).toHaveCount(2);
-  await expect(page.locator('.post-meta__dot')).toHaveCount(3);
+  await expect(page.locator('.post-meta > i')).toHaveCount(3);
   const neighbors = page.locator('.post-neighbors a');
   await expect(neighbors.nth(0)).toContainText('Earlier moment');
   await expect(neighbors.nth(1)).toContainText('Newer moment');

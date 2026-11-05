@@ -81,6 +81,13 @@ Cover proportions are derived from the approved image metadata into `media-frame
 hand-copy ratios into content or compensate for late image layout with scrolling delays. Verify
 that a selected moment stays visible when its images are delayed and then finish loading.
 
+Personal album entries group native photo links for the shared carousel. Dog albums include both
+original photographs and six additions each; Carson’s About album contains eight. Keep stable album
+IDs, distinct image URLs, meaningful alternatives, and related post IDs where confirmed. Compact
+previews have no per-image caption blocks; captions appear in the viewer. About’s preview follows
+Quick facts, and the main portrait stays in the introduction. Every photo remains reachable without
+JavaScript; do not replace hidden preview links with an image list held only in browser code.
+
 ## Keeping "Right now" fresh
 
 Edit `now.items` and `now.updated` in `src/data/life.ts` whenever something changes.

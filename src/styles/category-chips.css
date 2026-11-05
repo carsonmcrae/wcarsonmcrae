@@ -1,0 +1,47 @@
+/**
+ * Purpose: Distinguish post categories with compact, readable icon-and-label chips.
+ * Scope: Shared metadata/filter colors in both themes and forced-color fallback.
+ * Does NOT belong: Interactive button affordances, milestone styling, or global palette tokens.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  max-width: 100%;
+  padding: 0.12rem 0.55rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--wash);
+  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.category-chip .icon {
+  width: 1em;
+  height: 1em;
+}
+.category-chip--work {
+  color: light-dark(#164a89, #b8d4ff);
+  background: light-dark(#eaf2ff, #20344d);
+  border-color: light-dark(#9db8dc, #506987);
+}
+.category-chip--projects {
+  color: light-dark(#6841a0, #dbc5ff);
+  background: light-dark(#f2ecff, #37294b);
+  border-color: light-dark(#c8b4e5, #765a99);
+}
+.category-chip--life {
+  color: light-dark(#14614f, #b2e5cc);
+  background: light-dark(#e8f5ee, #203d32);
+  border-color: light-dark(#a4cbb7, #557d68);
+}
+@media (forced-colors: active) {
+  .category-chip {
+    color: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}

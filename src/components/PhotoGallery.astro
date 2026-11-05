@@ -1,35 +1,47 @@
 ---
 /**
  * Purpose: An editorial gallery of Carson’s actual approved photographs.
- * Scope: Responsive albums with full subjects, a shared larger viewer, and clear captions.
+ * Scope: Caption-free previews linked to complete albums in the shared larger viewer.
  * Does NOT belong: Content, dates, photo approval, or image processing.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { GalleryPhoto } from '../data/photo-gallery';
-import Photo from './Photo.astro';
-import { withBase } from '../lib/paths';
+import PhotoLink from './PhotoLink.astro';
+import '../styles/photo-albums.css';
 interface Props {
   photos: GalleryPhoto[];
+  id: string;
+  preview?: boolean;
+  skipCover?: boolean;
   layout?: 'album' | 'pairs';
 }
-const { photos, layout = 'album' } = Astro.props;
+const { photos, id, preview = false, skipCover = false, layout = 'album' } = Astro.props;
 ---
 
-<ul class:list={['photo-gallery', `photo-gallery--${layout}`]} role="list">
-  {photos.map((photo) => (
+<ul
+  class:list={[
+    'photo-gallery',
+    `photo-gallery--${layout}`,
+    { 'photo-gallery--preview': preview, 'photo-gallery--after-cover': skipCover },
+  ]}
+  role="list"
+>
+  {photos.map((photo, index) => (
     <li class="photo-gallery__item">
-      <Photo
-        name={photo.name}
-        alt={photo.alt}
-        {...(photo.postId ? { postId: photo.postId } : {})}
-      />
-      {photo.postId ? (
-        <a class="destination-link" href={withBase(`/posts/${photo.postId}/`)}>
-          {photo.caption}
-        </a>
-      ) : (
-        <p class="photo-gallery__caption">{photo.caption}</p>
+      <figure class="photo" data-image-frame>
+        <PhotoLink
+          name={photo.name}
+          alt={photo.alt}
+          caption={photo.caption}
+          album={id}
+          {...(photo.postId ? { postId: photo.postId } : {})}
+        />
+      </figure>
+      {preview && index === (skipCover ? 3 : 2) && photos.length > 3 && (
+        <span class="album-preview__remaining" aria-hidden="true">
+          +{photos.length - (skipCover ? 4 : 3)}
+        </span>
       )}
     </li>
   ))}
@@ -49,16 +61,6 @@ const { photos, layout = 'album' } = Astro.props;
   }
   .photo-gallery--pairs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .photo-gallery__caption {
-    margin-top: 0.65rem;
-    color: var(--muted);
-    font-size: 0.8125rem;
-    line-height: 1.5;
-  }
-  .photo-gallery .destination-link {
-    margin-top: 0.35rem;
-    font-size: 0.8125rem;
   }
   .photo-gallery :global(.photo) {
     width: 100%;

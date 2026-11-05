@@ -6,7 +6,9 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export function initDisclosures(doc: Document): () => void {
-  const menus = Array.from(doc.querySelectorAll<HTMLDetailsElement>('[data-timeline-menu]'));
+  const menus = Array.from(
+    doc.querySelectorAll<HTMLDetailsElement>('[data-timeline-menu], [data-disclosure-menu]'),
+  );
   const onToggle = (event: Event) => {
     const opened = event.target;
     if (opened instanceof HTMLDetailsElement && opened.open && menus.includes(opened)) {

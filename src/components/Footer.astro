@@ -1,8 +1,8 @@
 ---
 /**
- * Purpose: A clear footer with the Daysforth identity and organized navigation.
- * Scope: Primary destinations, brand/accessibility/source resources, the sign-off, and build date.
- * Does NOT belong: Main header navigation or private contact information.
+ * Purpose: Keep essential site choices close in a compact, recognizable footer.
+ * Scope: Approved identity, privacy/settings/accessibility/releases, More destinations, and quiet legal text.
+ * Does NOT belong: The separate browser-storage banner, header navigation, or consent behavior.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
@@ -13,104 +13,107 @@ import { currentVersion } from '../data/releases';
 import { withBase } from '../lib/paths';
 import { formatDate } from '../lib/text';
 import Icon from './Icon.astro';
+import '../styles/footer.css';
 const built = new Date();
+const resources = [
+  { label: 'Accessibility', href: '/accessibility/', icon: 'accessibility' as const },
+  { label: `Releases v${currentVersion}`, href: '/releases/', icon: 'release' as const },
+];
 ---
 
-<footer class="site-footer page">
-  <div class="site-footer__top">
-    <div class="site-footer__identity">
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        class="site-footer__brand"
-        href={withBase('/')}
-        aria-label="Daysforth (opens in a new tab)"
-      >
-        <img src={withBase('/brand/daysforth-mark.svg')} alt="" width="28" height="28" />
-        {brand.name}
-      </a>
-      <p>{footer.signature}</p>
-    </div>
-    <nav aria-label="Footer">
-      <h2>Explore</h2>
-      <ul role="list">
-        {navigation.map((item) => (
-          <li>
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href={withBase(item.href)}
-              tabindex="0"
-              aria-label={`${item.label} (opens in a new tab)`}
-            >
-              <Icon name={item.icon} />
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-    <nav aria-label="Resources">
-      <h2>More</h2>
-      <ul role="list">
-        <li>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href={withBase('/brand/')}
-            tabindex="0"
-            aria-label="Brand kit (opens in a new tab)"
-          >
-            Brand kit
-            <Icon name="arrowRight" />
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href={withBase('/accessibility/')}
-            aria-label="Accessibility (opens in a new tab)"
-            tabindex="0"
-          >
-            Accessibility
-            <Icon name="arrowRight" />
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href={withBase('/releases/')}
-            tabindex="0"
-            aria-label={`Releases · v${currentVersion} (opens in a new tab)`}
-          >
-            Releases · v{currentVersion}
-            <Icon name="arrowRight" />
-          </a>
-        </li>
-        <li>
-          <a target="_blank" rel="noopener noreferrer" href={site.repositoryUrl} tabindex="0">
-            Source
-            <Icon name="github" />
-            <span class="visually-hidden"> on GitHub (external site, opens in a new tab)</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-  <div class="site-footer__bottom">
+<footer class="site-footer">
+  <div class="site-footer__identity">
     <a
+      class="site-footer__brand"
+      href={withBase('/')}
       target="_blank"
       rel="noopener noreferrer"
+      aria-label="Daysforth (opens in a new tab)"
+    >
+      <img src={withBase('/brand/daysforth-mark.svg')} alt="" width="32" height="32" />
+      {brand.name}
+    </a>
+    <p>{footer.signature}</p>
+  </div>
+  <nav class="site-footer__actions" aria-label="Footer">
+    <a
       href={withBase('/privacy/')}
+      target="_blank"
+      rel="noopener noreferrer"
+      tabindex="0"
       aria-label="Privacy (opens in a new tab)"
     >
+      <Icon name="privacy" />
       Privacy
     </a>
-    <button class="storage-settings enhancement" data-storage-open>
-      Storage settings
+    <button
+      class="storage-settings enhancement"
+      type="button"
+      data-storage-open
+      aria-label="Settings for browser storage"
+    >
+      <Icon name="storage" />
+      Settings
     </button>
+    {resources.map((resource) => (
+      <a
+        href={withBase(resource.href)}
+        target="_blank"
+        rel="noopener noreferrer"
+        tabindex="0"
+        aria-label={`${resource.label} (opens in a new tab)`}
+      >
+        <Icon name={resource.icon} />
+        {resource.label}
+      </a>
+    ))}
+    <details class="site-footer__more" data-disclosure-menu>
+      <summary>
+        More <Icon name="chevron" />
+      </summary>
+      <nav class="site-footer__menu-panel" aria-label="More footer links">
+        <ul role="list">
+          {navigation.map((item) => (
+            <li>
+              <a
+                href={withBase(item.href)}
+                target="_blank"
+                rel="noopener noreferrer"
+                tabindex="0"
+                aria-label={`${item.label} (opens in a new tab)`}
+              >
+                <Icon name={item.icon} />
+                <span>{item.label}</span>
+                <Icon name="arrowRight" />
+              </a>
+            </li>
+          ))}
+          <li>
+            <a
+              href={withBase('/brand/')}
+              target="_blank"
+              rel="noopener noreferrer"
+              tabindex="0"
+              aria-label="Brand kit (opens in a new tab)"
+            >
+              <Icon name="portfolio" />
+              <span>Brand kit</span>
+              <Icon name="arrowRight" />
+            </a>
+          </li>
+          <li>
+            <a href={site.repositoryUrl} target="_blank" rel="noopener noreferrer" tabindex="0">
+              <Icon name="github" />
+              <span>Source on GitHub</span>
+              <Icon name="arrowRight" />
+              <span class="visually-hidden"> (external site, opens in a new tab)</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </details>
+  </nav>
+  <div class="site-footer__legal">
     <p>
       © {built.getFullYear()} {profile.name}. {footer.disclaimer}
     </p>
@@ -119,99 +122,3 @@ const built = new Date();
     </p>
   </div>
 </footer>
-<style>
-  .site-footer {
-    margin-top: var(--section);
-    padding-block: 2.5rem 1.5rem;
-    border-top: 1px solid var(--rule);
-  }
-  .site-footer__top {
-    display: grid;
-    grid-template-columns: 1fr 1.4fr 1fr;
-    gap: 1.5rem;
-    padding-bottom: 1.25rem;
-  }
-  .site-footer__brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-height: 2.75rem;
-    color: var(--text);
-    font-size: 1.25rem;
-    font-weight: 750;
-    text-decoration: none;
-    letter-spacing: -0.035em;
-  }
-  .site-footer__brand:visited {
-    color: var(--text);
-  }
-  .site-footer__brand img {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-  .site-footer__identity p {
-    margin-top: 0.75rem;
-    max-width: 14rem;
-    color: var(--muted);
-    font-size: 0.8125rem;
-  }
-  nav h2 {
-    margin-bottom: 0.5rem;
-    font-size: 0.75rem;
-    color: var(--muted);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-  }
-  nav ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 1rem;
-  }
-  nav li + li {
-    margin: 0;
-  }
-  nav a,
-  nav a:visited {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-height: 2.75rem;
-    min-width: 2.75rem;
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.8125rem;
-  }
-  .site-footer__bottom {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.5rem 1.5rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--rule);
-    color: var(--muted);
-    font-size: 0.75rem;
-    align-items: center;
-  }
-  @media (hover: hover) {
-    nav a:hover {
-      color: var(--link);
-      text-decoration: underline;
-    }
-  }
-  .site-footer__bottom > a {
-    display: inline-flex;
-    align-items: center;
-    min-width: 44px;
-    min-height: 44px;
-  }
-  @media (max-width: 40rem) {
-    .site-footer__top {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 1rem;
-    }
-    .site-footer__identity p {
-      max-width: none;
-    }
-  }
-</style>

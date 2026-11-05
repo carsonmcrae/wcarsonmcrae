@@ -360,3 +360,10 @@ were preserved. The salt, existing deduplication identities, bindings, and hourl
 Fresh NVDA evaluation remains outstanding because Carson requested TTS stay off. VoiceOver on
 macOS/iOS is unavailable on this Windows machine. Automated WebKit/axe results and source scans do
 not establish full accessibility conformance or certify the absence of every possible vulnerability.
+
+## Daysforth 1.0.1 — November 5, 2026
+
+The complete [follow-up implementation](docs/V1.0.1-RELEASE.md) and
+[visual/interaction review](docs/qa/1.0.1.md) are maintained separately so this historical record
+stays an index rather than absorbing every release’s detailed evidence. Final publication and
+scanner identifiers belong in the release pull request.

@@ -1,0 +1,22 @@
+---
+/**
+ * Purpose: Present a category with its shared decorative icon and readable label.
+ * Scope: Compact, noninteractive category metadata for posts and native filter choices.
+ * Does NOT belong: Selecting a category or changing timeline state.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+import { categoryPresentation } from '../data/categories';
+import Icon from './Icon.astro';
+import '../styles/category-chips.css';
+interface Props {
+  category: keyof typeof categoryPresentation;
+}
+const { category } = Astro.props;
+const presentation = categoryPresentation[category];
+---
+
+<span class={`category-chip category-chip--${presentation.tone}`}>
+  <Icon name={presentation.icon} />
+  {presentation.label}
+</span>

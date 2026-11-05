@@ -39,10 +39,11 @@ test('Life hobby photos form desktop pairs and a single mobile column', async ({
       'href',
       /(?:\.webp(?:\?|$)|[?&]f=webp(?:&|$))/,
     );
-    await expect(tile.locator('.destination-link')).toHaveAttribute(
-      'href',
+    await expect(tile.locator('[data-photo]')).toHaveAttribute(
+      'data-photo-post',
       new RegExp(`/posts/${photo.postId}/$`),
     );
+    await expect(tile.locator('figcaption,.destination-link')).toHaveCount(0);
   }
   await expect(gallery.locator('[data-moment-image="first-watch-new-photo"]')).toBeVisible();
 });

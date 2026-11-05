@@ -196,10 +196,9 @@ export const experiencePosts: TimelinePost[] = [
     date: '2026-05',
     title: 'Picked up pickleball',
     category: 'Life',
-    caption: 'Golf’s faster, louder, and more forgiving cousin.',
+    caption: 'Don’t knock it until you try it. It’s basically full-court ping-pong.',
     body: [
       'I started playing pickleball in May 2026. It only took my brother two years of asking—and me making fun of pickleball on Reels for about as long—to finally give it a try.',
-      'Between [golf](/posts/started-golf/) and pickleball, I’m finding plenty of ways to be humbled by a small ball. At least this one comes with a paddle.',
     ],
     image: 'carson-pickleball',
     imageAlt: 'Carson playing pickleball',
