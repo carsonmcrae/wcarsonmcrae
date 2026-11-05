@@ -1,19 +1,22 @@
 /**
  * Purpose: Protect decorative icon appearance and native keyboard exclusion as markup evolves.
- * Scope: Pixel equivalence with explicit legacy SVG sizing and keyboard exclusion in every browser project.
+ * Scope: Fresh-document pixel equivalence with legacy SVG sizing and native keyboard exclusion.
  * Does NOT belong: Brand artwork or the licensed Phosphor path definitions.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
-test('shared symbols preserve legacy appearance and native keyboard exclusion', async ({
-  page,
-}) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('');
+async function readyHeader(page: Page) {
   await expect(page.locator('html')).toHaveAttribute('data-site-ready', 'true');
-  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all(
+      Array.from(document.querySelectorAll<HTMLImageElement>('.site-header img')).map((image) =>
+        image.decode(),
+      ),
+    );
+  });
   const header = page.locator('.site-header');
   // External SVG symbols can finish painting after the document and its fonts are ready.
   // A reference captured before real glyph geometry exists compares two different loading states.
@@ -31,7 +34,18 @@ test('shared symbols preserve legacy appearance and native keyboard exclusion', 
       }),
     )
     .toBe(true);
-  // Inspect the shipped markup before adding legacy attributes to construct the reference.
+  return header;
+}
+
+test('shared symbols preserve legacy appearance and native keyboard exclusion', async ({
+  page,
+  context,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('');
+  const sourceUrl = page.url();
+  const header = await readyHeader(page);
+  // Inspect shipped markup without mutating its rendered SVG instance cache.
   const visibleIcons = await header.locator('svg.icon').evaluateAll((icons) =>
     icons
       .filter((icon) => icon.getBoundingClientRect().height > 0)
@@ -50,16 +64,37 @@ test('shared symbols preserve legacy appearance and native keyboard exclusion', 
     expect(icon.hidden).toBe('true');
   }
   const actual = await header.screenshot({ animations: 'disabled' });
-  await header.locator('svg.icon').evaluateAll((icons) => {
-    for (const icon of icons) {
-      icon.setAttribute('viewBox', '0 0 256 256');
-      icon.setAttribute('focusable', 'false');
+  const reference = await context.newPage();
+  try {
+    await reference.emulateMedia({ reducedMotion: 'reduce' });
+    let rewritten = 0;
+    await reference.route(sourceUrl, async (route) => {
+      const response = await route.fetch();
+      const html = await response.text();
+      const original = '<svg class="icon" aria-hidden="true">';
+      rewritten = html.split(original).length - 1;
+      // Build the reference before first paint; live viewport changes can alter curve rasters.
+      const body = html.replaceAll(
+        original,
+        '<svg class="icon" aria-hidden="true" viewBox="0 0 256 256" focusable="false">',
+      );
+      await route.fulfill({ response, body });
+    });
+    await reference.goto(sourceUrl);
+    expect(rewritten, 'Legacy SVG markup was rewritten before parsing').toBeGreaterThan(0);
+    const legacyHeader = await readyHeader(reference);
+    await expect(legacyHeader.locator('svg.icon').first()).toHaveAttribute(
+      'viewBox',
+      '0 0 256 256',
+    );
+    await expect(legacyHeader.locator('svg.icon').first()).toHaveAttribute('focusable', 'false');
+    const explicit = await legacyHeader.screenshot({ animations: 'disabled' });
+    if (!actual.equals(explicit)) {
+      await test.info().attach('explicit-header', { body: explicit, contentType: 'image/png' });
+      await test.info().attach('actual-header', { body: actual, contentType: 'image/png' });
     }
-  });
-  const explicit = await header.screenshot({ animations: 'disabled' });
-  if (!actual.equals(explicit)) {
-    await test.info().attach('explicit-header', { body: explicit, contentType: 'image/png' });
-    await test.info().attach('actual-header', { body: actual, contentType: 'image/png' });
+    expect(actual.equals(explicit), 'Header PNG bytes remain exactly equal').toBe(true);
+  } finally {
+    await reference.close();
   }
-  expect(actual.equals(explicit), 'Header PNG bytes remain exactly equal').toBe(true);
 });
