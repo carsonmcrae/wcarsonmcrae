@@ -1,5 +1,5 @@
 /**
- * Purpose: The positive reactions available on a Daysforth moment.
+ * Purpose: The positive reactions available on Daysforth moments and photographs.
  * Scope: Stable reaction IDs, labels, and corresponding interface icons.
  * Does NOT belong: Vote storage, totals, or network calls.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.

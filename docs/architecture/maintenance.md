@@ -29,6 +29,17 @@ these public records. Routine copy edits and tests do not need a new decision do
 
 ## Current release changes
 
+Version 1.1.0 separates photo-viewer lifecycle, native filmstrip navigation, and the photo reaction
+DOM adapter. Both photo and moment adapters use the shared reaction-only controller. Stable
+`photo-`/`screen-` asset identities extend the approved Worker allowlist without changing existing
+moment keys, database schema, secrets, or permanent totals. Deploy this compatible Worker addition
+before the corresponding site. Reactions keep the same consent-gated preferences and shared abuse
+allowance; family albums add approved content, not a new storage purpose or external service.
+
+Release records now carry explicit calendar dates rendered consistently on index/detail pages.
+The format gate checks valid full dates, and content-review policy preserves historical dates.
+Header container layout and dock-aware shortcut placement remain transient presentation state.
+
 Version 1.0.1 changes album presentation from long page grids to compact entries and a grouped
 carousel in the shared native photo viewer. The viewer continues to load on intent, keeps its
 selection in memory, and retains ordinary original-photo links without JavaScript. No service,

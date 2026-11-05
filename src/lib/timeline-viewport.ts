@@ -21,5 +21,6 @@ export function readTimelineViewport(root: HTMLElement, win: Pick<Window, 'inner
     atStart: content.top >= readingTop - 1,
     atEnd: content.bottom <= win.innerHeight + 1,
     readingTop,
+    dockVisible: dock.bottom > headerBottom,
   };
 }

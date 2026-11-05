@@ -1,6 +1,6 @@
 /**
  * Purpose: Keep existing hearts while adding independent reaction choices.
- * Scope: Stable database keys, preserving legacy post IDs for the heart reaction.
+ * Scope: Stable moment/image database keys, preserving legacy post IDs for the heart reaction.
  * Does NOT belong: Database schema, counts, or UI state.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted

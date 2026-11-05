@@ -50,7 +50,7 @@ export const dogs: Dog[] = [
     detail:
       'A shark as a puppy; the sweetest goldendoodle now. Still one half of the unelected management team.',
     photo: 'margot-1',
-    photoAlt: 'Margot, a golden apricot doodle with a wavy coat',
+    photoAlt: 'Margot sitting beside a bed with a yellow duck toy on her head',
     swatch: 'margot',
   },
   {
@@ -62,7 +62,7 @@ export const dogs: Dog[] = [
     detail:
       'The smartest dog I’ve ever had and a huge softy. My first and only Craigslist pickup—still wild that it’s how I found her.',
     photo: 'quinn-1',
-    photoAlt: 'Quinn, a black doodle with a shaggy coat and white markings',
+    photoAlt: 'Quinn wearing glasses on a gray sofa, with white markings on her chest and paws',
     swatch: 'quinn',
   },
 ];
@@ -77,6 +77,16 @@ export const orgChart = {
 export const interestsIntro = {
   title: 'Things I’m into',
   lede: 'The common thread: I like understanding how things work. If it has an inside, I’d like to see it.',
+};
+
+export const outAndAbout = {
+  title: 'Out and about',
+  lede: 'I’m big into watch collecting, golf, and pickleball. I also love to travel—I’ve been to over 15 countries, with plenty more I’d like to see.',
+};
+
+export const familyIntro = {
+  title: 'Family, old and new',
+  lede: 'I couldn’t be happier with the family I’ve had by my side all my life, and the new family I’m now part of.',
 };
 
 export const interests: Interest[] = [

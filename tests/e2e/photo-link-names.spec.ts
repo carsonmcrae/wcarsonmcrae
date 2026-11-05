@@ -7,6 +7,12 @@
  */
 import { expect, test } from '@playwright/test';
 import { expectNoViolations, openThemedHome } from './helpers';
+import { timelinePosts } from '../../src/data/timeline';
+
+const timelinePhotoCount = timelinePosts.reduce(
+  (count, post) => count + Number(Boolean(post.image)) + (post.gallery?.length ?? 0),
+  0,
+);
 
 for (const colorScheme of ['light', 'dark'] as const) {
   test(`offscreen photo links stay descriptively named after settings and reload in ${colorScheme}`, async ({
@@ -22,7 +28,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await page.reload();
     await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
     const photos = page.locator('[data-timeline-groups] [data-photo]');
-    await expect(photos).toHaveCount(24);
+    await expect(photos).toHaveCount(timelinePhotoCount);
     const offscreen = await photos.evaluateAll(
       (links) => links.filter((link) => link.getBoundingClientRect().top >= innerHeight).length,
     );

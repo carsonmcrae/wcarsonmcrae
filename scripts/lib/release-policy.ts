@@ -5,8 +5,11 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
+import { isTimelineDate } from '../../src/lib/timeline-dates.ts';
+
 interface Release {
   version: string;
+  date?: string;
   title: string;
   summary: string;
   sections: { id: string; title: string; items: string[] }[];
@@ -54,6 +57,8 @@ function checkHistory(releases: Release[]): string[] {
   const errors: string[] = [];
   for (const [index, release] of releases.entries()) {
     if (!STABLE.test(release.version)) errors.push(`Invalid release version: ${release.version}.`);
+    if (release.date?.length !== 10 || !isTimelineDate(release.date))
+      errors.push(`Release ${release.version} needs a real YYYY-MM-DD calendar date.`);
     const previous = releases[index - 1];
     if (previous && compare(previous.version, release.version) <= 0)
       errors.push('Release history must be unique and newest first.');

@@ -6,14 +6,18 @@ An outage or quota limit leaves the feed, Save, and Copy link usable.
 
 ## Contract
 
-- `GET /reactions` returns a count for each approved moment.
+- `GET /reactions` returns a count for each approved moment/image reaction key.
 - `POST /reactions/<id>` accepts `{ "visitorId": "<browser UUID>" }` and returns `{ "count": 1 }`.
 - Reactions are permanent. `DELETE /reactions/<id>` returns 405.
 - `DELETE /identity` accepts the same UUID and removes its deduplication records without changing
   aggregate counts. It cannot remove another browser’s records without knowing its random UUID.
-- Heart keys remain the published moment ID. Celebrate, Smile, and Applaud use the stable suffixes
+- Heart keys remain the published moment ID. Image targets use `photo-<canonical asset stem>` for
+  photographs and `screen-<canonical asset stem>` for interface captures. The same asset shares its
+  count across pages, albums, responsive sizes, and related moments; a photo reaction never changes
+  its moment's count. These namespaces are reserved for images.
+- Celebrate, Smile, and Applaud use the stable suffixes
   `--celebrate`, `--laugh`, and `--support`. Each option can be added independently, once per identity.
-- An existing browser/moment pair is idempotent. SQL uniqueness and the insert trigger prevent
+- An existing browser/reaction-key pair is idempotent. SQL uniqueness and the insert trigger prevent
   duplicate totals, including concurrent submissions. The removal trigger is retired by migration 0002.
 - New votes and identity-erasure requests each have a separate allowance of 20 per network per hour.
   Existing votes remain idempotent without consuming a new-vote allowance. Repeated erasure requests
@@ -28,7 +32,15 @@ An outage or quota limit leaves the feed, Save, and Copy link usable.
   Without permission, votes work with an identifier in memory for the current document.
 
 The implementation lives in `src/lib/reaction-service.ts`; the Worker entry only supplies bindings
-and approved post IDs. Unit tests execute the real migration and queries against in-memory SQLite.
+and the pure `src/data/reaction-targets.ts` allowlist. That registry derives image IDs from approved
+content rather than every file in the asset directory, and preserves published moment aliases.
+Published image stems are permanent identities: retain retired image IDs in the registry if their
+presentation is removed, and never repurpose an existing ID for a different photograph. Unit tests
+execute the real migrations and queries against in-memory SQLite.
+
+The browser's `reaction-controller.ts` shares identity, consent-gated choices, validated requests,
+and in-flight same-key deduplication between post controls and the photo viewer. DOM adapters own
+their own labels, counts, loading races, and feedback; image reactions do not acquire Save/Copy state.
 
 ## Deployment
 
@@ -58,6 +70,13 @@ For the permanent-reactions release, first apply migration 0002 remotely using t
 profile, then deploy the Worker, then publish the frontend. Never reset totals or rotate the salt.
 Migration 0002 drops only the decrement trigger; it preserves every existing vote and total.
 The three retired app-start event IDs remain accepted for compatibility.
+
+For photo reactions, deploy the additive Worker allowlist before publishing the frontend. This
+change needs no SQL migration, new database, binding change, or salt rotation. Preserve every
+existing moment key and permanent total. Take read-only before/after count snapshots and verify
+that old totals do not decrease while approved image keys become available with their real counts.
+All moment and image votes share the existing 20 new reactions per network/hour allowance;
+images do not receive an additional quota. Existing service cleanup and identity erasure cover both.
 
 Before deploying the bounded-erasure update, apply migration 0003 using the same guarded profile.
 It adds only a visitor-hash index so identifier erasure uses an indexed lookup instead of a full

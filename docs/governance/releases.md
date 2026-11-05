@@ -11,7 +11,10 @@ identify permanent records; they are not a second setting for the current versio
    or established experience. Content changes that alter the published site also need a patch.
 2. Update `package.json` and both root versions in `package-lock.json` together (`npm version
 <version> --no-git-tag-version --ignore-scripts` can do this). Never create an automatic commit.
-3. Prepend a release record in `src/data/releases.ts` with useful visitor-facing changes. Keep old
+3. Prepend a release record in `src/data/releases.ts` with a permanent `date` in `YYYY-MM-DD`
+   form and useful visitor-facing changes. Confirm the actual calendar date when the release is
+   prepared; never derive old release dates from the current clock or rebuild time. Preserve dates
+   on later releases unless Carson explicitly corrects a documented historical error. Keep old
    version URLs and old notes. Avoid implementation logs, invented release dates, and unsupported
    accessibility/security claims. Notes for the new version should explain the resulting experience.
 4. Update [architecture documentation](../architecture/maintenance.md) when its triggers apply.
@@ -25,7 +28,7 @@ changes can retain the version. Versions must never move backwards.
 ## Checks and comparison context
 
 `npm run check:release` checks stable version syntax, lockfile agreement, current public notes,
-unique descending release history, usable note sections, and any supplied tag identity. It runs
+unique descending release history, real full calendar dates, usable note sections, and any supplied tag identity. It runs
 as part of `validate:static`. CI supplies the pull request base commit in `RELEASE_BASE_SHA` with
 enough Git history available, so product bumps and architecture maintenance are enforced.
 
@@ -34,6 +37,10 @@ the check. Without a base it prints that change-sensitive checks were not perfor
 unavailable supplied base fails rather than silently skipping the comparison. When checking a Git
 tag or release, supply `RELEASE_TAG=v<version>`; a mismatched tag fails. A matching tag alone does not
 prove that required tests or manual evaluation passed.
+
+Release dates are calendar values, not timestamps. The public list and detail pages use semantic
+`<time datetime="YYYY-MM-DD">` elements and format the same calendar day in every time zone.
+Changing a displayed historical date never moves or replaces an immutable published Git tag.
 
 ## Owner-controlled publication
 

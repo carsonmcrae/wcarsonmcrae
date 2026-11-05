@@ -27,6 +27,17 @@ const groups = groupMoments(timelinePosts, 'years');
   <div class="timeline-dock enhancement">
     <DateRail />
     <TimelineControls />
+    <div class="timeline-jumps enhancement">
+      <button
+        class="timeline-jumps__up"
+        data-timeline-edge="newest"
+        data-jump-date={chronological(timelinePosts)[0]!.date}
+        aria-label="Top of timeline, newest moment"
+        hidden
+      >
+        <Icon name="chevron" />
+      </button>
+    </div>
   </div>
   <div class="timeline-empty" data-timeline-empty hidden tabindex="-1"></div>
   <div class="timeline-groups" data-timeline-groups>
@@ -45,19 +56,12 @@ const groups = groupMoments(timelinePosts, 'years');
 </section>
 <ActionNotice />
 <MomentNavigator />
-<div class="timeline-jumps enhancement" role="group" aria-label="Timeline shortcuts" hidden>
-  <button
-    class="timeline-jumps__up"
-    data-timeline-edge="newest"
-    data-jump-date={chronological(timelinePosts)[0]!.date}
-    aria-label="Top of timeline, newest moment"
-  >
-    <Icon name="chevron" />
-  </button>
+<div class="timeline-jumps enhancement">
   <button
     data-timeline-edge="oldest"
     data-jump-date={chronological(timelinePosts).at(-1)!.date}
     aria-label="Bottom of timeline, oldest moment"
+    hidden
   >
     <Icon name="chevron" />
   </button>

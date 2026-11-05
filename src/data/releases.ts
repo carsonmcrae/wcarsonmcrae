@@ -1,6 +1,6 @@
 /**
  * Purpose: Describe shipped Daysforth changes in language useful to visitors.
- * Scope: Permanent release history and the current version from the canonical package manifest.
+ * Scope: Permanent dated release history and the current version from the canonical package manifest.
  * Does NOT belong: Personal timeline events or instructions for publishing a release.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -11,7 +11,43 @@ export const currentVersion = manifest.version;
 
 export const releases = [
   {
+    version: '1.1.0',
+    date: '2026-11-05',
+    title: 'A closer look, and a reaction for every photograph',
+    summary:
+      'Enjoy a steadier photo viewer with a thumbnail strip, react to individual photographs, and find more of the people and stories behind the albums.',
+    sections: [
+      {
+        id: 'viewer',
+        title: 'Stay with the photograph',
+        items: [
+          'Browse a fixed photo viewer with a thumbnail strip that keeps the rest of the album within reach.',
+          'Move between photographs with buttons, arrow keys, or a swipe, then return to your place when you close the viewer.',
+          'Add a reaction to an individual photograph, with its own shared count.',
+        ],
+      },
+      {
+        id: 'navigation',
+        title: 'Find your way comfortably',
+        items: [
+          'Use clearer mobile header and menu controls, with more comfortable navigation on smaller screens.',
+          'Read a permanent calendar date on every release, on both the updates list and its own notes page.',
+        ],
+      },
+      {
+        id: 'people',
+        title: 'Meet more of the family',
+        items: [
+          'Read the stories behind all 24 photographs in Margot’s, Quinn’s, and Carson’s albums.',
+          'Find both sides of the family at the bottom of Life and in the wedding album.',
+          'Catch up on watch collecting, golf, pickleball, and travel in Life’s Out and about section.',
+        ],
+      },
+    ],
+  },
+  {
     version: '1.0.1',
+    date: '2026-11-05',
     title: 'More room for the photos, less clutter along the way',
     summary:
       'Browse personal albums in a carousel, recognize moment categories at a glance, and use quieter timeline controls that appear when you need them.',
@@ -48,6 +84,7 @@ export const releases = [
   },
   {
     version: '1.0.0',
+    date: '2026-11-03',
     title: 'A place for the moments along the way',
     summary:
       'The first version of Daysforth brings a personal timeline, photographs, and projects together in one place.',

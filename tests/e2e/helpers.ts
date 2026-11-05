@@ -1,7 +1,7 @@
 /**
  * Purpose: Shared page list and helpers for the browser tests.
  * Scope: The site's pages (paths relative to the base URL, so tests run at the root or under the
- *   GitHub Pages project path), themed home readiness, opening the small-screen menu, and overflow.
+ *   GitHub Pages project path), themed home readiness, menu/shortcut fixtures, and overflow.
  * Does NOT belong: Test cases (the *.spec.ts files beside it).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -90,6 +90,26 @@ export async function openMenuIfCollapsed(page: Page): Promise<void> {
   if ((await toggle.isVisible()) && (await toggle.getAttribute('aria-expanded')) === 'false') {
     await toggle.click();
   }
+}
+
+/** Named shortcut targets shared by intent, geometry, and touch browser checks. */
+export function timelineShortcuts(page: Page) {
+  return {
+    up: page.getByRole('button', { name: 'Top of timeline, newest moment' }),
+    down: page.getByRole('button', { name: 'Bottom of timeline, oldest moment' }),
+  };
+}
+
+/** Qualifies initially hidden shortcuts with actual keyboard scrolling, preserving both assertions. */
+export async function qualifyTimelineShortcuts(page: Page) {
+  await page.evaluate(() => document.fonts.ready);
+  const controls = timelineShortcuts(page);
+  await expect(controls.up).toBeHidden();
+  await expect(controls.down).toBeHidden();
+  await page.keyboard.press('PageDown');
+  await expect(controls.up).toBeVisible();
+  await expect(controls.down).toBeVisible();
+  return controls;
 }
 
 /** An explicit allowed decision for tests of optional persistence; privacy tests use the real UI. */

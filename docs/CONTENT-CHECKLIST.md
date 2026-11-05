@@ -50,6 +50,11 @@ the matching file in `src/data/`.
 - [x] **Wedding photos with Nicole** provided and approved (`nicole-carson-*.jpg`). Everyone pictured in
       every photo is approved for public use (2026-11-03).
 - [x] Photos were imported with `npm run images:import`, which strips metadata and resizes.
+- [x] **Family photographs and album captions (November 5).** Both new family group photographs
+      and their pictured subjects are approved for public use. All 62 incoming originals are
+      preserved; the two additions have a SHA-256 verified external backup. The 24 dog/Carson captions,
+      Jackson gaming identification, Nashville SC/Messi context, and over-15-country travel total
+      come directly from Carson. No match date or opponent was inferred.
 
 ## Optional details
 

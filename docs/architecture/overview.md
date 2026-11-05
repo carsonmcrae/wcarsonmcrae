@@ -76,13 +76,32 @@ belong to a browser entry. They are not a server browsing profile. Dialog and ac
 intent to control the script budget.
 
 Personal albums use the same native photo dialog as individual photographs. Compact previews on
-Life and About expose approved photo links grouped in the rendered page; the viewer reads that
-group when opened and owns only the current photo index, previous/next actions, keyboard/swipe
-navigation, and related moment destination. It does not create browser history entries, network
-profiles, or persistent album state. Closing preserves the background position and returns focus
+Life and About expose approved photo links grouped in the rendered page; `photo-viewer.ts` reads
+that group when opened and owns dialog lifecycle and composition, the current photo index,
+previous/next actions, keyboard/swipe navigation, and related moment destination. It does not create
+browser history entries, network profiles, or persistent album state. Closing preserves the background position and returns focus
 to the original trigger, even after navigating to another photograph. Original image links remain
 usable without JavaScript. Visible captions belong inside the viewer, while the preview identifies
 the album as a whole.
+
+Each rendered photo link carries its canonical image reaction ID in the `data-photo` value.
+`photo-reaction-id.ts` derives `photo-<asset stem>` or `screen-<asset stem>`, independent of generated
+URLs, album order, captions, or related post IDs. `reaction-targets.ts` derives the Worker allowlist
+from approved content and includes existing moment aliases. Do not reuse published image IDs or
+remove their supported keys when retiring a presentation. The reaction-only controller shares
+consent-gated identity, remembered choices, validated HTTP operations, and in-flight deduplication;
+post and viewer adapters remain responsible for their own DOM and stale-read protection.
+If a confirmed vote's optional choice flag cannot be written, the controller retains it for that
+visitor identity in the current session. Forgetting the identity invalidates that fallback; a late
+vote response does not restore cleared preferences or reduce the permanent server count.
+
+The shared dialog has a viewport-bounded shell with a contained image, reserved caption and related
+moment slots, and a filmstrip below the image. `photo-filmstrip.ts` owns native thumbnail buttons,
+their `aria-current` state, and the scrollable neighboring thumbnails; centering scrolls only the
+strip, preserving the background page position. `photo-reaction-controls.ts` adapts the shared reaction controller to
+the selected image without duplicating the network protocol or keeping a separate visitor identity.
+The same asset's choices and counts follow its stable ID across pages. The existing reaction-key
+preference namespace covers images; family albums add no independent storage category or history.
 
 Timeline shortcut visibility and touch media affordances are transient browsing presentation.
 Shortcuts qualify only after scrolling into the feed and suppress directions that have no remaining
@@ -115,6 +134,12 @@ parameterized SQL and database uniqueness make votes idempotent while aggregate 
 permanent. An hourly trigger removes expired network limit records and reaction identifiers eligible
 after 90 days. Identifier removal does not undo a published count.
 
+Moment and image reactions use the same four kinds and service protections. Image keys extend the
+existing allowlist without a schema migration, salt change, or reset of published moment totals.
+Deploy this backward-compatible Worker addition before the site starts submitting image votes.
+The network/hour new-vote allowance is shared across all targets; identity erasure and cleanup retain
+all aggregate counts regardless of target type.
+
 Origin/CORS checks govern browsers; they are not account authentication. A person can clear storage
 and obtain another identifier. Reaction totals are lightweight social signals, not a ballot,
 identity proof, analytics measure, or fraud-resistant counter. Hashed identifiers are pseudonymous,
@@ -123,7 +148,10 @@ not a claim of anonymization.
 ## Release and delivery
 
 `package.json` is the canonical product version. `src/data/releases.ts` reads it for the UI and keeps
-permanent historical visitor notes. The lockfile must agree. CI checks source quality, full per-file
+permanent historical visitor notes with explicit calendar dates. Release list/detail pages share
+the UTC calendar formatter and semantic time elements; dates do not depend on rebuild time or the
+visitor's time zone. The release gate validates actual full calendar dates, while preserving a
+historical date remains a content-review responsibility. The lockfile must agree. CI checks source quality, full per-file
 unit coverage, built pages and budgets at root/subpath, browser behavior/accessibility, and security.
 The Pages deployment workflow builds and verifies the exact publication address after the quality
 gate. A Worker/schema change is released separately and needs its own deployment verification.

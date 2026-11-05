@@ -49,6 +49,12 @@ Set `PW_WEBKIT=1` to include WebKit locally. Browser tests generate a temporary 
 certificate using OpenSSL (bundled with Git for Windows; override `OPENSSL_PATH` if needed).
 They do not install a trust root or change the production Content Security Policy.
 
+For browser verification, set `PUBLIC_REACTIONS_URL=https://reactions.daysforth.test` in your shell
+before both the build and browser commands (or `npm run validate:full`). CI’s browser job does this
+automatically. Photo-reaction tests intercept that reserved endpoint before navigation and require
+it to be configured; they never send votes to the live Worker. Use the real service URL only for
+an explicitly authorized production build.
+
 ## Project structure
 
 ```text

@@ -8,7 +8,8 @@
  */
 import Icon from './Icon.astro';
 import { withBase } from '../lib/paths';
-import '../styles/photo-albums.css';
+import { reactions } from '../data/reactions';
+import '../styles/photo-viewer.css';
 ---
 
 <dialog class="photo-viewer" data-photo-viewer aria-labelledby="photo-viewer-title">
@@ -24,28 +25,69 @@ import '../styles/photo-albums.css';
     >
       Close <span aria-hidden="true">×</span>
     </button>
-    <p
-      class="photo-viewer__position"
-      data-photo-count
-      aria-live="polite"
-      aria-atomic="true"
-      hidden
-    ></p>
+    <p class="photo-viewer__position" data-photo-count hidden></p>
   </div>
-  <figure data-photo-stage>
-    <img data-photo-large alt="" />
-    <figcaption data-photo-caption-output></figcaption>
-  </figure>
-  <div class="photo-viewer__navigation">
-    <button type="button" class="control" data-photo-previous hidden>
-      <Icon name="arrow" /> Previous
-    </button>
-    <button type="button" class="control" data-photo-next hidden>
-      Next <Icon name="arrowRight" />
-    </button>
+  <div class="photo-viewer__body">
+    <div class="photo-viewer__media">
+      <figure data-photo-stage aria-describedby="photo-caption">
+        <img data-photo-large alt="" />
+      </figure>
+      <nav class="photo-viewer__navigation" aria-label="Photo navigation">
+        <button type="button" class="control" data-photo-previous hidden>
+          <Icon name="arrow" /> Previous
+        </button>
+        <button type="button" class="control" data-photo-next hidden>
+          Next <Icon name="arrowRight" />
+        </button>
+      </nav>
+      <div
+        class="photo-viewer__strip"
+        data-photo-strip
+        role="group"
+        aria-label="Photos in this album"
+        hidden
+      ></div>
+    </div>
+    <section class="photo-viewer__details" aria-label="About this photo">
+      <div class="photo-viewer__caption">
+        <p class="photo-viewer__eyebrow">A moment along the way</p>
+        <p id="photo-caption" data-photo-caption-output></p>
+      </div>
+      <div class="photo-viewer__social">
+        <p class="photo-viewer__eyebrow">Leave a little love</p>
+        <div
+          class="photo-viewer__reactions"
+          data-photo-reactions
+          role="group"
+          aria-label="Photo reactions"
+        >
+          {reactions.map((reaction) => (
+            <button type="button" data-photo-react={reaction.id} aria-pressed="false" disabled>
+              <Icon name={reaction.icon} />
+              <span>{reaction.label}</span> <span data-photo-reaction-count>—</span>
+            </button>
+          ))}
+        </div>
+        <p
+          class="photo-viewer__status"
+          data-photo-reaction-status
+          role="status"
+          aria-live="polite"
+        ></p>
+      </div>
+      <div class="photo-viewer__related">
+        <a href={withBase('/')} class="destination-link" data-photo-related hidden>
+          <Icon name="arrowRight" />
+          View this moment
+        </a>
+      </div>
+    </section>
   </div>
-  <a href={withBase('/')} class="destination-link" data-photo-related hidden>
-    <Icon name="arrowRight" />
-    View this moment
-  </a>
+  <p
+    class="visually-hidden"
+    data-photo-announcement
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  ></p>
 </dialog>

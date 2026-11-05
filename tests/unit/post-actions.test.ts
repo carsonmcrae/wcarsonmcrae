@@ -77,10 +77,35 @@ beforeEach(() => clearPreferences(null));
 afterEach(() => {
   for (const cleanup of cleanups.splice(0)) cleanup();
   document.body.innerHTML = '';
+  document.head.querySelector('link[rel="canonical"]')?.remove();
+  vi.unstubAllEnvs();
   vi.restoreAllMocks();
 });
 
 describe('Save and Copy', () => {
+  it.each([
+    ['/', 'https://canonical.test/posts/current/', 'https://canonical.test/posts/born/'],
+    ['/project/', 'https://pages.test/project/', 'https://pages.test/project/posts/born/'],
+    ['/', null, 'https://daysforth.com/posts/born/'],
+    ['/project/', null, 'https://daysforth.com/project/posts/born/'],
+  ])(
+    'derives Copy from stable ID at base %s with canonical %s',
+    async (base, canonical, expected) => {
+      vi.stubEnv('BASE_URL', base);
+      const { win, click } = setup();
+      document.querySelector('[data-post-actions]')!.removeAttribute('data-post-url');
+      if (canonical) {
+        const link = document.createElement('link');
+        link.rel = 'canonical';
+        link.href = canonical;
+        document.head.append(link);
+      }
+      click('copy');
+      await vi.waitFor(() =>
+        expect(win.navigator.clipboard.writeText).toHaveBeenCalledWith(expected),
+      );
+    },
+  );
   it('updates choices on consent changes without replacing cards or reducing shared counts', async () => {
     const { storage, button, destroy } = setup({ storage: memoryStorage() });
     const original = button('save');
@@ -164,25 +189,27 @@ describe('Save and Copy', () => {
     expect(button('save').getAttribute('aria-pressed')).toBe('false');
     expect(announce).toHaveBeenCalledWith('Your browser could not save this moment.');
   });
-  it('copies a canonical permalink and supplies a manual alternative when the clipboard fails', async () => {
+  it('preserves a legacy explicit permalink and supplies it manually when the clipboard fails', async () => {
     const { win, click, announce } = setup();
+    document.querySelector<HTMLElement>('[data-post-actions]')!.dataset['postUrl'] =
+      'https://legacy.test/archive/born/';
     click('copy');
     await vi.waitFor(() => expect(announce).toHaveBeenLastCalledWith('Link copied.'));
     expect(win.navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'https://daysforth.com/posts/born/',
+      'https://legacy.test/archive/born/',
     );
     win.navigator.clipboard.writeText.mockRejectedValueOnce(new Error('blocked'));
     click('copy');
     await vi.waitFor(() =>
       expect(announce).toHaveBeenLastCalledWith(
-        'Copy this link: https://daysforth.com/posts/born/',
+        'Copy this link: https://legacy.test/archive/born/',
       ),
     );
     Object.assign(win, { navigator: {} });
     click('copy');
     await vi.waitFor(() =>
       expect(announce).toHaveBeenLastCalledWith(
-        'Copy this link: https://daysforth.com/posts/born/',
+        'Copy this link: https://legacy.test/archive/born/',
       ),
     );
   });
@@ -191,7 +218,9 @@ describe('shared reactions', () => {
   it('leaves totals unknown when unconfigured and keeps Save usable during an outage', async () => {
     const none = setup();
     none.click('react');
-    expect(none.announce).toHaveBeenCalledWith(expect.stringContaining('unavailable'));
+    await vi.waitFor(() =>
+      expect(none.announce).toHaveBeenCalledWith(expect.stringContaining('unavailable')),
+    );
     expect(none.button('react').textContent).toBe('—');
     none.destroy();
     const failing = setup({
@@ -276,7 +305,9 @@ describe('shared reactions', () => {
     });
     const noIdentity = setup({ endpoint: 'https://api.example.com', storage: blocked });
     noIdentity.click('react');
-    expect(noIdentity.announce).toHaveBeenCalledWith(expect.stringContaining('browser storage'));
+    await vi.waitFor(() =>
+      expect(noIdentity.announce).toHaveBeenCalledWith(expect.stringContaining('browser storage')),
+    );
     noIdentity.destroy();
     const unavailable = setup({
       endpoint: 'https://api.example.com',
@@ -323,6 +354,39 @@ describe('shared reactions', () => {
     expect(storage.getItem('daysforth.reacted.born')).toBeNull();
     click('react');
     await vi.waitFor(() => expect(button('react').textContent).toBe('3'));
+  });
+  it('does not submit twice if another click arrives while its first vote is pending', async () => {
+    let finish!: (response: Response) => void;
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({ born: 2 }))
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+      );
+    const { button, click, announce } = setup({ endpoint: 'https://api.example.com', fetcher });
+    await vi.waitFor(() => expect(button('react').textContent).toBe('2'));
+    click('react');
+    button('react').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await Promise.resolve();
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(announce).not.toHaveBeenCalled();
+    finish(Response.json({ count: 3 }));
+    await vi.waitFor(() => expect(button('react').getAttribute('aria-pressed')).toBe('true'));
+    expect(button('react').disabled).toBe(true);
+    expect(button('react').textContent).toBe('3');
+  });
+  it('honors a choice recorded by another adapter before its visible button refreshes', async () => {
+    const { storage, click, button, win, announce } = setup({
+      endpoint: 'https://api.example.com',
+    });
+    storage.setItem('daysforth.reacted.born', 'true');
+    click('react');
+    await vi.waitFor(() => expect(button('react').getAttribute('aria-pressed')).toBe('true'));
+    expect(button('react').disabled).toBe(true);
+    expect(win.fetch).toHaveBeenCalledTimes(1);
+    expect(announce).not.toHaveBeenCalled();
   });
   it('does not let a slow initial read block actions or overwrite a newer vote total', async () => {
     let resolve!: (response: Response) => void;

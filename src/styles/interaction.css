@@ -114,24 +114,45 @@ html:has(dialog[open]) body {
   display: contents;
 }
 .timeline-jumps button {
+  --jump-side-space: max(var(--gutter), calc((100vw - var(--page)) / 2));
   position: fixed;
-  right: max(0.5rem, calc((100vw - 72rem) / 2 - 3rem));
+  right: max(8px, calc(var(--jump-side-space) - 48px));
   bottom: max(0.75rem, env(safe-area-inset-bottom));
   z-index: 12;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 1px solid var(--rule);
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--link);
+  isolation: isolate;
+}
+.timeline-jumps button::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--control);
   border-radius: 50%;
   background: var(--surface);
-  color: var(--link);
   box-shadow: 0 2px 8px #09101d15;
+  z-index: -1;
+}
+.timeline-jumps .icon {
+  font-size: 0.625rem;
 }
 .timeline-jumps .timeline-jumps__up {
-  top: calc(var(--header-height) + 0.75rem + env(safe-area-inset-top));
+  position: absolute;
+  top: calc(100% + 4px);
+  right: max(-48px, calc(8px - var(--jump-side-space)));
   bottom: auto;
+}
+.timeline-jumps .timeline-jumps__up[data-dock-detached] {
+  position: fixed;
+  top: calc(var(--header-height) + 4px);
+  right: max(8px, calc(var(--jump-side-space) - 48px));
 }
 .timeline-jumps__up .icon {
   transform: rotate(180deg);
@@ -153,24 +174,6 @@ html[data-timeline-restore] main {
   .profile-summary__portrait {
     flex-basis: 4.5rem;
   }
-  .timeline-jumps .timeline-jumps__up {
-    top: calc(var(--header-height) + 17rem);
-  }
-}
-@media (min-width: 40.01rem) and (max-width: 64rem) {
-  .timeline-jumps .timeline-jumps__up {
-    top: calc(var(--header-height) + 13rem);
-  }
-}
-@media (max-height: 40rem) {
-  .timeline-jumps .timeline-jumps__up {
-    top: calc(var(--header-height) + 0.5rem);
-  }
-}
-@media (max-height: 28rem) {
-  .timeline-jumps .timeline-jumps__up {
-    top: max(0.5rem, env(safe-area-inset-top));
-  }
 }
 @media (hover: hover) {
   .destination-link:hover {
@@ -180,7 +183,7 @@ html[data-timeline-restore] main {
   .storage-settings:hover {
     color: var(--link);
   }
-  .timeline-jumps button:hover {
+  .timeline-jumps button:hover::before {
     background: var(--selected);
   }
 }

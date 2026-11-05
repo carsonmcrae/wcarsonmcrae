@@ -18,6 +18,11 @@
   font-weight: 650;
   letter-spacing: 0.025em;
 }
+.release-date {
+  display: block;
+  color: var(--muted);
+  font-size: var(--size-small);
+}
 .release-list {
   display: grid;
   gap: 1.5rem;

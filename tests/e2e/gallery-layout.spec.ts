@@ -6,7 +6,8 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test } from '@playwright/test';
-import { lifePhotos } from '../../src/data/photo-gallery';
+import { familyPhotos, lifePhotos } from '../../src/data/photo-gallery';
+import { familyIntro, outAndAbout } from '../../src/data/life';
 
 test('Life hobby photos form desktop pairs and a single mobile column', async ({
   page,
@@ -16,6 +17,7 @@ test('Life hobby photos form desktop pairs and a single mobile column', async ({
   const gallery = page.locator('#photos .photo-gallery');
   const tiles = gallery.locator(':scope > li');
   await expect(tiles).toHaveCount(4);
+  await expect(page.locator('#photos')).toContainText(outAndAbout.lede);
   const rectangles = await tiles.evaluateAll((elements) =>
     elements.map((element) => element.getBoundingClientRect().toJSON()),
   );
@@ -46,4 +48,23 @@ test('Life hobby photos form desktop pairs and a single mobile column', async ({
     await expect(tile.locator('figcaption,.destination-link')).toHaveCount(0);
   }
   await expect(gallery.locator('[data-moment-image="first-watch-new-photo"]')).toBeVisible();
+});
+
+test('Life closes with both family groups and their wedding album destinations', async ({
+  page,
+}) => {
+  await page.goto('life/');
+  const family = page.getByRole('region', { name: familyIntro.title, exact: true });
+  await expect(family).toContainText(familyIntro.lede);
+  await expect(page.locator('.secondary-page > section').last()).toHaveAttribute('id', 'family');
+  const links = family.locator('[data-photo]');
+  await expect(links).toHaveCount(familyPhotos.length);
+  for (const [index, photo] of familyPhotos.entries()) {
+    const link = links.nth(index);
+    await expect(link).toHaveAccessibleName(photo.alt);
+    await expect(link).toHaveAttribute('data-photo-album', 'family-photos');
+    await expect(link).toHaveAttribute('data-photo-caption', photo.caption);
+    await expect(link).toHaveAttribute('data-photo-post', /\/posts\/married-nicole\/$/);
+    await expect(link).toHaveAttribute('href', /(?:\.webp(?:\?|$)|[?&]f=webp(?:&|$))/);
+  }
 });

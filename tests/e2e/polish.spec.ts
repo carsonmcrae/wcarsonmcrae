@@ -81,7 +81,7 @@ test('photos enlarge everywhere and keyboard dismissal restores the trigger', as
     await photo.click();
     const viewer = page.locator('[data-photo-viewer]');
     await expect(viewer).toBeVisible();
-    await expect(viewer.locator('img')).toHaveJSProperty('complete', true);
+    await expect(viewer.locator('[data-photo-large]')).toHaveJSProperty('complete', true);
     await expectNoViolations(page);
     await page.keyboard.press('Escape');
     await expect(viewer).toBeHidden();
