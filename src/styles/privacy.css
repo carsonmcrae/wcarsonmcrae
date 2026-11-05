@@ -1,0 +1,73 @@
+/**
+ * Purpose: Make the privacy notice readable as its content grows.
+ * Scope: A compact contents navigation, measured policy sections, and responsive disclosure cards.
+ * Does NOT belong: Policy text, consent behavior, or the global palette.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+.privacy-page {
+  padding-bottom: 2rem;
+}
+.privacy-intro {
+  max-width: 42rem;
+  margin-bottom: 3rem;
+}
+.privacy-eyebrow {
+  color: var(--muted);
+  font-size: var(--size-small);
+  font-weight: 650;
+  letter-spacing: 0.025em;
+}
+.privacy-layout {
+  display: grid;
+  gap: 2rem;
+  align-items: start;
+}
+.privacy-contents {
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--wash);
+}
+.privacy-contents ol {
+  margin-top: 0.75rem;
+}
+.privacy-contents a {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-block: 0.4rem;
+  font-size: var(--size-small);
+}
+.privacy-sections {
+  min-width: 0;
+  max-width: 42rem;
+}
+.privacy-section {
+  padding-block: 1.75rem;
+  border-top: 1px solid var(--rule);
+}
+.privacy-section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.privacy-section p {
+  line-height: 1.8;
+}
+.privacy-providers {
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--wash);
+}
+.privacy-providers li a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+@media (min-width: 56rem) {
+  .privacy-layout {
+    grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
+    gap: 3rem;
+  }
+}

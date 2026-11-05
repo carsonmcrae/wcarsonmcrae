@@ -1,0 +1,48 @@
+---
+/**
+ * Purpose: Give visitors a readable history of Daysforth improvements.
+ * Scope: Current version and links to permanent, visitor-facing release notes.
+ * Does NOT belong: Build logs, deployment status, or personal timeline entries.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { currentVersion, releases } from '../../data/releases';
+import { withBase } from '../../lib/paths';
+import '../../styles/releases.css';
+---
+
+<BaseLayout
+  page={{
+    id: 'releases',
+    title: 'What’s new',
+    description:
+      'Follow the changes to Daysforth: new ways to explore the timeline, enjoy photographs, and keep the moments that matter.',
+    path: '/releases/',
+  }}
+>
+  <div class="column section release-page">
+    <div class="flow release-intro">
+      <p class="release-eyebrow">Daysforth updates</p>
+      <h1>What’s new</h1>
+      <p class="lede">A little more room for the moments along the way.</p>
+      <p class="muted">Current version {currentVersion}</p>
+    </div>
+    <ol class="release-list" role="list">
+      {releases.map((release) => (
+        <li>
+          <article class="release-card flow">
+            <p class="release-eyebrow">Version {release.version}</p>
+            <h2>
+              <a href={withBase(`/releases/${release.version}/`)}>{release.title}</a>
+            </h2>
+            <p>{release.summary}</p>
+            <a class="release-read" href={withBase(`/releases/${release.version}/`)}>
+              Read the {release.version} release notes <span aria-hidden="true">→</span>
+            </a>
+          </article>
+        </li>
+      ))}
+    </ol>
+  </div>
+</BaseLayout>

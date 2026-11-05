@@ -2,8 +2,12 @@
 
 Carson McRae's story in a centered, photo-rich timeline. Switch between Timeline and Posts, jump
 through dates, and open a permanent page for any moment. Built with [Astro](https://astro.build)
-for free GitHub Pages hosting at [daysforth.com](https://daysforth.com), with the legacy domain
-forwarding there after the owner completes the release checklist.
+for free GitHub Pages hosting at [wcarsonmcrae.com](https://wcarsonmcrae.com).
+[Daysforth.com](https://daysforth.com) forwards to the same canonical site.
+
+See the [current release notes](https://wcarsonmcrae.com/releases/1.0.0/),
+[architecture](docs/architecture/overview.md), [release rules](docs/governance/releases.md), and
+[security policy](SECURITY.md). Fixes for this project are welcome under [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Looking for my software projects? They live in my [product portfolio](https://carsonmcrae.github.io/)
 and on [GitHub](https://github.com/carsonmcrae).
@@ -93,8 +97,9 @@ headers, 100% per-file coverage, no duplicated code, strict linting, exactly pin
 
 ## License
 
-Copyright © 2026 Carson McRae. All rights reserved.
+Copyright © 2026 William Carson McRae. All rights reserved.
 
-This repository is public so GitHub Pages can host the site, not as an invitation to reuse it. No
-license is granted to copy, modify, or redistribute the code, design, content, photographs, or the
-names and logos of my products. You are welcome to read it and learn from it.
+This public, source-available repository is for review, free hosting, and contributions to Carson’s
+site. External reuse or independent deployment requires permission. Limited permission to test and
+submit a fix is described in [LICENSE.md](LICENSE.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+[COPYRIGHT.md](COPYRIGHT.md) preserves third-party licenses and supplied media ownership.

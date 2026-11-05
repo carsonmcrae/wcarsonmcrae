@@ -2,6 +2,8 @@
  * Purpose: Keep app navigation reachable and give mobile a spacious left-side drawer.
  * Scope: Sticky header, quiet history/menu controls, native scrim, safe areas, and reflow.
  * Does NOT belong: Pointer or keyboard state.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 :root {
   --header-height: 3.5rem;
@@ -33,6 +35,11 @@
   text-decoration: none;
   color: var(--text);
   flex-shrink: 0;
+}
+.site-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 .site-header__name:visited {
   color: var(--text);
@@ -140,8 +147,22 @@
   justify-content: space-between;
   gap: 1rem;
 }
-.mobile-drawer__heading p {
+.mobile-drawer__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 44px;
+  color: var(--text);
   font-size: 1.4rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+.mobile-drawer__brand:visited {
+  color: var(--text);
+}
+.mobile-drawer__brand img {
+  width: 2rem;
+  height: 2rem;
 }
 .mobile-drawer .primary-nav ul {
   display: grid;
@@ -159,11 +180,23 @@
 .mobile-drawer .theme-toggle {
   justify-self: start;
 }
-html[data-menu-open='true'] {
-  overflow: hidden;
+@media (min-width: 68rem) {
+  .site-header__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+  .site-header__desktop {
+    display: contents;
+  }
+  .site-header__desktop .theme-toggle {
+    justify-self: end;
+  }
 }
 @media (max-width: 59.99rem) {
   .site-header__inner {
+    gap: 0.25rem;
+  }
+  .site-header__identity {
     gap: 0.25rem;
   }
   .primary-nav a {

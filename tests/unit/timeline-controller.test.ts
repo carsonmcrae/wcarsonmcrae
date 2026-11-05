@@ -3,6 +3,8 @@
  * Scope: Presentation and category state, empty months, clusters, jump focus, rail input, history, and cleanup.
  * Does NOT belong: Visual layout or real-browser accessibility checks.
  * @vitest-environment happy-dom
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { initTimeline } from '../../src/lib/timeline-controller';

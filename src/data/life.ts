@@ -5,6 +5,8 @@
  * Constraints: Only details Carson approved. Never invent stories, quotes, or traits for Nicole or
  *   the dogs; family photos need approval before they are added.
  * Does NOT belong: Professional content (src/data/career.ts and src/data/profile.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { Dog, Interest, NowItem } from './types';
 

@@ -3,11 +3,15 @@
  * Purpose: Carson’s background with a clear story, portrait, principles, and facts.
  * Scope: Preserves approved copy while organizing it into visual, readable sections.
  * Does NOT belong: Personal facts or timeline interaction logic.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import Markdown from '../components/Markdown.astro';
 import SecondaryHero from '../components/SecondaryHero.astro';
 import Section from '../components/Section.astro';
 import Photo from '../components/Photo.astro';
+import PhotoGallery from '../components/PhotoGallery.astro';
+import { carsonGallery } from '../data/photo-gallery';
 import { about, principles, quickFacts, timeline } from '../data/career';
 import { profile } from '../data/profile';
 import { pages } from '../data/site';
@@ -23,6 +27,9 @@ import '../styles/secondary.css';
       ))}
       <Photo slot="media" name="carson-solo" alt={profile.name} />
     </SecondaryHero>
+    <Section title={carsonGallery.title} id="photos" wide>
+      <PhotoGallery photos={carsonGallery.photos} />
+    </Section>
     <Section title="How I got here" id="timeline" wide>
       <ol role="list" class="story-timeline">
         {timeline.map((entry) => (

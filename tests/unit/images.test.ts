@@ -4,6 +4,8 @@
  *   for images that fail to load.
  * Does NOT belong: Image optimization, which Astro handles at build time.
  * @vitest-environment happy-dom
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import {

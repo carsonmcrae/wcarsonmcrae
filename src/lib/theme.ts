@@ -5,6 +5,8 @@
  *   persistence, following system changes until the visitor chooses).
  * Does NOT belong: Theme colors (src/styles/global.css) or the toggle's markup
  *   (src/components/ThemeToggle.astro).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { readItem, writeItem, type StorageLike } from './storage';
 import { preferenceStorage, CONSENT_KEY } from './consent';
@@ -49,12 +51,12 @@ export function initThemeToggle(doc: Document, win: ThemeWindow): () => void {
   const root = doc.documentElement;
   const storage = preferenceStorage(win);
   const stored = readStoredTheme(storage);
-  if (stored) root.setAttribute('data-theme', stored);
+  if (stored) root.dataset['theme'] = stored;
   const media = typeof win.matchMedia === 'function' ? win.matchMedia(DARK_SCHEME_QUERY) : null;
   const buttons = Array.from(doc.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]'));
 
   const currentTheme = (): Theme => {
-    const explicit = root.getAttribute('data-theme');
+    const explicit = root.dataset['theme'];
     return isTheme(explicit) ? explicit : resolveTheme(null, media?.matches ?? false);
   };
 
@@ -67,14 +69,14 @@ export function initThemeToggle(doc: Document, win: ThemeWindow): () => void {
 
   const onClick = () => {
     const next = oppositeTheme(currentTheme());
-    root.setAttribute('data-theme', next);
+    root.dataset['theme'] = next;
     writeItem(storage, THEME_STORAGE_KEY, next);
     sync();
   };
 
   const onSystemChange = () => {
     if (!readStoredTheme(storage)) {
-      root.removeAttribute('data-theme');
+      delete root.dataset['theme'];
     }
     sync();
   };

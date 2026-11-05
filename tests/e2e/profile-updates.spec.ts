@@ -2,6 +2,8 @@
  * Purpose: Verify the expanded profile as a complete browsing experience.
  * Scope: Saved/milestone collections, linked albums, event scrubbing, real app covers, and sticky controls.
  * Does NOT belong: Backend SQL guarantees or copying visual implementation into assertions.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test } from '@playwright/test';
 import { allowStorage, expectNoViolations } from './helpers';

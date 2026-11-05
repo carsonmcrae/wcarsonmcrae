@@ -3,6 +3,8 @@
  * Scope: View/category/detail selection, URL history, date jumps, rail previews, and scroll synchronization.
  * Constraints: Server-rendered moments remain the source of truth and work without this module.
  * Does NOT belong: Social actions or date/grouping calculations.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { dateLabel, monthAt, monthIndex, periodKey } from './timeline-dates';
 import {
@@ -39,6 +41,8 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
   const slider = doc.querySelector<HTMLInputElement>('[data-date-slider]')!;
   const preview = doc.querySelector<HTMLOutputElement>('[data-date-preview]')!;
   const form = doc.querySelector<HTMLFormElement>('[data-date-form]')!;
+  const month = form.querySelector<HTMLSelectElement>('[name="month"]')!;
+  const year = form.querySelector<HTMLSelectElement>('[name="year"]')!;
 
   const saveUrl = (push = false) => {
     const url = new URL(win.location.href);
@@ -54,8 +58,8 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
     doc.querySelector<HTMLElement>('[data-current-date]')!.textContent = dateLabel(state.date);
     slider.value = String(monthIndex(state.date));
     slider.setAttribute('aria-valuetext', dateLabel(monthAt(Number(slider.value))));
-    form.querySelector<HTMLSelectElement>('[name="month"]')!.value = state.date.slice(5, 7);
-    form.querySelector<HTMLSelectElement>('[name="year"]')!.value = state.date.slice(0, 4);
+    month.value = state.date.slice(5, 7);
+    year.value = state.date.slice(0, 4);
   };
   const render = () => {
     root.dataset['view'] = state.view;
@@ -126,7 +130,8 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
       destination = group.querySelector('h2')!;
     } else {
       const message = doc.createElement('p');
-      message.textContent = `No moments in ${dateLabel(state.date)}${state.category === 'All' ? '' : ` for ${state.category}`}.`;
+      const category = state.category === 'All' ? '' : ` for ${state.category}`;
+      message.textContent = `No moments in ${dateLabel(state.date)}${category}.`;
       empty.replaceChildren(message);
       const nearby = nearestMoment(visible, state.date)!;
       const link = doc.createElement('a');
@@ -191,15 +196,14 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
   };
   const onSubmit = (event: SubmitEvent) => {
     event.preventDefault();
-    const values = new FormData(form);
-    goToDate(`${values.get('year')}-${values.get('month')}`);
+    goToDate(`${year.value}-${month.value}`);
   };
   const onPopState = () => {
     state = readTimelineState(win.location.search, latest);
     render();
     const position = prepareTimelineRestore(win);
-    if (position !== null) win.scrollTo({ top: position, behavior: 'instant' });
-    else goToDate(state.date, false, 'none');
+    if (position === null) goToDate(state.date, false, 'none');
+    else win.scrollTo({ top: position, behavior: 'instant' });
   };
   const onSaved = () => {
     if (state.category === 'Saved') {

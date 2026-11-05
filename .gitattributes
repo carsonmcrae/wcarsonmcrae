@@ -2,6 +2,8 @@
 # Scope: LF normalisation for every text file, binary marking for images and fonts, and the lockfile
 #   marked as generated so diffs and language stats skip it.
 # Does NOT belong: Ignore rules (.gitignore) or editor settings (.editorconfig).
+# Copyright (c) 2026 William Carson McRae. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 * text=auto eol=lf
 *.png binary
 *.jpg binary

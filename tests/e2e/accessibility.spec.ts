@@ -7,6 +7,8 @@
  * Constraints: Passing these checks does not certify conformance; manual screen reader checks are
  *   recorded separately (docs/governance/accessibility.md).
  * Does NOT belong: Navigation behavior (navigation.spec.ts) or the theme toggle (theme.spec.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow, PAGES, expectNoViolations } from './helpers';

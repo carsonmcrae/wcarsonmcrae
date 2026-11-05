@@ -1,0 +1,111 @@
+/**
+ * Purpose: Preserve the archived desktop wireframes’ common shell and native control grouping.
+ * Scope: Shared header, navigation, base type, and fieldset reset for the historical artboards.
+ * Does NOT belong: Production site styling or the external design-canvas runtime.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  color: #111;
+  background: #fff;
+  line-height: 1.45;
+}
+a {
+  color: #1a55c0;
+}
+@media (hover: hover) {
+  a:hover {
+    color: #0f3a8a;
+  }
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+.wireframe-desktop {
+  max-width: 1280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0 0 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.wireframe-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+  padding: 16px 40px;
+  border-bottom: 1px solid #d4d4d4;
+}
+.wireframe-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.wireframe-mark {
+  width: 32px;
+  height: 32px;
+  border: 2px dashed #8a8a8a;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+.wireframe-app-name {
+  font-size: 18px;
+}
+.wireframe-concept {
+  color: #5c5c5c;
+  font-size: 13px;
+}
+.wireframe-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.wireframe-navigation a,
+.wireframe-navigation button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #c4c4c4;
+  border-radius: 8px;
+}
+.wireframe-navigation a {
+  display: inline-flex;
+  align-items: center;
+  color: #111;
+  text-decoration: none;
+}
+.wireframe-navigation a[aria-current] {
+  border-color: #111;
+  font-weight: 600;
+}
+.wireframe-navigation button {
+  background: #fff;
+}
+.wireframe-controls {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.wireframe-controls legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

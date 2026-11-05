@@ -3,6 +3,8 @@
  * Scope: Profile, links, projects, roles, timeline, principles, interests, and dogs, plus which
  *   fields accept inline markdown ([links](/path/), *emphasis*, **strong**).
  * Does NOT belong: The content itself (the other files in src/data).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 
 export interface LinkItem {

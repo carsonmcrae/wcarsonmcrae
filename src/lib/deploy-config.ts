@@ -5,6 +5,8 @@
  *   defaults. The deploy workflow fills both from actions/configure-pages.
  * Does NOT belong: Building URLs for pages and assets (src/lib/paths.ts) or Astro configuration
  *   itself (astro.config.mjs).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export const DEFAULT_SITE_URL = 'https://wcarsonmcrae.com';
 

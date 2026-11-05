@@ -1,6 +1,8 @@
 # Purpose: Keeps generated output, local tooling state, and secrets out of Git.
 # Scope: Dependencies, build and test output, local screenshots, environment files, and OS/editor clutter.
 # Does NOT belong: Formatting exclusions (.prettierignore) or attributes (.gitattributes).
+# Copyright (c) 2026 William Carson McRae. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 
 # Dependencies
 node_modules/
@@ -15,6 +17,7 @@ playwright-report/
 test-results/
 blob-report/
 screenshots/
+.scannerwork/
 
 # Environment and secrets: never commit these
 .env

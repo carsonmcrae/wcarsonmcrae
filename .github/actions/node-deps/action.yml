@@ -1,6 +1,8 @@
 # Purpose: Install Node (the version in .nvmrc, with the npm cache) and the locked npm dependencies.
 # Scope: Shared by every workflow job that runs npm scripts; the job checks out the repository first.
 # Does NOT belong: Browser installation or job-specific steps (the calling workflow).
+# Copyright (c) 2026 William Carson McRae. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 name: Node and npm dependencies
 description: Set up Node from .nvmrc with the npm cache, then run npm ci.
 runs:

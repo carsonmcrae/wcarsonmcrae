@@ -4,8 +4,10 @@
  *   introduces it. Detailed metrics and case studies stay in the product portfolio on purpose.
  * Constraints: Never invent URLs, user counts, revenue, or release status.
  * Does NOT belong: Professional roles (src/data/career.ts) or page metadata (src/data/site.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import type { Project } from './types';
+import { projectRecords } from '../lib/content-records';
 
 /**
  * Personal software projects. Facts and links come from Carson's public GitHub
@@ -24,70 +26,58 @@ export const projectsIntro = {
     'The full case studies, with product decisions, walkthroughs, and engineering details, live in my product portfolio.',
 };
 
-export const projects: Project[] = [
-  {
-    id: 'ttsnative',
-    postId: 'ttsnative-1',
-    name: 'TTSNative',
-    icon: 'ttsnative',
-    status: 'Open source',
-    tagline: 'Natural text-to-speech that runs on your own computer.',
-    description:
+export const projects = projectRecords({
+  ttsnative: {
+    identity: ['ttsnative-1', 'TTSNative', 'Open source'],
+    copy: [
+      'Natural text-to-speech that runs on your own computer.',
       'TTSNative reads PDFs, EPUBs, Word documents, and plain text aloud with read-along highlighting, plus optional, consent-based voice cloning. Your documents, voices, and audio stay on your computer. It’s free and MIT-licensed.',
-    note: 'I designed and built it end to end, from the reader and voice studio to the brand and the website.',
+      'I designed and built it end to end, from the reader and voice studio to the brand and the website.',
+    ],
     stack: ['React', 'TypeScript', 'Python', 'FastAPI', 'ONNX Runtime'],
     links: [
-      { label: 'ttsnative.com', href: 'https://ttsnative.com' },
-      { label: 'the source on GitHub', href: 'https://github.com/carsonmcrae/ttsnative' },
-      { label: 'the case study', href: 'https://carsonmcrae.github.io/ttsnative-case-study/' },
+      ['ttsnative.com', 'https://ttsnative.com'],
+      ['the source on GitHub', 'https://github.com/carsonmcrae/ttsnative'],
+      ['the case study', 'https://carsonmcrae.github.io/ttsnative-case-study/'],
     ],
   },
-  {
-    id: 'recalen',
-    postId: 'recalen-beta',
-    name: 'Recalen',
-    icon: 'recalen',
-    status: 'Private beta',
-    tagline: 'Dump now. Recall later.',
-    description:
+  recalen: {
+    identity: ['recalen-beta', 'Recalen', 'Private beta'],
+    copy: [
+      'Dump now. Recall later.',
       'A capture-and-recall app for thoughts, links, files, and voice notes, with organization, search, reminders, and calendar views across web and native mobile.',
-    note: 'Currently in an ongoing private beta.',
+      'Currently in an ongoing private beta.',
+    ],
     stack: ['Next.js', 'TypeScript', 'React Native / Expo', 'PostgreSQL / Prisma'],
     links: [
-      { label: 'recalen.com', href: 'https://recalen.com' },
-      { label: 'the case study', href: 'https://carsonmcrae.github.io/recalen/' },
+      ['recalen.com', 'https://recalen.com'],
+      ['the case study', 'https://carsonmcrae.github.io/recalen/'],
     ],
   },
-  {
-    id: 'picpledge',
-    postId: 'picpledge-wedding',
-    name: 'PicPledge',
-    icon: 'picpledge',
-    status: 'Live',
-    tagline: 'Private photo sharing for events.',
-    description:
+  picpledge: {
+    identity: ['picpledge-wedding', 'PicPledge', 'Live'],
+    copy: [
+      'Private photo sharing for events.',
       'Guests add photos to a shared album, can find photos of themselves with optional facial matching, and download the moments they want to keep.',
-    note: 'It launched at our own wedding. In my defense, it worked.',
+      'It launched at our own wedding. In my defense, it worked.',
+    ],
     stack: ['React', 'TypeScript', 'Cloudflare Workers', 'Capacitor'],
     links: [
-      { label: 'picpledge.com', href: 'https://picpledge.com' },
-      { label: 'the case study', href: 'https://carsonmcrae.github.io/picpledge/' },
+      ['picpledge.com', 'https://picpledge.com'],
+      ['the case study', 'https://carsonmcrae.github.io/picpledge/'],
     ],
   },
-  {
-    id: 'daysforth',
-    postId: 'built-daysforth',
-    name: 'Daysforth',
-    icon: 'daysforth',
-    status: 'Live',
-    tagline: 'Your life, as it unfolds.',
-    description:
+  daysforth: {
+    identity: ['built-daysforth', 'Daysforth', 'Live'],
+    copy: [
+      'Your life, as it unfolds.',
       'A timeline-first social profile for work, projects, and life. Switch between a chronological timeline and a photographic feed, and explore the moments along the way.',
-    note: 'You’re looking at it. Built with Astro, with shared reactions on Cloudflare.',
+      'You’re looking at it. Built with Astro, with shared reactions on Cloudflare.',
+    ],
     stack: ['Astro', 'TypeScript', 'Cloudflare Workers', 'D1'],
     links: [
-      { label: 'Daysforth', href: 'https://wcarsonmcrae.com/' },
-      { label: 'the source on GitHub', href: 'https://github.com/carsonmcrae/wcarsonmcrae' },
+      ['Daysforth', 'https://wcarsonmcrae.com/'],
+      ['the source on GitHub', 'https://github.com/carsonmcrae/wcarsonmcrae'],
     ],
   },
-];
+});

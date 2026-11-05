@@ -2,6 +2,8 @@
  * Purpose: Trusted Phosphor glyphs shared once per document.
  * Scope: Licensed SVG sources, icon names, and extraction of symbol contents.
  * Does NOT belong: Brand marks or UI behavior.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import heart from '@phosphor-icons/core/assets/regular/heart.svg?raw';
 import bookmark from '@phosphor-icons/core/assets/regular/bookmark-simple.svg?raw';

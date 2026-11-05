@@ -4,6 +4,8 @@
  *   viewport change, plus cleanup.
  * Does NOT belong: Browser checks of the real header (tests/e2e).
  * @vitest-environment happy-dom
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { initMenu } from '../../src/lib/menu';

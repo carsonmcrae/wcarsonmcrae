@@ -2,12 +2,14 @@
  * Purpose: Design tokens and global styles for the whole site.
  * Scope: Light and dark palettes (system preference, or a saved choice on <html data-theme>), type,
  *   the reading column, links (with a distinct visited color), lists, focus, forced-colors, reduced
- *   motion, and a readable print stylesheet.
+ *   motion, header-safe fragment offsets, and a readable print stylesheet.
  * Constraints: The approved Daysforth interface: white paper, clear typography, and photographic
  *   moments. Body text and links meet 4.5:1 and focus indicators 3:1 in both themes. Hover styles live
  *   inside @media (hover: hover). See docs/governance/design.md.
  * Does NOT belong: Component layout (each component's own <style>) or the font files
  *   (astro.config.mjs).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 
 /* Resolve the paired link color before SVG icons inherit currentColor. */
@@ -226,6 +228,10 @@ a:focus-visible {
 
 .section {
   margin-top: var(--section);
+}
+
+:target {
+  scroll-margin-top: calc(var(--header-height, 3.5rem) + 2.5rem);
 }
 
 .section > h2 {

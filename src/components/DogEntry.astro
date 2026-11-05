@@ -5,6 +5,8 @@
  *   list (breed, coat, title) followed by a one-line note.
  * Constraints: Only the details Carson provided; no invented traits.
  * Does NOT belong: The dogs' details (src/data/life.ts) or the org chart (OrgChart.astro).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { Dog } from '../data/types';
 import Markdown from './Markdown.astro';
@@ -24,7 +26,9 @@ const { dog } = Astro.props;
     {dog.name}
   </h3>
   <Photo name={dog.photo} alt={dog.photoAlt} postId={dog.postId} />
-  <a href={withBase(`/posts/${dog.postId}/`)}>Meet {dog.name}</a>
+  <a class="destination-link" href={withBase(`/posts/${dog.postId}/`)}>
+    Meet {dog.name}
+  </a>
   <dl>
     <dt>Breed</dt>
     <dd>{dog.breed}</dd>

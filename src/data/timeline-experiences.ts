@@ -2,6 +2,8 @@
  * Purpose: Carson’s newly confirmed work, travel, and hobby moments.
  * Scope: Supplied dates, actual photographs, watch identities, and approved video links.
  * Does NOT belong: Date inference from photographs or rendering and navigation.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { TimelinePost } from './timeline';
 export const experiencePosts: TimelinePost[] = [

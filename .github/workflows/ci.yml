@@ -2,9 +2,11 @@
 # Scope: Static checks (format, lint, line limits, headers, asset sizes, duplication, unused code,
 #   types), unit tests at 100% per-file coverage, the built site at the domain root and under the
 #   GitHub Pages project path, browser tests with axe in desktop Chromium, mobile Chromium, and mobile
-#   WebKit, and security (npm audit, registry signatures, gitleaks). One aggregate "Validate" job is
+#   WebKit, and security (npm audit, registry signatures, gitleaks, Semgrep, Trivy). One aggregate "Validate" job is
 #   the check to require in branch protection.
 # Does NOT belong: Publishing (deploy.yml calls this workflow first) or CodeQL (codeql.yml).
+# Copyright (c) 2026 William Carson McRae. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 name: CI
 
 on:
@@ -26,11 +28,18 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/node-deps
       - run: npm run format:check
       - run: npm run lint
       - name: Line limits, file headers, and asset sizes
         run: npm run check:repo
+      - name: Release and architecture consistency
+        env:
+          RELEASE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || '' }}
+        run: npm run check:release
       - name: Copy-paste detection (jscpd)
         run: npm run check:duplicates
       - name: Unused files, exports, and dependencies (Knip)
@@ -100,14 +109,52 @@ jobs:
           if [ -n "$BASE" ]; then range="$BASE..HEAD"; else range=""; fi
           ./gitleaks git --redact --no-banner --config .gitleaks.toml ${range:+--log-opts="$range"} .
 
+  semgrep:
+    name: Semgrep source security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Scan first-party code with the pinned community engine
+        run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:/src:ro" -w /src \
+            semgrep/semgrep@sha256:34ab619bf1391a24bfda3f05debd0d8a6ce3093c2d5f9d39cfc00f83c1397823 \
+            sh -c 'git config --global --add safe.directory /src && semgrep scan --config p/security-audit --config p/typescript --config p/javascript --config p/github-actions --metrics off --disable-version-check --error'
+
+  trivy:
+    name: Trivy dependency and secret security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Scan every dependency tier, source secrets, and supported configuration
+        run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:/src:ro" -w /src \
+            aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969 \
+            fs --scanners vuln,misconfig,secret --include-dev-deps --skip-version-check \
+            --skip-dirs .git --exit-code 1 /src
+
   validate:
     name: Validate
     if: always()
-    needs: [static, unit, build, e2e, security]
+    needs: [static, unit, build, e2e, security, semgrep, trivy]
     runs-on: ubuntu-24.04
     steps:
       - name: All required jobs passed
+        env:
+          STATIC_RESULT: ${{ needs.static.result }}
+          UNIT_RESULT: ${{ needs.unit.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          BROWSER_RESULT: ${{ needs.e2e.result }}
+          SECURITY_RESULT: ${{ needs.security.result }}
+          SEMGREP_RESULT: ${{ needs.semgrep.result }}
+          TRIVY_RESULT: ${{ needs.trivy.result }}
         run: |
-          [ "${{ needs.static.result }}" = success ] && [ "${{ needs.unit.result }}" = success ] \
-            && [ "${{ needs.build.result }}" = success ] && [ "${{ needs.e2e.result }}" = success ] \
-            && [ "${{ needs.security.result }}" = success ]
+          [ "$STATIC_RESULT" = success ] && [ "$UNIT_RESULT" = success ] \
+            && [ "$BUILD_RESULT" = success ] && [ "$BROWSER_RESULT" = success ] \
+            && [ "$SECURITY_RESULT" = success ] && [ "$SEMGREP_RESULT" = success ] \
+            && [ "$TRIVY_RESULT" = success ]

@@ -310,3 +310,47 @@ documents that non-secret; default scanning remains enabled and no source path i
 NVDA remains off at Carson’s request. Fresh NVDA and VoiceOver review of these new controls is
 outstanding and disclosed publicly. This evidence does not establish complete accessibility
 conformance or provide a worldwide legal certification.
+
+## Daysforth 1.0.0 — November 5, 2026
+
+The [implementation record](docs/V1-RELEASE.md) maps this release’s request. The approved mobile
+drawer now carries the full identity and a quiet storage action. Timeline shortcuts occupy separated
+upper/lower positions; desktop navigation is independently centered. Standalone photo destinations
+use restrained chips, and the footer keeps its destinations visible in compact wrapping rows.
+
+Life retains its primary dog cards with breed details, adds seven-photo albums for each dog and a
+custom semantic household diagram, and preserves the four hobby photos as larger desktop pairs.
+About retains its portrait and adds eight photographs. The new horizontal Fossil photo is used on
+Life. All 60 incoming originals remain ignored and untouched; the 21 new originals were verified
+again against their separate external SHA-256 backup manifest.
+
+Media frames follow the actual image, placing overlays at its upper-right edge. Lazy images reserve
+separate usable photo/post targets before loading, including mobile WebKit. Media layout now has a
+single stylesheet owner; obsolete competing 15rem card columns and redundant post-link metadata
+were removed. Both homepage builds remain inside the unchanged 80 KiB HTML cap. The narrow headroom
+and the content-growth trigger are recorded in the architecture review.
+
+Manual Windows/in-app Chromium review covered the mobile logo/drawer/storage control, desktop and
+mobile household diagrams, dog and About albums, horizontal hobby photography, the compact footer,
+privacy/release page readability, timeline shortcuts, and the native photo/storage dialogs. Scrolling
+with a photo open left the background at the same recorded position; closing returned focus.
+Keyboard Enter opened storage controls and Escape returned focus to their trigger. Browser tests
+cover the same behavior in desktop Chromium, mobile Chromium, and mobile WebKit, including native
+fragment destinations, image bounds, unloaded targets, reflow, and the footer’s visible/accessibility
+name agreement.
+
+The architecture review checked responsibilities and a 72-module runtime graph (74 internal edges,
+no cycles). New dependency-boundary and complexity rules protect the actual findings without adding
+a framework or splitting cohesive controllers merely for size. The full unit scope has 406 tests
+and 100% per-file coverage across 73 executable files. Maintained architecture, release, security,
+ownership, and contribution rules accompany the code; no coverage/duplication exclusions or relaxed
+budgets were introduced. The Worker stays public, while secrets and database contents remain private.
+
+Carson explicitly authorized merge, the Worker-first release, publication, repository protection,
+and the 1.0.0 tag. Final CI/scanner results, deployment identifiers, preserved reaction totals, and
+published-page acceptance evidence are attached to the release pull request. The versioned visitor
+notes describe capabilities rather than implementation history.
+
+Fresh NVDA evaluation remains outstanding because Carson requested TTS stay off. VoiceOver on
+macOS/iOS is unavailable on this Windows machine. Automated WebKit/axe results and source scans do
+not establish full accessibility conformance or certify the absence of every possible vulnerability.

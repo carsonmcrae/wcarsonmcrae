@@ -6,6 +6,8 @@
  *   publication.
  * Does NOT belong: Career history (src/data/career.ts), projects (src/data/projects.ts), or
  *   personal life (src/data/life.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { Profile, SocialLink } from './types';
 

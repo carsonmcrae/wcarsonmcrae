@@ -2,6 +2,8 @@
  * Purpose: Protect the approved new moments, saved-event migration, and browsing filters.
  * Scope: Confirmed dates, real media, distinct albums, one event per app, and browser-local bookmark continuity.
  * Does NOT belong: Visual layout or production network calls.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it, vi } from 'vitest';
 import { timelinePosts } from '../../src/data/timeline';

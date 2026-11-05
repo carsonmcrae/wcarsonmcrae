@@ -2,6 +2,8 @@
  * Purpose: Focused reading layout for a moment’s permalink.
  * Scope: Comfortable copy, uncropped photography, metadata, and previous/next navigation.
  * Does NOT belong: Social action behavior or feed-card styling.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 .post-detail {
   max-width: 48rem;
@@ -83,12 +85,20 @@
 
 .post-location {
   margin-top: 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  background: var(--wash);
 }
 .post-location a {
-  display: grid;
-  gap: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
   min-height: 2.75rem;
-  color: var(--text);
+  color: var(--link);
+  font-size: 0.8125rem;
   text-decoration: none;
 }
 .post-location__dates {
@@ -165,12 +175,6 @@
   color: var(--muted);
   font-size: 0.875rem;
 }
-.post-location {
-  padding: 1.25rem;
-  border: 1px solid var(--rule);
-  border-radius: 14px;
-  background: var(--wash);
-}
 .post-location__label {
   display: block;
   margin-bottom: 0.75rem;
@@ -186,15 +190,6 @@
   display: block;
   font-size: 0.875rem;
   font-weight: 600;
-}
-.post-location a {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  color: var(--link);
-  font-size: 0.8125rem;
 }
 @media (max-width: 35rem) {
   .post-album {

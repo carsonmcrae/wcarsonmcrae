@@ -1,8 +1,10 @@
 ---
 /**
  * Purpose: Compact decorative references to the page’s shared Phosphor symbols.
- * Scope: Non-focusable SVG icons; controls supply their visible and accessible labels.
+ * Scope: Decorative SVG icons sized by CSS and their shared symbols; controls supply accessible labels.
  * Does NOT belong: SVG definitions or brand assets.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { IconName } from '../lib/icons';
 import { withBase } from '../lib/paths';
@@ -12,7 +14,7 @@ interface Props {
 const { name } = Astro.props;
 ---
 
-<svg class="icon" viewBox="0 0 256 256" aria-hidden="true" focusable="false">
+<svg class="icon" aria-hidden="true">
   <use href={`${withBase('/icons.svg')}#icon-${name}`} />
 </svg>
 <style is:global>
@@ -21,8 +23,6 @@ const { name } = Astro.props;
     flex: 0 0 auto;
     width: 1.25em;
     height: 1.25em;
-  }
-  .icon {
     fill: currentColor;
   }
 </style>

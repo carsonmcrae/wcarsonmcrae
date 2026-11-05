@@ -3,6 +3,8 @@
  * Scope: Escaping, links with the base path, external link notes, unsafe protocols, emphasis,
  *   injection attempts, and linear-time matching on hostile input.
  * Does NOT belong: Checks on the content itself (tests/unit/content.test.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import { escapeHtml, renderInline, toPlainText } from '../../src/lib/inline-markdown';

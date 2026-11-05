@@ -3,6 +3,8 @@
  * Scope: SITE_URL and BASE_PATH validation for the custom domain, the GitHub Pages project URL,
  *   and local defaults.
  * Does NOT belong: URL building (tests/unit/paths.test.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import {

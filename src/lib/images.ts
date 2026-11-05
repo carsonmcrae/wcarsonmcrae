@@ -3,6 +3,8 @@
  * Scope: Photographs, project icons, and interface captures in local asset folders; never import in browser code.
  * Does NOT belong: Image optimization (Astro's Picture and Image components) or stripping photo
  *   metadata (scripts/strip-image-metadata.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { ImageMetadata } from 'astro';
 

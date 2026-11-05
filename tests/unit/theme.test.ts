@@ -4,6 +4,8 @@
  *   and system-change behavior.
  * Does NOT belong: Browser checks of the real page (tests/e2e).
  * @vitest-environment happy-dom
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { clearPreferences, CONSENT_KEY } from '../../src/lib/consent';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';

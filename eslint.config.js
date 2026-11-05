@@ -4,9 +4,12 @@
  *   components, the 500-line cap, consistent type imports, no explicit any, and the reliability
  *   guards used across Carson's repositories: no nested ternaries, explicit sort comparators,
  *   replaceAll for literal replacements, Number.* parsing, and regexes that cannot backtrack
- *   super-linearly. Runs with --max-warnings 0.
+ *   super-linearly, bounded function/block complexity, and readable regex construction.
+ *   Runs with --max-warnings 0.
  * Does NOT belong: Formatting (Prettier), type checking (astro check), or gates ESLint cannot
  *   express, such as headers and line limits for CSS, YAML, and Markdown (scripts/check-repo.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import js from '@eslint/js';
 import { defineConfig, globalIgnores } from 'eslint/config';
@@ -25,6 +28,7 @@ export default defineConfig([
     'test-results/',
     'screenshots/',
     'node_modules/',
+    '**/.wrangler/',
   ]),
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -46,6 +50,10 @@ export default defineConfig([
       eqeqeq: ['error', 'always'],
       'no-console': ['error', { allow: ['info', 'warn', 'error'] }],
       'no-nested-ternary': 'error',
+      complexity: ['error', { max: 20, variant: 'modified' }],
+      'max-depth': ['error', 4],
+      'no-negated-condition': 'error',
+      'prefer-regex-literals': ['error', { disallowRedundantWrapping: true }],
       // WebKit and VoiceOver drop list semantics from lists styled with list-style: none, so an
       // explicit role="list" on those lists is required, not redundant.
       'astro/jsx-a11y/no-redundant-roles': [
@@ -60,6 +68,11 @@ export default defineConfig([
       ],
       'no-restricted-syntax': [
         'error',
+        {
+          selector: String.raw`:matches(NewExpression, CallExpression)[callee.type='Identifier'][callee.name='RegExp'][arguments.0.type='TemplateLiteral']:has(TemplateElement[value.raw=/\\/])`,
+          message:
+            'Use String.raw for dynamic RegExp templates with backslashes so escapes stay readable.',
+        },
         {
           selector: 'CallExpression[callee.property.name=/^(sort|toSorted)$/][arguments.length=0]',
           message: 'Pass an explicit comparator (byCodeUnit in scripts/lib/repo-files.ts).',

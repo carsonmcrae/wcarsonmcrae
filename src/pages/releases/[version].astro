@@ -1,0 +1,70 @@
+---
+/**
+ * Purpose: Present the capabilities introduced in each published Daysforth version.
+ * Scope: Permanent release URLs, summaries, and navigable visitor-facing change sections.
+ * Does NOT belong: Personal claims, implementation changelogs, or release automation.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { releases } from '../../data/releases';
+import { withBase } from '../../lib/paths';
+import '../../styles/releases.css';
+
+export function getStaticPaths() {
+  return releases.map((release) => ({ params: { version: release.version }, props: { release } }));
+}
+interface Props {
+  release: (typeof releases)[number];
+}
+const { release } = Astro.props;
+---
+
+<BaseLayout
+  page={{
+    id: 'release',
+    title: `Daysforth ${release.version} — ${release.title}`,
+    description: release.summary,
+    path: `/releases/${release.version}/`,
+  }}
+>
+  <article class="column section release-page">
+    <a class="release-back" href={withBase('/releases/')}>
+      ← All updates
+    </a>
+    <div class="flow release-intro">
+      <p class="release-eyebrow">Daysforth {release.version}</p>
+      <h1>{release.title}</h1>
+      <p class="lede">{release.summary}</p>
+    </div>
+    <nav class="release-contents" aria-label="In this release">
+      <p class="release-eyebrow">In this release</p>
+      <ul role="list">
+        {release.sections.map((section) => (
+          <li>
+            <a href={`#${section.id}`} tabindex="0">
+              {section.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <div class="release-details">
+      {release.sections.map((section) => (
+        <section class="flow" id={section.id} aria-labelledby={`${section.id}-title`}>
+          <h2 id={`${section.id}-title`}>{section.title}</h2>
+          <ul>
+            {section.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+    <p class="release-outro">
+      Start with <a href={withBase('/')}>the timeline</a>, or read about{' '}
+      <a href={withBase('/privacy/')}>privacy & browser storage</a> and{' '}
+      <a href={withBase('/accessibility/')}>accessibility</a>.
+    </p>
+  </article>
+</BaseLayout>

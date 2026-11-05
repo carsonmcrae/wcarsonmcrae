@@ -2,6 +2,8 @@
  * Purpose: The compact, consolidated browsing toolbar and its disclosures.
  * Scope: Presentation state, native menu panels, focus, and text-size-aware toolbar reflow.
  * Does NOT belong: Interaction behavior or timeline cards.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 .timeline-toolbar {
   position: sticky;

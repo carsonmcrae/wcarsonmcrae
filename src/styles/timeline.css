@@ -2,6 +2,8 @@
  * Purpose: The same moments presented as an axis or a photographic post grid.
  * Scope: Card hierarchy, real-date connectors, clusters, action rows, empty states, and mobile reflow.
  * Does NOT belong: Toolbar menus or profile layout.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 .timeline-feed {
   container: timeline / inline-size;
@@ -307,9 +309,6 @@
   }
   [data-view='posts'] .post-card--milestone .post-actions {
     align-self: center;
-  }
-  [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) {
-    grid-template-columns: minmax(0, 1fr) 15rem;
   }
   [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) .post-card__media {
     grid-column: 2;

@@ -1,6 +1,8 @@
 # Purpose: Paths Prettier must not format.
 # Scope: Generated output, dependencies, the lockfile, and binary or vendored assets.
 # Does NOT belong: Git ignore rules (.gitignore).
+# Copyright (c) 2026 William Carson McRae. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 dist/
 dist-subpath/
 .astro/

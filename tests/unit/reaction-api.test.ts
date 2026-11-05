@@ -2,6 +2,8 @@
  * Purpose: Contract tests for the browser reaction client.
  * Scope: Endpoint validation, real nonnegative totals, safe URLs, and server/malformed failures.
  * Does NOT belong: SQL consistency or DOM actions.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it, vi } from 'vitest';
 import {

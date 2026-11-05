@@ -6,17 +6,19 @@
  *   add an exemption to pass. Only generated lockfiles are exempt.
  * Does NOT belong: Reading files from disk (scripts/check-repo.ts) or binary asset sizes
  *   (scripts/lib/asset-sizes.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
+import { hasTextExtension, isLineLimitedConfig } from './repo-text.ts';
 
 export const LINE_LIMIT = 500;
 const REVIEW_THRESHOLD = 400;
 
-const CHECKED =
-  /\.(?:astro|ts|mts|mjs|js|css|md|ya?ml|json|jsonc|svg|txt|webmanifest|toml)$|(?:^|\/)(?:\.gitignore|\.prettierignore|\.gitattributes|\.editorconfig|\.npmrc|CODEOWNERS)$/;
-const EXEMPT = [/(?:^|\/)package-lock\.json$/];
-
 export function isLineChecked(path: string): boolean {
-  return CHECKED.test(path) && !EXEMPT.some((pattern) => pattern.test(path));
+  return (
+    (hasTextExtension(path) || isLineLimitedConfig(path)) &&
+    path.split('/').at(-1) !== 'package-lock.json'
+  );
 }
 
 /** Physical lines: a trailing newline ends the last line rather than starting a new one. */

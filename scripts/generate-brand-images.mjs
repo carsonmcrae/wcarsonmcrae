@@ -3,6 +3,8 @@
  * Purpose: Exports the original Daysforth brand kit and production icons.
  * Scope: Exports both approved mark sizes, outlines the wordmark, renders PNGs, and packages the kit.
  * Does NOT belong: Vector construction (scripts/lib/brand-assets.ts) or photo processing.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { mkdir, readFile, writeFile, copyFile } from 'node:fs/promises';
 import { join } from 'node:path';

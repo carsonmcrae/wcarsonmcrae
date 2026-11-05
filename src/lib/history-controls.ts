@@ -2,6 +2,8 @@
  * Purpose: Mirror the browser’s available back/forward destinations in the app header.
  * Scope: Native Navigation API signals and a conservative older-browser fallback.
  * Does NOT belong: Custom browsing-history storage or routing implementation.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 interface NavigationState extends EventTarget {
   canGoBack: boolean;

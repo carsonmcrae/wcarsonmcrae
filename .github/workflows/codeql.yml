@@ -1,6 +1,8 @@
 # Purpose: Static security analysis with CodeQL for the site's TypeScript and JavaScript.
 # Scope: Runs on pull requests, pushes to main, and weekly; no build step is needed (build-mode: none).
 # Does NOT belong: Dependency auditing (ci.yml and dependency-review.yml).
+# Copyright (c) 2026 William Carson McRae. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 name: CodeQL
 
 on:

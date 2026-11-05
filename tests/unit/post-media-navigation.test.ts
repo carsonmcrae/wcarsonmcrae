@@ -3,6 +3,8 @@
  * Scope: Photo/icon fallback, album counts, accessible previews, route commits, and listener cleanup.
  * Does NOT belong: Visual screenshot comparisons or browser storage.
  * @vitest-environment happy-dom
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { postMedia } from '../../src/lib/post-media';

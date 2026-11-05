@@ -2,6 +2,8 @@
  * Purpose: Scrub between actual event permalinks without returning to the feed.
  * Scope: Proportional month positions, nearest-event previews, and keyboard traversal of same-month events.
  * Does NOT belong: Content, feed scrolling, or network calls.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export function initPostNavigation(doc: Document, navigate: (href: string) => void) {
   const root = doc.querySelector<HTMLElement>('[data-post-browser]');
@@ -25,8 +27,8 @@ export function initPostNavigation(doc: Document, navigate: (href: string) => vo
   const change = () => {
     const option = nearest();
     slider.value = option.value;
-    if (option.dataset['id'] !== current) navigate(option.dataset['href']!);
-    else preview();
+    if (option.dataset['id'] === current) preview();
+    else navigate(option.dataset['href']!);
   };
   const onKey = (event: KeyboardEvent) => {
     let step = 0;

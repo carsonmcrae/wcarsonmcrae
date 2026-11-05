@@ -29,9 +29,13 @@ uses it updates. Pages and components contain no personal facts of their own.
 
 ## Photos
 
-All 39 supplied photographs are approved for public use, including everyone pictured. Original
+All 60 supplied photographs are approved for public use, including everyone pictured. Original
 incoming files are ignored and protected by a verified external backup. Never replace them during
 an update. The imported, metadata-stripped copies live in `src/assets/photos/`.
+
+The November 5 batch adds 21 originals: eight Carson gallery photos, six per dog, and the horizontal
+first-watch image. Their separate SHA-256 verified backup is `daysforth-photos-backup-20261105`
+under the task’s external visualization workspace. The original 39 files remain unchanged.
 
 | Photo              | File (any of .jpg, .png, .webp, .avif)             | Where it appears                               |
 | ------------------ | -------------------------------------------------- | ---------------------------------------------- |

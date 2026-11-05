@@ -2,7 +2,9 @@
  * Purpose: Safe access to localStorage.
  * Scope: Returns localStorage when the browser allows it, and reads and writes items without
  *   throwing in private browsing or when storage is blocked.
- * Does NOT belong: Deciding what is stored (src/lib/theme.ts and src/lib/achievements.ts).
+ * Does NOT belong: Choosing persistence or preference semantics (consent.ts and saved-moments.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 

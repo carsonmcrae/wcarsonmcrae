@@ -3,6 +3,8 @@
  * Scope: Loopback-only test key generation using the system OpenSSL and cleanup after the runner exits.
  * Constraints: Never installs a trust root or changes the production CSP; the key stays in OS temp.
  * Does NOT belong: Production certificates, deployment secrets, or application behavior.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, rmdirSync } from 'node:fs';

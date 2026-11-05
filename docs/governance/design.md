@@ -15,6 +15,13 @@ and wireframe experiments are historical. Preserve the approved composition when
   stays centered when the profile scrolls away. Secondary pages use a narrower reading column.
 - Use the original Daysforth mark and wordmark from the [brand kit](../../public/brand/README.md).
   UI icons come from Phosphor. Use Carson's approved photos, never generated substitutes.
+- Keep a feature’s layout in its owning stylesheet. `post-media.css` owns card media, overlays,
+  reaction presentation, and illustrated-card columns; do not append competing overrides to
+  `interaction.css` or `timeline.css`. Shared dialog, consent, and shortcut styles stay in
+  `interaction.css`. Verify actual image bounds, unloaded targets, and both browsing presentations
+  when changing media layout; matching selector names alone does not establish correct behavior.
+  Shared fragment offsets live in `global.css` so section links clear the sticky header; the timeline
+  dock owns its larger browsing offsets. Do not reintroduce shorter per-page offsets that hide headings.
 - The approved refined D uses a connected inset timeline at 32 px and larger. Use the simplified
   three-moment drawing below 32 px and in browser favicons, including high-resolution favicon PNGs.
   Headers, app icons, lockups, and social artwork use the full timeline. Preserve the selected

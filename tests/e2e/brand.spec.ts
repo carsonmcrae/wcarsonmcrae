@@ -2,6 +2,8 @@
  * Purpose: Verify the approved logo sizes and complete downloadable brand kit.
  * Scope: Header artwork, small-size examples, published archive retrieval, and favicon identity.
  * Does NOT belong: Vector geometry fidelity (tests/unit/brand-assets.test.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test } from '@playwright/test';
 import { unzipSync } from 'fflate';

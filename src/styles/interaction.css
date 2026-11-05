@@ -2,6 +2,8 @@
  * Purpose: Quiet photograph, consent, and navigation enhancements with generous hit areas.
  * Scope: Native dialogs, storage choice, enlarged imagery, and unobtrusive timeline jumps.
  * Does NOT belong: Brand tokens or event logic.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 .photo-open {
   cursor: zoom-in;
@@ -23,60 +25,42 @@
   height: 100%;
   object-fit: cover;
 }
-.post-media > .photo-open {
-  display: flex;
+.storage-settings {
+  justify-self: start;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.35rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.destination-link {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-.post-media > .photo-open img {
-  width: 100%;
-  height: 100%;
-  max-height: 29rem;
-  object-fit: contain;
-}
-.post-media__open {
-  top: 0.25rem;
-  right: 0.25rem;
-  width: 2.75rem;
-  height: 2.75rem;
-  min-width: 2.75rem;
-  min-height: 2.75rem;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
+  gap: 0.45rem;
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  background: var(--wash);
+  font-size: 0.875rem;
+  font-weight: 550;
+  line-height: 1.4;
   text-decoration: none;
-  z-index: 2;
 }
-.post-media__open::before {
-  content: '';
-  position: absolute;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 6px;
-  border: 1px solid var(--rule);
-  background: var(--surface);
-  z-index: -1;
-}
-.post-media__open .icon {
-  font-size: 0.75rem;
-}
-.post-media__count {
-  top: 0.65rem;
-  left: 0.65rem;
-  min-width: 0;
-  min-height: 1.5rem;
-  padding: 0.15rem 0.4rem;
-  border-radius: 6px;
-  gap: 0.25rem;
-  font-size: 0.6875rem;
-  line-height: 1;
-  border: 1px solid var(--rule);
-  pointer-events: none;
-}
-.post-media__count .icon {
-  font-size: 0.75rem;
+html[data-menu-open='true'],
+html:has(dialog[open]),
+html:has(dialog[open]) body {
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 .photo-viewer,
 .storage-dialog {
@@ -89,6 +73,8 @@
   max-width: calc(100vw - 1.5rem);
   max-height: calc(100dvh - 1.5rem);
   padding: 1.25rem;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 .photo-viewer::backdrop,
 .storage-dialog::backdrop {
@@ -125,10 +111,8 @@
   margin-top: 0.75rem;
 }
 .storage-notice {
-  position: fixed;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
+  position: static;
+  margin: 1rem auto;
   z-index: 25;
   display: flex;
   align-items: center;
@@ -138,7 +122,6 @@
   border: 1px solid var(--control);
   border-radius: 16px;
   background: var(--surface);
-  box-shadow: 0 8px 32px #09101d25;
   font-size: 0.875rem;
 }
 .storage-notice > div,
@@ -157,14 +140,13 @@
   margin-block: 1rem;
 }
 .timeline-jumps {
-  position: fixed;
-  right: max(0.5rem, calc((100vw - 72rem) / 2 - 3rem));
-  bottom: 7rem;
-  display: grid;
-  gap: 0.25rem;
-  z-index: 12;
+  display: contents;
 }
 .timeline-jumps button {
+  position: fixed;
+  right: max(0.5rem, calc((100vw - 72rem) / 2 - 3rem));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  z-index: 12;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -176,40 +158,15 @@
   color: var(--link);
   box-shadow: 0 2px 8px #09101d15;
 }
+.timeline-jumps .timeline-jumps__up {
+  top: calc(var(--header-height) + 0.75rem + env(safe-area-inset-top));
+  bottom: auto;
+}
 .timeline-jumps__up .icon {
   transform: rotate(180deg);
 }
-.reaction-options button:disabled[aria-pressed='true'] {
-  cursor: default;
-  color: var(--link);
-  opacity: 1;
-}
 html[data-timeline-restore] main {
   visibility: hidden;
-}
-.storage-notice {
-  position: static;
-  transform: none;
-  margin: 1rem auto;
-  width: min(54rem, calc(100% - 2rem));
-  box-shadow: none;
-}
-@media (min-width: 48rem) {
-  [data-view='timeline'] .post-card--illustrated {
-    grid-template-columns: minmax(0, 1fr) 17rem;
-    grid-template-rows: auto minmax(2.75rem, 1fr);
-  }
-  [data-view='timeline'] .post-card--illustrated > .post-media {
-    grid-column: 2;
-    grid-row: 1/3;
-    min-height: 16rem;
-    max-height: 23rem;
-  }
-  [data-view='timeline'] .post-card--illustrated > .post-actions {
-    grid-column: 1;
-    grid-row: 2;
-    align-self: end;
-  }
 }
 @media (max-width: 40rem) {
   .storage-notice {
@@ -225,13 +182,32 @@ html[data-timeline-restore] main {
   .profile-summary__portrait {
     flex-basis: 4.5rem;
   }
-  .timeline-jumps {
-    bottom: 8rem;
+  .timeline-jumps .timeline-jumps__up {
+    top: calc(var(--header-height) + 17rem);
+  }
+}
+@media (min-width: 40.01rem) and (max-width: 64rem) {
+  .timeline-jumps .timeline-jumps__up {
+    top: calc(var(--header-height) + 13rem);
+  }
+}
+@media (max-height: 40rem) {
+  .timeline-jumps .timeline-jumps__up {
+    top: calc(var(--header-height) + 0.5rem);
+  }
+}
+@media (max-height: 28rem) {
+  .timeline-jumps .timeline-jumps__up {
+    top: max(0.5rem, env(safe-area-inset-top));
   }
 }
 @media (hover: hover) {
-  .post-media__open:hover::before {
+  .destination-link:hover {
     border-color: var(--link);
+    background: var(--selected);
+  }
+  .storage-settings:hover {
+    color: var(--link);
   }
   .timeline-jumps button:hover {
     background: var(--selected);

@@ -3,6 +3,8 @@
  * Purpose: A persistent social-app header with native history controls and a mobile side drawer.
  * Scope: Brand, primary navigation, theme, modal mobile navigation, and its trigger.
  * Does NOT belong: History or gesture implementations.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { brand } from '../data/brand';
 import { withBase } from '../lib/paths';
@@ -14,17 +16,19 @@ import '../styles/header.css';
 
 <header class="site-header">
   <div class="site-header__inner">
-    <a class="site-header__name" href={withBase('/')} aria-label="Daysforth">
-      <img src={withBase('/brand/daysforth-mark.svg')} width="32" height="32" alt="" />
-      <span>{brand.name}</span>
-    </a>
-    <div class="app-history enhancement" role="group" aria-label="Page navigation">
-      <button type="button" data-history="back" aria-label="Go back" disabled>
-        <Icon name="arrow" />
-      </button>
-      <button type="button" data-history="forward" aria-label="Go forward" disabled>
-        <Icon name="arrowRight" />
-      </button>
+    <div class="site-header__identity">
+      <a class="site-header__name" href={withBase('/')} aria-label="Daysforth">
+        <img src={withBase('/brand/daysforth-mark.svg')} width="32" height="32" alt="" />
+        <span>{brand.name}</span>
+      </a>
+      <div class="app-history enhancement" role="group" aria-label="Page navigation">
+        <button type="button" data-history="back" aria-label="Go back" disabled>
+          <Icon name="arrow" />
+        </button>
+        <button type="button" data-history="forward" aria-label="Go forward" disabled>
+          <Icon name="arrowRight" />
+        </button>
+      </div>
     </div>
     <div class="site-header__desktop">
       <MainNavigation />
@@ -46,14 +50,17 @@ import '../styles/header.css';
 <dialog id="site-menu" class="mobile-drawer" data-menu-dialog aria-labelledby="menu-title">
   <div class="mobile-drawer__inner">
     <div class="mobile-drawer__heading">
-      <p id="menu-title">Daysforth</p>
+      <a id="menu-title" class="mobile-drawer__brand" href={withBase('/')}>
+        <img src={withBase('/brand/daysforth-mark.svg')} width="32" height="32" alt="" />
+        {brand.name}
+      </a>
       <button class="control" type="button" data-menu-close aria-label="Close menu">
         ×
       </button>
     </div>
     <MainNavigation />
     <ThemeToggle />
-    <button class="control" data-storage-open>
+    <button class="storage-settings" data-storage-open>
       Storage settings
     </button>
   </div>

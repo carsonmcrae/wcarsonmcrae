@@ -2,6 +2,8 @@
  * Purpose: Cache licensed UI glyph definitions once instead of repeating them in every document.
  * Scope: A static same-origin SVG sprite with trusted Phosphor paths.
  * Does NOT belong: User-supplied SVG, scripts, or branded assets.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { icons, iconBody } from '../lib/icons';
 export function GET() {

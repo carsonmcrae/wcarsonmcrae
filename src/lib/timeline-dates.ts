@@ -2,6 +2,8 @@
  * Purpose: Date precision and readable labels for the timeline.
  * Scope: Validates real month/day dates, indexes months, and labels browsing periods without timezones.
  * Does NOT belong: Personal dates (src/data/timeline.ts) or DOM interactions.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export type DateDetail = 'years' | 'quarters' | 'months';
 export const MONTHS = [

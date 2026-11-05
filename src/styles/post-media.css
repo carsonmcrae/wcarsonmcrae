@@ -1,7 +1,9 @@
 /**
  * Purpose: Photographic covers, clear post affordances, and consistent metadata.
- * Scope: Linked image surfaces, app badges, photo counts, separators, and responsive card proportions.
+ * Scope: Image sizing, post overlays, metadata, reaction rows, and responsive card proportions.
  * Does NOT belong: Feed grouping or interaction logic.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 .post-meta {
   display: flex;
@@ -29,22 +31,39 @@
   color: var(--text);
   text-decoration: none;
 }
-.post-media > img {
-  width: 100%;
-  height: 100%;
-  max-height: 29rem;
+.post-media__frame {
+  position: relative;
+  display: grid;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+}
+.post-media__frame > .photo-open {
+  display: grid;
+  min-width: 0;
+}
+.post-media__frame > .photo-open img {
+  width: auto;
+  height: auto;
+  /* Keep separate photo and post targets usable before lazy intrinsic dimensions exist. */
+  min-width: 6rem;
+  min-height: 3.25rem;
+  max-width: 100%;
+  max-height: calc(var(--media-height, 23rem) - var(--media-inset, 0rem));
+  margin-inline: auto;
   object-fit: contain;
 }
-.post-media--project > img {
+.post-media--project .post-media__frame > img {
   width: 6rem;
   height: 6rem;
   padding: 0;
   border-radius: 20px;
 }
 .post-media--screen {
+  --media-inset: 2rem;
   padding: 1rem;
 }
-.post-media--screen > img {
+.post-media--screen .photo-open img {
   border: 1px solid var(--rule);
   border-radius: 7px;
   object-fit: contain;
@@ -57,9 +76,49 @@
   justify-content: center;
   color: var(--text);
 }
+.post-media__open {
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  text-decoration: none;
+  z-index: 2;
+}
+.post-media__open::before {
+  content: '';
+  position: absolute;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  z-index: -1;
+}
+.post-media__open .icon {
+  font-size: 0.75rem;
+}
 .post-media__count {
   background: var(--surface);
   font-weight: 650;
+  top: 0.65rem;
+  left: 0.65rem;
+  min-width: 0;
+  min-height: 1.5rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  line-height: 1;
+  border: 1px solid var(--rule);
+  pointer-events: none;
+}
+.post-media__count .icon {
+  font-size: 0.75rem;
 }
 .post-media__app {
   position: absolute;
@@ -104,6 +163,11 @@
   background: var(--selected);
   border-radius: 9px;
 }
+.reaction-options button:disabled[aria-pressed='true'] {
+  cursor: default;
+  color: var(--link);
+  opacity: 1;
+}
 .post-card__copy {
   min-width: 0;
 }
@@ -111,12 +175,14 @@
   min-height: 20rem;
 }
 [data-view='posts'] .post-media {
+  --media-height: 18rem;
   grid-row: 1;
   grid-column: 1 / -1;
   border-radius: 0;
   height: 18rem;
 }
 [data-view='posts'] .post-card--milestone .post-media {
+  --media-height: 26rem;
   height: 26rem;
 }
 [data-view='posts'] .post-card {
@@ -133,19 +199,20 @@
   align-self: end;
 }
 @media (min-width: 48rem) {
-  [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) {
+  [data-view='timeline'] .post-card--illustrated {
     grid-template-columns: minmax(0, 1fr) 17rem;
     grid-template-rows: auto minmax(2.75rem, 1fr);
   }
-  [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) > .post-media {
+  [data-view='timeline'] .post-card--illustrated > .post-media {
     grid-column: 2;
-    grid-row: 1 / 3;
+    grid-row: 1/3;
     min-height: 16rem;
     max-height: 23rem;
   }
-  [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) > .post-actions {
+  [data-view='timeline'] .post-card--illustrated > .post-actions {
     grid-column: 1;
     grid-row: 2;
+    align-self: end;
   }
 }
 @media (max-width: 40rem) {
@@ -161,10 +228,15 @@
   }
   [data-view='posts'] .post-media,
   [data-view='posts'] .post-card--milestone .post-media {
+    --media-height: 20rem;
     height: 20rem;
   }
 }
 @media (hover: hover) {
+  .post-media__open:hover::before {
+    border-color: var(--link);
+  }
+
   .post-media:hover .post-media__open {
     color: var(--link);
     border-color: var(--link);

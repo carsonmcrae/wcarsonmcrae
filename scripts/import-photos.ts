@@ -6,6 +6,8 @@
  * Constraints: Source files are never modified or deleted; photos-incoming/ is ignored by git.
  * Does NOT belong: The planning rules (scripts/lib/photo-import.ts) or placing photos on pages
  *   (src/data).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { mkdir, readdir, stat } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';

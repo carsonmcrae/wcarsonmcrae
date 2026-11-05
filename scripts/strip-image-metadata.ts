@@ -4,6 +4,8 @@
  *   with its orientation applied, so GPS locations, camera serials, and timestamps never reach Git.
  * Does NOT belong: Choosing formats and quality (scripts/lib/image-encoding.ts) or optimizing images for
  *   the site, which Astro does at build time.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { readFile, readdir, rename, stat } from 'node:fs/promises';
 import { join, relative } from 'node:path';

@@ -2,6 +2,8 @@
  * Purpose: Unit tests for scripts/lib/photo-import.ts.
  * Scope: Stem cleanup, format choice, resize math, and duplicate detection.
  * Does NOT belong: Running the import against real files (scripts/import-photos.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import {

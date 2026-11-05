@@ -2,6 +2,8 @@
  * Purpose: HTTP and real-SQL guarantees for shared Daysforth reactions.
  * Scope: Global totals, duplicate/concurrent votes, privacy, rate limits, origins, and malformed requests.
  * Does NOT belong: Browser button state or live Cloudflare deployment tests.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { randomUUID } from 'node:crypto';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -11,6 +13,7 @@ import {
   type ReactionEnvironment,
 } from '../../src/lib/reaction-service';
 import { reactionDatabase } from './reaction-db';
+import { erasureRequest } from '../support/reaction-requests';
 const ids = ['born', 'graduation'];
 const now = 1_800_000_000_000;
 let database: ReturnType<typeof reactionDatabase>;
@@ -50,17 +53,7 @@ describe('shared totals', () => {
     const visitor = randomUUID();
     for (const kind of kinds) await handleReactions(vote(visitor, kind), env, kinds, now);
     await handleReactions(vote(randomUUID(), 'born--celebrate'), env, kinds, now);
-    const erase = () =>
-      handleReactions(
-        new Request('https://reactions.example.com/identity', {
-          method: 'DELETE',
-          headers: { Origin: 'https://wcarsonmcrae.com', 'Content-Type': 'application/json' },
-          body: JSON.stringify({ visitorId: visitor }),
-        }),
-        env,
-        kinds,
-        now,
-      );
+    const erase = () => handleReactions(erasureRequest(visitor), env, kinds, now);
     expect(await (await erase()).json()).toEqual({ forgotten: true });
     expect(await (await erase()).json()).toEqual({ forgotten: true });
     expect(database.sqlite.prepare('SELECT * FROM reactions').all()).toHaveLength(1);

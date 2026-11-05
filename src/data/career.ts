@@ -5,6 +5,8 @@
  * Constraints: Public-safe and accurate: transferable capabilities only, no client details,
  *   internal systems, or unconfirmed titles or dates.
  * Does NOT belong: Projects (src/data/projects.ts) or personal life (src/data/life.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { Principle, Role, TimelineEntry } from './types';
 

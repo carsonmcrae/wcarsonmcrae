@@ -6,16 +6,19 @@
  * Constraints: The gate checks the shape, never the prose. Strict JSON, Markdown, `.nvmrc`,
  *   lockfiles, and binary or image assets cannot or need not carry a header.
  * Does NOT belong: The line limit (scripts/lib/file-lines.ts) or reading files from disk.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { FileText, GateReport } from './file-lines.ts';
 
-export type CommentStyle = 'block' | 'astro' | 'hash' | 'slash';
+export type CommentStyle = 'block' | 'astro' | 'hash' | 'slash' | 'dash';
 
 const REQUIRED_FIELDS = ['Purpose', 'Scope', 'Does NOT belong'] as const;
 
 const STYLES: [RegExp, CommentStyle][] = [
   [/\.(?:ts|mts|mjs|js|css)$/, 'block'],
   [/\.astro$/, 'astro'],
+  [/\.sql$/, 'dash'],
   [
     /\.(?:ya?ml|toml)$|(?:^|\/)(?:\.gitignore|\.prettierignore|\.gitattributes|\.editorconfig|\.npmrc|CODEOWNERS)$/,
     'hash',
@@ -60,6 +63,9 @@ export function extractHeader(text: string, style: CommentStyle): string | null 
   if (style === 'slash') {
     return lineComment(lines, '//');
   }
+  if (style === 'dash') {
+    return lineComment(lines, '--');
+  }
   return blockComment(lines);
 }
 
@@ -71,7 +77,7 @@ export function headerProblems(header: string | null): string[] {
   }
   const problems: string[] = [];
   for (const field of REQUIRED_FIELDS) {
-    const match = new RegExp(`${field}:[ \\t]*([^\\n]*)`).exec(header);
+    const match = new RegExp(String.raw`${field}:[ \t]*([^\n]*)`).exec(header);
     if (!match) {
       problems.push(`header is missing "${field}:"`);
       continue;

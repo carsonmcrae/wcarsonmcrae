@@ -3,6 +3,8 @@
  * Scope: Buffered clicks, settings requests, touch gestures, failure fallback, and disposal.
  * Does NOT belong: The loaded dialog behavior or network fetching.
  * @vitest-environment happy-dom
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { afterEach, expect, it, vi } from 'vitest';
 import { deferControl } from '../../src/lib/deferred-controls';

@@ -8,6 +8,12 @@ and are kept here as the record of the approved structure. Each `.dc.html` file 
 the canvas's own component format; `canvas.json` holds their layout and the notes. They are not part
 of the site build and are not served.
 
+The desktop header and shared control-group resets live in `wireframe-shell.css`; keep that file
+beside the HTML when opening or sharing these historical previews. Native fieldsets retain the
+original invisible group labels. The referenced `support.js` is the design canvas’s external
+runtime and was not supplied with this archive; static HTML previews remain readable, while the
+`text/x-dc` filter/zoom logic requires that original runtime.
+
 | File               | Screen                                                          |
 | ------------------ | --------------------------------------------------------------- |
 | `Main.dc.html`     | Profile and timeline feed, desktop, interactive (filters, zoom) |

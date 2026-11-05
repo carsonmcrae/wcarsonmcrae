@@ -3,6 +3,8 @@
  * Scope: Allows every crawler and points it at the sitemap at the published address (custom
  *   domain or GitHub Pages project path).
  * Does NOT belong: The sitemap itself (@astrojs/sitemap in astro.config.mjs).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { APIRoute } from 'astro';
 import { absoluteUrl } from '../lib/paths';

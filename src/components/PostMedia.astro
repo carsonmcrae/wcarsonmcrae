@@ -3,6 +3,8 @@
  * Purpose: Separate photo enlargement from opening a moment, with quiet consistent overlays.
  * Scope: One photographic frame, small post icon, optional album badge, and app identity.
  * Does NOT belong: Lightbox behavior or post content.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { TimelinePost } from '../data/timeline';
 import { postMedia } from '../lib/post-media';
@@ -19,28 +21,30 @@ const media = postMedia(post);
 ---
 
 <div class:list={['post-media', `post-media--${media.kind}`]}>
-  {media.kind === 'project' ? (
-    <MomentImage name={media.name} alt={media.alt} kind="project" />
-  ) : (
-    <PhotoLink name={media.name} alt={media.alt} kind={media.kind} />
-  )}
-  {post.project && (
-    <span class="post-media__app" aria-hidden="true">
-      <MomentImage name={post.project} alt="" kind="project" />
-    </span>
-  )}
-  {showCount && media.count > 1 && (
-    <span class="post-media__count" aria-label={`${media.count} photos`}>
-      <Icon name="images" />
-      {media.count}
-    </span>
-  )}
-  <a
-    class="post-media__open"
-    title="Open post"
-    href={withBase(`/posts/${post.id}/`)}
-    aria-label={`View post: ${post.title}`}
-  >
-    <Icon name="expand" />
-  </a>
+  <div class="post-media__frame">
+    {media.kind === 'project' ? (
+      <MomentImage name={media.name} alt={media.alt} kind="project" />
+    ) : (
+      <PhotoLink name={media.name} alt={media.alt} kind={media.kind} />
+    )}
+    {post.project && (
+      <span class="post-media__app" aria-hidden="true">
+        <MomentImage name={post.project} alt="" kind="project" />
+      </span>
+    )}
+    {showCount && media.count > 1 && (
+      <span class="post-media__count" aria-label={`${media.count} photos`}>
+        <Icon name="images" />
+        {media.count}
+      </span>
+    )}
+    <a
+      class="post-media__open"
+      title="Open post"
+      href={withBase(`/posts/${post.id}/`)}
+      aria-label={`View post: ${post.title}`}
+    >
+      <Icon name="expand" />
+    </a>
+  </div>
 </div>

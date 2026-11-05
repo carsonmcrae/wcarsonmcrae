@@ -1,6 +1,8 @@
 -- Purpose: Consistent shared counts and bounded abuse protection for Daysforth.
 -- Scope: Unique anonymous reactions, atomic count maintenance, and expiring rate buckets.
 -- Does NOT belong: Personal information, raw visitor IDs, or raw network addresses.
+-- Copyright (c) 2026 William Carson McRae. All rights reserved.
+-- SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 CREATE TABLE reactions (
   post_id TEXT NOT NULL,
   visitor_hash TEXT NOT NULL,

@@ -5,6 +5,8 @@
  * Constraints: Without JavaScript the navigation stays visible; CSS hides the panel only when
  *   <html> has the js class.
  * Does NOT belong: Menu markup and styles (src/components/Header.astro).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 const DESKTOP_QUERY = '(min-width: 40rem)';
 
@@ -34,7 +36,7 @@ export function initMenu(doc: Document, win: MenuWindow): MenuController | null 
   const setOpen = (value: boolean) => {
     expanded = value;
     button.setAttribute('aria-expanded', String(value));
-    panel.setAttribute('data-open', String(value));
+    panel.dataset['open'] = String(value);
     doc.documentElement.dataset['menuOpen'] = String(value);
     if (modal) {
       if (value && !modal.open) modal.showModal();

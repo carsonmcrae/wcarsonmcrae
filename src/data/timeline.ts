@@ -3,6 +3,8 @@
  * Scope: Confirmed public moments, photo albums, month-precise dates, and pinned milestones.
  * Constraints: Dates preserve their supplied precision; a photograph never supplies an event date.
  * Does NOT belong: Grouping, filtering, navigation, or rendering (src/lib/timeline-*).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { experiencePosts } from './timeline-experiences';
 import { margotPhotos, quinnPhotos, weddingPhotos } from './photo-gallery';

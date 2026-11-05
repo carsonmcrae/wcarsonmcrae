@@ -9,6 +9,21 @@ before changing code, and [content](docs/CONTENT.md) before changing copy or pho
 Carson McRae's personal website: a static Astro site, published to GitHub Pages from this public
 repository and served at https://wcarsonmcrae.com. Every file here is public and permanent.
 
+## Ownership and permitted contributions
+
+This repository is source-available for review and patches to Carson’s website. It is **not licensed
+for external reuse, independent deployment, redistribution, or use as another product/template**.
+Read [LICENSE.md](LICENSE.md), [COPYRIGHT.md](COPYRIGHT.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
+Preserve the copyright/SPDX header in first-party commentable files. Keep upstream licenses intact;
+never claim ownership of third-party fonts, icons, packages, or supplied photographs. Do not add
+hidden tracking canaries or trap code. Fixes submitted to this repository remain welcome.
+
+Public source is not a substitute for security. Secrets and private data stay outside Git; keep the
+tested Worker in this repository unless Carson explicitly changes that architecture.
+Follow [SECURITY.md](SECURITY.md) and the maintained [architecture](docs/architecture/overview.md).
+Product updates require a version increment and user-facing release notes under the
+[release process](docs/governance/releases.md); the release gate enforces manifest, history, and tag consistency.
+
 ## How changes land
 
 - Commits are authored by Carson's identity only. No co-author trailers, "Generated with" lines, or
@@ -23,8 +38,10 @@ repository and served at https://wcarsonmcrae.com. Every file here is public and
 - Maximum **500 physical lines** per first-party file (`npm run check:repo`). Split by responsibility.
 - Every hand-written file that can carry a comment opens with a **Purpose / Scope / Does NOT belong**
   header (optional Constraints). Write it from the file itself and keep it accurate.
-- **100% statements, branches, functions, and lines per file** for `src/lib`, `src/data`, and
-  `scripts/lib`. Never lower a threshold, exclude a file, or add a hollow test; extract and test logic.
+- **100% statements, branches, functions, and lines per file** for logic/data, browser and CLI
+  entrypoints, typed page endpoints, Worker entrypoints, and Astro/Playwright configurations
+  (`vitest.config.ts` lists the scope). Never lower a threshold, exclude a file, or add a hollow test;
+  extract and test logic and composition.
 - **No copied code** (`npm run check:duplicates`). Extract the shared piece; never raise a threshold.
 - ESLint and Prettier with zero warnings, strict TypeScript, no unused files, exports, or dependencies.
 - Pages meet **Revised Section 508 and WCAG 2.2 AA** in both themes. Automated checks alone do not prove

@@ -6,6 +6,8 @@
  *   social tags.
  * Does NOT belong: Deployment settings (src/lib/deploy-config.ts) or page metadata
  *   (src/lib/seo.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 const EXTERNAL_PATTERN = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
 

@@ -3,6 +3,8 @@
  * Scope: Default-off persistence, withdrawal/erasure, modal focus, and native navigation availability.
  * Does NOT belong: Real network requests or layout assertions.
  * @vitest-environment happy-dom
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -198,7 +200,10 @@ describe('large photos', () => {
     document.dispatchEvent(new MouseEvent('click'));
     document.querySelector<HTMLButtonElement>('#other')!.click();
     document.querySelector<HTMLButtonElement>('[data-photo-close]')!.click();
+    window.scrollTo({ top: 420, left: 12 });
+    const scroll = vi.spyOn(window, 'scrollTo');
     link.click();
+    expect(scroll).toHaveBeenLastCalledWith({ top: 420, left: 12, behavior: 'instant' });
     expect(dialog.open).toBe(true);
     expect(dialog.querySelector('img')!.src).toBe('https://daysforth.com/photo.webp');
     expect(dialog.querySelector('img')!.alt).toBe('A portrait');

@@ -2,6 +2,8 @@
  * Purpose: Unit tests for src/lib/storage.ts.
  * Scope: Reading and writing through available, missing, and throwing storage.
  * Does NOT belong: Theme or achievement behavior (their own test files).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import { readItem, safeStorage, writeItem } from '../../src/lib/storage';

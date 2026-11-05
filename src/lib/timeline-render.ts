@@ -2,6 +2,8 @@
  * Purpose: Reuses server-rendered cards when a visitor changes timeline presentation.
  * Scope: Reads trusted card metadata, groups visible cards, and exposes expandable period clusters.
  * Does NOT belong: URL state, events, content, or social actions.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { groupMoments, visibleMoments, type Moment, type TimelineState } from './timeline-model';
 export interface MomentCard extends Moment {

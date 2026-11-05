@@ -6,6 +6,8 @@
  * Constraints: Pure functions only, so the plan is unit tested; the file system and sharp live in
  *   scripts/import-photos.ts.
  * Does NOT belong: Reading or writing files, or choosing which photo goes on which page (src/data).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 
 export const MAX_EDGE = 2000;

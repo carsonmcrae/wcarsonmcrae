@@ -14,6 +14,9 @@ and [WCAG 2.2](https://www.w3.org/TR/WCAG22/) extends the web criteria.
 - Everything works with a keyboard. A working skip link comes first, focus is always visible and never
   obscured, there are no positive `tabindex` values, and focus is never trapped. Navigation links carry
   `tabindex="0"` so Safari includes them in the normal tab order.
+- Accessible names retain their visible labels, including version strings. Prefer the element’s own
+  text; when an `aria-label` adds context, include that text unchanged so speech-control users can
+  name what they see. The all-page axe checks enforce label/name agreement.
 - Every page has a stable URL that supports direct links, refresh, back, and forward, and a unique,
   descriptive title.
 - Text contrast is at least 4.5:1 (3:1 for large text). Control boundaries, state indicators, and focus

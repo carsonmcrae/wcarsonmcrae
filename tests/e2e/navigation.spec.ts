@@ -4,6 +4,8 @@
  *   menu (open, Escape, outside click, link choice), back and forward, the 404 page, and the links to
  *   Carson's portfolio, GitHub, and TTSNative.
  * Does NOT belong: Accessibility audits (accessibility.spec.ts) or theme behavior (theme.spec.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test } from '@playwright/test';
 import { NAV_PAGES, openMenuIfCollapsed, PAGES } from './helpers';
@@ -61,6 +63,7 @@ test.describe('main navigation', () => {
 });
 
 test.describe('small-screen menu', () => {
+  // Each test runs in both mobile engines; the desktop layout has persistent navigation instead.
   test.skip(({ isMobile }) => !isMobile, 'The collapsible menu exists only on small screens.');
 
   test('opens, closes with Escape, and returns focus', async ({ page }) => {

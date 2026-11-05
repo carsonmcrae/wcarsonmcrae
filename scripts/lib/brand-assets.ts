@@ -2,6 +2,8 @@
  * Purpose: Portable vector construction for the original Daysforth identity.
  * Scope: The approved main and small D marks, outlined font paths, lockups, and social templates.
  * Does NOT belong: File IO or raster export (scripts/generate-brand-images.mjs).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { brand } from '../../src/data/brand.ts';
 interface OutlineFont {

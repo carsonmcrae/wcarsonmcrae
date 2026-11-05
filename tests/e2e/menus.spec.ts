@@ -2,6 +2,8 @@
  * Purpose: Keeps every date-menu option reachable in constrained reading layouts.
  * Scope: Keyboard focus in short windows and at 200% text size, with reader CSS overrides.
  * Does NOT belong: Main navigation or date/grouping calculations.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test } from '@playwright/test';
 

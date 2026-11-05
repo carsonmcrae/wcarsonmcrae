@@ -2,6 +2,8 @@
  * Purpose: Daysforth’s public brand foundations.
  * Scope: Name, positioning, voice, palette, typography, and asset inventory.
  * Does NOT belong: Carson’s biography or page-specific content.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export const brand = {
   name: 'Daysforth',

@@ -2,6 +2,8 @@
  * Purpose: Lists every file under a directory, for tests that inspect source or build output.
  * Scope: A recursive, synchronous walk returning absolute paths.
  * Does NOT belong: Filtering or reading files (the calling test).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';

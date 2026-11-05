@@ -3,6 +3,8 @@
  * Scope: Escape/focus, mutual exclusion, outside dismissal, notice timing, hover/focus pause, and cleanup.
  * Does NOT belong: Timeline filters or network actions.
  * @vitest-environment happy-dom
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { initDisclosures } from '../../src/lib/disclosures';

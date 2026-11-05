@@ -4,6 +4,8 @@
  *   locally with PW_WEBKIT=1), the production preview server, and the base path the tests run
  *   under.
  * Does NOT belong: Unit tests (vitest.config.ts) or the tests themselves (tests/e2e).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { defineConfig, devices } from '@playwright/test';
 import { normalizeBasePath } from './src/lib/deploy-config';

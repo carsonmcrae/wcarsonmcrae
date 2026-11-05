@@ -2,6 +2,8 @@
  * Purpose: The pure browsing model shared by server rendering and the interactive feed.
  * Scope: Stable chronology, filtering with persistent milestones, grouping, URL state, and nearest dates.
  * Does NOT belong: Browser events, DOM rendering, or storage.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { Category } from '../data/timeline';
 import {

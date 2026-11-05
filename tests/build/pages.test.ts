@@ -5,6 +5,8 @@
  *   Content-Security-Policy, zoom not disabled, unique ids, and every internal link, asset, and
  *   fragment resolving to something that exists.
  * Does NOT belong: Size budgets (budgets.test.ts) or browser behavior (tests/e2e).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -12,6 +14,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { BASE, DIST, htmlPages, parse, resolveInternal, SITE, urlPathFor } from './dist';
 import { postAliases } from '../../src/data/post-aliases';
+import { releases } from '../../src/data/releases';
 
 const pages = htmlPages.map((file) => ({ file, document: parse(file) }));
 const meta = (document: Document, key: string) =>
@@ -27,6 +30,9 @@ describe('the build', () => {
       'life/index.html',
       'contact/index.html',
       'accessibility/index.html',
+      'privacy/index.html',
+      'releases/index.html',
+      ...releases.map((release) => `releases/${release.version}/index.html`),
       '404.html',
     ]) {
       expect(htmlPages, file).toContain(file);

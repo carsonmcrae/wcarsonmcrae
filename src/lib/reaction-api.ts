@@ -2,6 +2,8 @@
  * Purpose: A small, validated client for shared reaction counts.
  * Scope: Public endpoint validation, count payload validation, and idempotent anonymous votes.
  * Does NOT belong: DOM state, browser storage, or the Worker implementation.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export function reactionEndpoint(raw: string | undefined): string {
   if (!raw?.trim()) return '';

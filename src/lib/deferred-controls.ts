@@ -2,6 +2,8 @@
  * Purpose: Load optional dialog and drawer behavior only when a visitor intends to use it.
  * Scope: Primary-click replay, explicit settings requests, buffered edge gestures, and cleanup.
  * Does NOT belong: Dialog content, storage decisions, or native link navigation.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export function deferControl(
   doc: Document,

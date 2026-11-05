@@ -1,6 +1,8 @@
 # Purpose: Free-tier deployment configuration for Daysforth shared reactions.
 # Scope: Worker entry, D1 binding, allowed browser origins, and rate-limit cleanup.
 # Does NOT belong: Secrets (set RATE_LIMIT_SALT with wrangler secret put) or site hosting.
+# Copyright (c) 2026 William Carson McRae. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 name = "daysforth-reactions"
 account_id = "e40c53bd15ed7311ba8ef5fdfa63bfac"
 main = "src/index.ts"
