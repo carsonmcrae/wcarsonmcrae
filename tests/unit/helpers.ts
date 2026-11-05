@@ -3,6 +3,8 @@
  * Scope: Controllable matchMedia results, in-memory storage, and storage that throws like a
  *   blocked browser.
  * Does NOT belong: Assertions or test cases (the *.test.ts files beside it).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { vi } from 'vitest';
 import { CONSENT_KEY } from '../../src/lib/consent';

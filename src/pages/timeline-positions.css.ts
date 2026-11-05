@@ -2,6 +2,8 @@
  * Purpose: Build-time CSS endpoint for the timeline’s real date proportions.
  * Scope: Serves computed pin positions as a same-origin, CSP-compatible stylesheet.
  * Does NOT belong: Styling tokens or browser-side code.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { timelinePosts } from '../data/timeline';
 import { chronological } from '../lib/timeline-model';

@@ -3,6 +3,8 @@
  * Scope: Maps a file extension to the sharp output format and quality used by
  *   scripts/strip-image-metadata.ts, and lists which extensions count as photos.
  * Does NOT belong: File system access or running sharp (scripts/strip-image-metadata.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 
 const PHOTO_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.avif'] as const;

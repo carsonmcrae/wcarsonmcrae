@@ -3,6 +3,8 @@
  * Scope: Site name and defaults, navigation, page titles and descriptions, contact page copy,
  *   footer, 404, and the achievement notice.
  * Does NOT belong: Personal or professional content (the other files in src/data).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { LinkItem } from './types';
 

@@ -2,6 +2,8 @@
  * Purpose: Exercise the polished timeline, photo viewer, privacy choices, and app navigation.
  * Scope: Real rendered interaction, modal keyboard/inert behavior, consistent media, and history.
  * Does NOT belong: Backend SQL contracts or real production votes.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test } from '@playwright/test';
 import { allowStorage, expectNoViolations } from './helpers';
@@ -23,6 +25,7 @@ test('the native date range accepts pointer dragging while its dock is sticky', 
   page,
   isMobile,
 }) => {
+  // Mouse dragging is a desktop case; mobile touch/keyboard coverage is exercised separately.
   test.skip(isMobile, 'Touch and keyboard states are covered by the mobile date-jump checks.');
   await page.goto('?date=2022-05');
   const range = page.locator('[data-date-slider]');
@@ -187,6 +190,7 @@ test('the mobile drawer is modal, left aligned, and closes with a swipe', async 
   page,
   isMobile,
 }) => {
+  // The modal drawer exists only at the mobile breakpoint; both mobile engines execute this case.
   test.skip(!isMobile, 'Desktop uses the persistent navigation bar.');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('');

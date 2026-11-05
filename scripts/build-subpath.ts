@@ -4,6 +4,8 @@
  * Scope: Builds into dist-subpath/ as https://carsonmcrae.github.io/wcarsonmcrae/ and runs the
  *   built-site checks against that output, so links and assets cannot assume the domain root.
  * Does NOT belong: The checks themselves (tests/build) or deployment (.github/workflows/deploy.yml).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { spawnSync } from 'node:child_process';
 

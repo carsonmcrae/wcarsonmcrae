@@ -2,6 +2,8 @@
  * Purpose: Consistent cover and album metadata for every post presentation.
  * Scope: Resolves photo/screen/icon sources, aspect classes, and gallery counts.
  * Does NOT belong: Image optimization, storage, or post content.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { TimelinePost } from '../data/timeline';
 export function postMedia(post: TimelinePost): {

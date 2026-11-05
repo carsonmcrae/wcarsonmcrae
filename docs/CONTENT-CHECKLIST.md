@@ -32,8 +32,9 @@ the matching file in `src/data/`.
 - [x] **Project facts.** Status, stack, and links for TTSNative, Recalen, and PicPledge come from your
       GitHub profile README; metrics stay in the portfolio. Southern Surface Company is kept off the site
       for now (your call, 2026-11-03).
-- [x] **License.** All rights reserved (2026-11-03). The repository is public only so GitHub Pages can
-      host it for free; no reuse is granted, and no `LICENSE` file is added.
+- [x] **License.** All rights reserved. The November 5 restricted-use notice, ownership inventory,
+      contribution terms, and enforced SPDX headers make permitted review/patches and restricted
+      external reuse explicit while preserving GitHub’s terms and third-party licenses.
 - [x] **Name and domains.** Daysforth is chosen and `daysforth.com` purchased. Carson subsequently
       chose `wcarsonmcrae.com` as canonical, with Daysforth and both www hosts forwarding there.
 - [x] **Timeline dates.** Month and year required; days optional. Born November 1999, PC December

@@ -7,6 +7,8 @@
  *   never raise a cap to make a file fit.
  * Does NOT belong: Text line limits (scripts/lib/file-lines.ts) or the built-page budgets
  *   (tests/build/budgets.test.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { GateReport } from './file-lines.ts';
 

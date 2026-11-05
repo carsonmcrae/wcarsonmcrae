@@ -3,6 +3,8 @@
  * Scope: External URL detection, base path handling, active navigation matching, and absolute URLs
  *   at the root and under a project path.
  * Does NOT belong: Deployment settings (tests/unit/deploy-config.test.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import {

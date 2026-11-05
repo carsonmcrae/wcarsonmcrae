@@ -2,6 +2,8 @@
  * Purpose: Minimal DOM contracts for timeline behavior tests.
  * Scope: Production data attributes, native controls, isolated history, and controllable scroll observers.
  * Does NOT belong: Grouping/filtering logic or layout assertions.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { vi } from 'vitest';
 import { timelinePosts } from '../../src/data/timeline';

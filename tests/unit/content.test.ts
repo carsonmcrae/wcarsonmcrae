@@ -4,6 +4,8 @@
  *   banned buzzwords, typographic tidiness, and scans for phone numbers, email addresses, street
  *   addresses, and credentials.
  * Does NOT belong: Checks on the built output (tests/build).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -18,6 +20,7 @@ import * as brandData from '../../src/data/brand';
 import * as timelineData from '../../src/data/timeline';
 import * as galleryData from '../../src/data/photo-gallery';
 import * as privacyData from '../../src/data/privacy';
+import * as releaseData from '../../src/data/releases';
 import { availableProjectImages } from '../../src/lib/images';
 import { isExternalUrl } from '../../src/lib/paths';
 import { walk } from '../support/walk';
@@ -34,6 +37,7 @@ const allData = {
   timelineData,
   galleryData,
   privacyData,
+  releaseData,
 };
 
 /** Every string anywhere in the content layer. */

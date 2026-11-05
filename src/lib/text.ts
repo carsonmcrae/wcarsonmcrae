@@ -3,6 +3,8 @@
  * Scope: The separator before each item of an English list ("A and B", "A, B, and C"), joining
  *   plain strings into such a list, and long-form dates in Nashville's time zone.
  * Does NOT belong: Markdown rendering (src/lib/inline-markdown.ts) or the content (src/data).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 
 /** The text that goes before item `index` in an English list of `count` items. */

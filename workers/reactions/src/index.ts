@@ -2,6 +2,8 @@
  * Purpose: Cloudflare Worker entry point for Daysforth shared reactions.
  * Scope: Passes platform bindings and approved moment IDs to the tested HTTP service.
  * Does NOT belong: HTTP, SQL, validation, or rate-limit logic (src/lib/reaction-service.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { timelinePosts } from '../../../src/data/timeline';
 import { postAliases } from '../../../src/data/post-aliases';

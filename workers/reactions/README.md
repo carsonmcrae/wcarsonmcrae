@@ -15,7 +15,10 @@ An outage or quota limit leaves the feed, Save, and Copy link usable.
   `--celebrate`, `--laugh`, and `--support`. Each option can be added independently, once per identity.
 - An existing browser/moment pair is idempotent. SQL uniqueness and the insert trigger prevent
   duplicate totals, including concurrent submissions. The removal trigger is retired by migration 0002.
-- New votes are limited to 20 per network per hour. Bodies are limited to 512 bytes.
+- New votes and identity-erasure requests each have a separate allowance of 20 per network per hour.
+  Existing votes remain idempotent without consuming a new-vote allowance. Repeated erasure requests
+  are idempotent but consume the erasure allowance; an exhausted allowance returns 429 with Retry-After.
+  Browser preferences can still be cleared. Bodies are limited to 512 bytes.
 - POST and DELETE require an approved Origin and JSON content type. Production permits only the personal
   domain and its www host; local development origins must be explicitly configured locally.
 - Raw browser identifiers and network addresses are never stored. SHA-256 hashes use a private salt.
@@ -55,6 +58,11 @@ For the permanent-reactions release, first apply migration 0002 remotely using t
 profile, then deploy the Worker, then publish the frontend. Never reset totals or rotate the salt.
 Migration 0002 drops only the decrement trigger; it preserves every existing vote and total.
 The three retired app-start event IDs remain accepted for compatibility.
+
+Before deploying the bounded-erasure update, apply migration 0003 using the same guarded profile.
+It adds only a visitor-hash index so identifier erasure uses an indexed lookup instead of a full
+table scan. The Worker separately bounds erasure requests by network/hour, using a distinct salted
+bucket namespace. Existing reaction bucket hashes, identifiers, totals, and the salt remain unchanged.
 
 Operator canary cleanup now requires a guarded transaction affecting only the known test UUID hash
 and its exact reaction key. Remove the exact test row and subtract exactly its one test increment;

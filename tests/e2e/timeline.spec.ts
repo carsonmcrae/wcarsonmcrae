@@ -2,6 +2,8 @@
  * Purpose: Browser verification of the approved Daysforth timeline journey.
  * Scope: Pinned navigation, native slider, view/filter/date history, saved posts, and visual captures.
  * Does NOT belong: Pure date calculations or backend contracts (tests/unit).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test } from '@playwright/test';
 import { allowStorage, expectNoViolations } from './helpers';
@@ -104,10 +106,15 @@ test('Save stays in sync across views, refresh, and the permanent post page', as
 });
 
 test('captures the approved states for visual review', async ({ page }, testInfo) => {
+  // Capture artifacts only on explicit request; the ordinary layout/accessibility cases always run.
   test.skip(
     process.env['DAYSFORTH_QA'] !== '1' || testInfo.project.name !== 'desktop-chromium',
     'Opt-in visual evidence.',
   );
+  await page.goto('');
+  await expect(
+    page.getByRole('heading', { name: 'William Carson McRae', exact: true }),
+  ).toBeVisible();
   await page.setViewportSize({ width: 1440, height: 1024 });
   await page.screenshot({ path: 'screenshots/daysforth-desktop-timeline.png' });
   await page.getByRole('button', { name: 'Posts', exact: true }).click();

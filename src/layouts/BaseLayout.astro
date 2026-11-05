@@ -3,6 +3,8 @@
  * Purpose: The page shell every route renders inside.
  * Scope: Document metadata, landmarks, shared photo/privacy dialogs, and the progressive client entry.
  * Does NOT belong: Page content (src/pages) or metadata details (SiteHead.astro).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import '../styles/global.css';
 import PhotoViewer from '../components/PhotoViewer.astro';
@@ -15,7 +17,7 @@ import { site, type PageMeta } from '../data/site';
 
 interface Props {
   page: Pick<PageMeta, 'title' | 'description' | 'path'> & {
-    id: PageMeta['id'] | '404' | 'post' | 'brand' | 'privacy';
+    id: PageMeta['id'] | '404' | 'post' | 'brand' | 'privacy' | 'releases' | 'release';
   };
   noindex?: boolean;
 }

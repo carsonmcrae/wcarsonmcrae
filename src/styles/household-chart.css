@@ -1,0 +1,139 @@
+/**
+ * Purpose: The household’s custom organization diagram.
+ * Scope: Responsive semantic nodes, decorative connectors, and visible roles in both themes.
+ * Does NOT belong: Household facts, global tokens, or generated photographic substitutes.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+.org {
+  margin-top: 3rem;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  background: var(--surface);
+}
+.org__heading {
+  max-width: 32rem;
+  margin-bottom: 2rem;
+}
+.org__eyebrow {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--link);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.org__heading h3 {
+  font-size: clamp(1.25rem, 3vw, 1.625rem);
+  letter-spacing: -0.035em;
+  line-height: 1.35;
+}
+.org__diagram {
+  max-width: 38rem;
+  margin-inline: auto;
+}
+.org__tier-label {
+  margin-bottom: 0.75rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+.org__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.75rem, 3vw, 2rem);
+  padding: 0;
+  list-style: none;
+}
+.org__person {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: clamp(0.75rem, 2vw, 1.5rem);
+}
+.org__person h4 {
+  font-size: clamp(1rem, 2.5vw, 1.375rem);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+.org__person--management {
+  border-top: 3px solid var(--link);
+  background: var(--wash);
+}
+.org__person--management > p {
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+.org__seal {
+  display: inline-flex;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--link);
+}
+.org__breed {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.org__connectors {
+  display: block;
+  width: 100%;
+  height: 4.5rem;
+  overflow: visible;
+  fill: var(--surface);
+  stroke: var(--link);
+  stroke-width: 1.5px;
+}
+.org__connectors path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.org__tier--staff {
+  position: relative;
+}
+.org__tier--staff > .org__tier-label {
+  position: absolute;
+  top: -1.85rem;
+  left: 0;
+}
+.org__person--staff {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+.org__person--staff > .icon {
+  color: var(--muted);
+}
+.org__duties {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+.org__duties > span {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+@media (forced-colors: active) {
+  .org__connectors {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
+}

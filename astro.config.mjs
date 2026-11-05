@@ -5,6 +5,8 @@
  *   output, the sitemap, the Content-Security-Policy, and the self-hosted fonts.
  * Does NOT belong: Deployment (.github/workflows/deploy.yml), page content (src/data), or styles
  *   (src/styles).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';

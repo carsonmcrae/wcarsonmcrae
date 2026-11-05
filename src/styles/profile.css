@@ -2,6 +2,8 @@
  * Purpose: The approved centered profile, photographic pins, and date rail.
  * Scope: Desktop/mobile proportions, photographic focal points, and accessible slider styling.
  * Does NOT belong: Feed cards (timeline.css) or global tokens.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 .profile-overview {
   max-width: 50rem;

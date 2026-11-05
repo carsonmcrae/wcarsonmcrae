@@ -2,6 +2,8 @@
  * Purpose: Accessible, dismissible action feedback.
  * Scope: Eight-second notices that pause on hover/focus and can be dismissed by hand.
  * Does NOT belong: The actions that request a notice.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export function initActionNotice(doc: Document, win: Pick<Window, 'setTimeout' | 'clearTimeout'>) {
   const notice = doc.querySelector<HTMLElement>('[data-action-notice]');

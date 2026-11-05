@@ -4,6 +4,8 @@
  *   sitemap, and size budgets.
  * Does NOT belong: Unit tests and coverage (vitest.config.ts) or browser tests
  *   (playwright.config.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { defineConfig } from 'vitest/config';
 

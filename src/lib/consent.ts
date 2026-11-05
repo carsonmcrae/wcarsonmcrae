@@ -2,6 +2,8 @@
  * Purpose: Keep optional browser persistence behind a clear, revocable choice.
  * Scope: A necessary consent record, consent-gated preferences, and memory-only fallback.
  * Does NOT belong: Consent dialog markup or server reaction totals.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { readItem, safeStorage, writeItem, type StorageLike } from './storage';
 export const CONSENT_KEY = 'daysforth.consent.v1';

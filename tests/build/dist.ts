@@ -4,6 +4,8 @@
  *   (from SITE_URL and BASE_PATH, like the build), listing pages, parsing HTML, and resolving an
  *   internal URL to the file GitHub Pages would serve for it.
  * Does NOT belong: Assertions (the *.test.ts files beside it).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';

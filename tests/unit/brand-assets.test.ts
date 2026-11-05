@@ -2,6 +2,8 @@
  * Purpose: Integrity tests for the portable Daysforth brand exports.
  * Scope: Glyph positioning, approved mark fidelity, complete inventory, and export dimensions.
  * Does NOT belong: Subjective design approval or browser presentation.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import { readFile } from 'node:fs/promises';

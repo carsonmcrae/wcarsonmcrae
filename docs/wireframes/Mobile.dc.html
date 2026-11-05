@@ -8,6 +8,7 @@
 <body>
 <x-dc>
 <helmet>
+<link rel="stylesheet" href="./wireframe-shell.css">
 <style>
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#111;background:#fff;line-height:1.4}
 a{color:#1a55c0}a:hover{color:#0f3a8a}
@@ -64,12 +65,12 @@ button{font:inherit;cursor:pointer}
     <section id="m-feed" aria-labelledby="m-feed-title" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #d4d4d4; padding-top: 12px">
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
         <h2 id="m-feed-title" style="margin: 0; font-size: 18px">Timeline</h2>
-        <div role="group" aria-label="Show" style="display: flex; gap: 6px">
+        <fieldset class="wireframe-controls" style="display: flex; gap: 6px"><legend>Show</legend>
           <button type="button" aria-pressed="true" style="min-height: 36px; padding: 0 12px; border: 1px solid #111; border-radius: 999px; background: #111; color: #fff; font-size: 13px">All</button>
           <button type="button" aria-pressed="false" style="min-height: 36px; padding: 0 12px; border: 1px solid #111; border-radius: 999px; background: #fff; font-size: 13px">Work</button>
           <button type="button" aria-pressed="false" style="min-height: 36px; padding: 0 12px; border: 1px solid #111; border-radius: 999px; background: #fff; font-size: 13px">Projects</button>
           <button type="button" aria-pressed="false" style="min-height: 36px; padding: 0 12px; border: 1px solid #111; border-radius: 999px; background: #fff; font-size: 13px">Life</button>
-        </div>
+        </fieldset>
       </div>
       <div style="display: flex; gap: 12px">
         <div style="width: 44px; flex: none; display: flex; flex-direction: column; gap: 92px; font-size: 12px; font-weight: 700; text-align: right; padding-top: 10px">
@@ -102,12 +103,12 @@ button{font:inherit;cursor:pointer}
     </section>
   </div>
 
-  <div role="group" aria-label="Zoom" style="flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 16px; border-top: 1px solid #d4d4d4; background: #fff">
+  <fieldset class="wireframe-controls" style="flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 16px; border-top: 1px solid #d4d4d4; background: #fff"><legend>Zoom</legend>
     <button type="button" aria-label="Zoom out" style="width: 44px; height: 44px; border: 1px solid #111; border-radius: 8px; background: #fff; font-size: 20px">−</button>
     <span style="font-weight: 600">Years</span>
     <button type="button" aria-label="Zoom in" style="width: 44px; height: 44px; border: 1px solid #111; border-radius: 8px; background: #fff; font-size: 20px">+</button>
     <a href="#m-feed" style="font-size: 14px">Jump to year</a>
-  </div>
+  </fieldset>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>

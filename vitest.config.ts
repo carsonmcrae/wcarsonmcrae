@@ -5,6 +5,8 @@
  * Constraints: Never lower a threshold or exclude a file to pass; extract and test the logic.
  * Does NOT belong: Checks against the built site (vitest.build.config.ts) or browser tests
  *   (playwright.config.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { defineConfig } from 'vitest/config';
 
@@ -16,10 +18,20 @@ export default defineConfig({
     testTimeout: 15_000,
     coverage: {
       provider: 'v8',
-      // The CLI entry points in scripts/*.ts are thin wrappers; their logic lives in scripts/lib.
-      include: ['src/lib/**/*.ts', 'src/data/**/*.ts', 'scripts/lib/**/*.ts'],
+      // Include adapters and configuration as well as logic; composition tests cover their seams.
+      include: [
+        'src/lib/**/*.ts',
+        'src/data/**/*.ts',
+        'src/scripts/**/*.ts',
+        'src/pages/*.ts',
+        'scripts/**/*.ts',
+        'scripts/*.mjs',
+        'workers/**/src/*.ts',
+        'astro.config.mjs',
+        'playwright.config.ts',
+      ],
       exclude: ['**/*.d.ts', 'src/data/types.ts'],
-      reporter: ['text', 'html', 'json-summary'],
+      reporter: ['text', 'html', 'json-summary', 'lcov'],
       thresholds: { perFile: true, lines: 100, statements: 100, functions: 100, branches: 100 },
     },
   },

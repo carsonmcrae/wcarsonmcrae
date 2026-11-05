@@ -1,7 +1,9 @@
 /**
  * Purpose: Open any approved photograph in a larger, accessible native dialog.
- * Scope: Delegated triggers, Escape/backdrop close, related moments, and restored focus.
+ * Scope: Delegated triggers, Escape/backdrop close, related moments, scroll isolation, and restored focus.
  * Does NOT belong: Image URL generation or persistence.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export function initPhotoViewer(doc: Document) {
   const dialog = doc.querySelector<HTMLDialogElement>('[data-photo-viewer]')!;
@@ -30,6 +32,8 @@ export function initPhotoViewer(doc: Document) {
           ?.getAttribute('href');
       related.hidden = !moment;
       if (moment) related.href = moment;
+      const win = doc.defaultView!;
+      win.scrollTo({ top: win.scrollY, left: win.scrollX, behavior: 'instant' });
       dialog.showModal();
     }
     if (event.target.closest('[data-photo-close]') || event.target === dialog) close();

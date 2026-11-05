@@ -2,6 +2,8 @@
  * Purpose: Date, chronology, and URL regression tests for Daysforth.
  * Scope: Real calendar dates, month-only precision, stable same-month order, pins, filters, and periods.
  * Does NOT belong: Browser event handling or image rendering.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import { timelinePosts, timelineProfile } from '../../src/data/timeline';

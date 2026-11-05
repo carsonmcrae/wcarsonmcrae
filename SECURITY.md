@@ -1,19 +1,39 @@
-# Security
+# Security policy
 
-This repository is a static personal website. It has no server, database, accounts, forms, or
-analytics, and it stores nothing about visitors outside their own browser.
+Report vulnerabilities privately using this repository’s **Security → Report a vulnerability**
+feature. Do not put credentials, private visitor data, or exploitable details in a public issue.
+If private reporting is unavailable, use the existing private LinkedIn contact on the site.
 
-## Reporting a problem
+## Trust boundaries
 
-If you find a security issue (for example, a way to run script on the site, a leaked credential in the
-history, or private information that should not be public), please report it privately through
-GitHub's **Report a vulnerability** button on this repository's Security tab, or send Carson a message
-on [LinkedIn](https://www.linkedin.com/in/carsonmcrae/). Please do not open a public issue for it.
+- GitHub Pages serves static HTML, CSS, JavaScript, images, and fonts. There is no PHP interpreter,
+  server template evaluation, account system, upload endpoint, or server filesystem to traverse.
+- The Cloudflare Worker is the only application backend. D1 bindings and the private rate-limit
+  salt stay in Cloudflare; no browser-facing credential exists. Do not publish `.env`, `.dev.vars`,
+  local databases, scan tokens, logs containing secrets, or incoming originals.
+- API route/reaction IDs, origins, methods, content type, UUIDs, and bounded request bodies are
+  validated. SQL is fixed and parameterized. Database uniqueness preserves idempotency and totals.
+- Content formatting escapes HTML and restricts link protocols. Astro supplies hashed CSP; external
+  links isolate their opener and referrer. No third-party embeds or arbitrary HTML inputs are accepted.
+- Dependency pins, provenance checks, secret scanning, CodeQL, Semgrep, Trivy, and runtime/browser
+  tests complement manual review. A clean scan is evidence, not a guarantee of zero vulnerabilities.
 
-## What is in place
+Public implementation details are not secrets and are not the security boundary. GitHub cannot
+hide selected files within a public repository, and browser-delivered code is visible by design.
+The Worker stays alongside its tests and migrations to avoid an unnecessary private-repo deployment
+and contract-sync workflow. Already published Git history cannot be made confidential retroactively.
 
-- A strict Content-Security-Policy on every page, with hashed scripts and styles and no third-party
-  requests.
-- Exactly pinned dependencies with a 14-day adoption cooldown, no install scripts, `npm audit` and
-  registry-signature checks, CodeQL, dependency review on pull requests, and gitleaks secret scanning.
-- GitHub Actions pinned to full commit SHAs, with read-only default permissions.
+## Changes and reporting
+
+Carson is the only current write/admin collaborator and the CODEOWNER. Protected `main` requires
+the current quality/security checks, disallows force pushes and deletion, and resolves review
+conversations. Owner-specific review bypass does not disable required CI checks. Review access
+before granting another collaborator or integration write permissions.
+
+Keep [architecture documentation](docs/architecture/overview.md), the public privacy notice, and
+the release notes aligned whenever a trust boundary, storage purpose, API contract, or deployment
+changes. Use environment variables for local SonarQube authentication; never commit a scan token.
+
+Supported production is the latest published release. Report a reproducible issue with the version,
+affected route, expected/observed behavior, and a redacted reproduction. Avoid destructive tests,
+quota exhaustion, real visitor data, or modifying production reaction totals.

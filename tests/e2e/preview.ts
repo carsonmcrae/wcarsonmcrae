@@ -3,6 +3,8 @@
  * Scope: Test-only certificate generation, the Astro CLI process, and shutdown forwarding.
  * Constraints: Importing Playwright configuration must not create certificates or spawn OpenSSL.
  * Does NOT belong: Production TLS, hosting settings, or application behavior.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';

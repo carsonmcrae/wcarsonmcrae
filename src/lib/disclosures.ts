@@ -2,6 +2,8 @@
  * Purpose: Keyboard and dismissal behavior for native disclosure menus.
  * Scope: One open menu, outside-click dismissal, and Escape with focus restored to its summary.
  * Does NOT belong: The header menu (menu.ts) or choices inside the disclosures.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export function initDisclosures(doc: Document): () => void {
   const menus = Array.from(doc.querySelectorAll<HTMLDetailsElement>('[data-timeline-menu]'));

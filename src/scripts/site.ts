@@ -1,9 +1,11 @@
 /**
  * Purpose: The browser entry point for the site's progressive enhancements.
- * Scope: Starts theme, history, feed, privacy, and image controls with dialogs loaded on intent.
+ * Scope: Composes theme, history, feed, privacy, image controls, and cleanup with dialogs loaded on intent.
  * Constraints: Everything here is optional: every page is readable and navigable without
  *   JavaScript.
  * Does NOT belong: The behaviors themselves, which live (and are tested) in src/lib.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { initImageFallbacks } from '../lib/image-fallbacks';
 import { initThemeToggle } from '../lib/theme';
@@ -16,41 +18,45 @@ import { consentChoice } from '../lib/consent';
 import { safeStorage } from '../lib/storage';
 
 const start = () => {
-  initThemeToggle(document, window);
-  initHistoryControls(document, window);
-  deferControl(document, '[data-photo]', async () => {
-    const { initPhotoViewer } = await import('../lib/photo-viewer');
-    return initPhotoViewer(document);
-  });
-  deferControl(
-    document,
-    '[data-storage-open],[data-storage-choice],[data-forget-browser]',
-    async () => {
-      const { initPrivacyControls } = await import('../lib/privacy-controls');
-      return initPrivacyControls(
-        document,
-        window,
-        reactionEndpoint(import.meta.env['PUBLIC_REACTIONS_URL']),
-      );
-    },
-    { request: 'daysforth:privacy-request' },
+  const stops = [initThemeToggle(document, globalThis), initHistoryControls(document, globalThis)];
+  stops.push(
+    deferControl(document, '[data-photo]', async () => {
+      const { initPhotoViewer } = await import('../lib/photo-viewer');
+      return initPhotoViewer(document);
+    }),
+    deferControl(
+      document,
+      '[data-storage-open],[data-storage-choice],[data-forget-browser]',
+      async () => {
+        const { initPrivacyControls } = await import('../lib/privacy-controls');
+        return initPrivacyControls(
+          document,
+          globalThis,
+          reactionEndpoint(import.meta.env['PUBLIC_REACTIONS_URL']),
+        );
+      },
+      { request: 'daysforth:privacy-request' },
+    ),
+    deferControl(
+      document,
+      '[data-menu-toggle]',
+      async () => {
+        const { initMenu } = await import('../lib/menu');
+        return initMenu(document, globalThis)!.destroy;
+      },
+      { edge: true },
+    ),
+    initPagePosition(document, globalThis),
   );
-  deferControl(
-    document,
-    '[data-menu-toggle]',
-    async () => {
-      const { initMenu } = await import('../lib/menu');
-      return initMenu(document, window)!.destroy;
-    },
-    { edge: true },
-  );
-  initPagePosition(document, window);
   document.querySelector<HTMLElement>('[data-storage-notice]')!.hidden =
-    consentChoice(safeStorage(window)) !== null;
+    consentChoice(safeStorage(globalThis)) !== null;
   initImageFallbacks(document);
-  startTimeline();
+  stops.push(startTimeline());
   document.documentElement.dataset['siteReady'] = 'true';
   if (!document.querySelector('[data-timeline]'))
-    document.documentElement.removeAttribute('data-timeline-restore');
+    delete document.documentElement.dataset['timelineRestore'];
+  return () => {
+    for (const stop of stops) stop();
+  };
 };
-start();
+export const stopSite = start();

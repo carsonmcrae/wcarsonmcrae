@@ -2,6 +2,8 @@
  * Purpose: A readable, visual brand guide using the actual export files.
  * Scope: Logo presentation, approved swatches, type specimens, download list, and responsive layout.
  * Does NOT belong: Production app UI or vector artwork generation.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 .brand-guide {
   max-width: 58rem;

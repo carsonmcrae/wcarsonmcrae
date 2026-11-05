@@ -1,32 +1,64 @@
 ---
 /**
  * Purpose: An editorial gallery of Carson’s actual approved photographs.
- * Scope: Responsive image pairs with clear alternatives and captions.
+ * Scope: Responsive albums with full subjects, a shared larger viewer, and clear captions.
  * Does NOT belong: Content, dates, photo approval, or image processing.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { GalleryPhoto } from '../data/photo-gallery';
 import Photo from './Photo.astro';
 import { withBase } from '../lib/paths';
 interface Props {
   photos: GalleryPhoto[];
+  layout?: 'album' | 'pairs';
 }
-const { photos } = Astro.props;
+const { photos, layout = 'album' } = Astro.props;
 ---
 
-<div class="photo-gallery">
+<ul class:list={['photo-gallery', `photo-gallery--${layout}`]} role="list">
   {photos.map((photo) => (
-    <div class="photo-gallery__link">
-      <Photo name={photo.name} alt={photo.alt} postId={photo.postId} />
-      <a href={withBase(`/posts/${photo.postId}/`)}>{photo.caption}</a>
-    </div>
+    <li class="photo-gallery__item">
+      <Photo
+        name={photo.name}
+        alt={photo.alt}
+        {...(photo.postId ? { postId: photo.postId } : {})}
+      />
+      {photo.postId ? (
+        <a class="destination-link" href={withBase(`/posts/${photo.postId}/`)}>
+          {photo.caption}
+        </a>
+      ) : (
+        <p class="photo-gallery__caption">{photo.caption}</p>
+      )}
+    </li>
   ))}
-</div>
+</ul>
 <style>
   .photo-gallery {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem 1rem;
     margin-top: 1.5rem;
+    padding: 0;
+    list-style: none;
+  }
+  .photo-gallery__item {
+    min-width: 0;
+    margin: 0;
+  }
+  .photo-gallery--pairs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .photo-gallery__caption {
+    margin-top: 0.65rem;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  .photo-gallery .destination-link {
+    margin-top: 0.35rem;
+    font-size: 0.8125rem;
   }
   .photo-gallery :global(.photo) {
     width: 100%;
@@ -34,14 +66,25 @@ const { photos } = Astro.props;
   }
   .photo-gallery :global(img) {
     width: 100%;
-    height: 20rem;
+    height: 15rem;
     object-fit: contain;
-    object-position: 50% 35%;
+    background: var(--wash);
     border-radius: 12px;
+  }
+  .photo-gallery--pairs :global(img) {
+    height: 20rem;
+  }
+  @media (max-width: 48rem) {
+    .photo-gallery {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   @media (max-width: 30rem) {
     .photo-gallery {
       grid-template-columns: minmax(0, 1fr);
+    }
+    .photo-gallery :global(img) {
+      height: 19rem;
     }
   }
 </style>

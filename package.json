@@ -24,6 +24,7 @@
     "lint": "eslint . --max-warnings 0",
     "typecheck": "astro check",
     "check:repo": "node scripts/check-repo.ts",
+    "check:release": "node scripts/check-release.ts",
     "check:duplicates": "jscpd src scripts tests workers .github astro.config.mjs playwright.config.ts",
     "check:unused": "knip",
     "test": "vitest run",
@@ -33,7 +34,7 @@
     "test:build:subpath": "node scripts/build-subpath.ts",
     "test:e2e": "playwright test",
     "security:audit": "npm audit --omit=dev --audit-level=high",
-    "validate:static": "npm run format:check && npm run lint && npm run check:repo && npm run check:duplicates && npm run check:unused && npm run typecheck",
+    "validate:static": "npm run format:check && npm run lint && npm run check:repo && npm run check:release && npm run check:duplicates && npm run check:unused && npm run typecheck",
     "validate": "npm run validate:static && npm run test:coverage && npm run build && npm run test:build && npm run test:build:subpath",
     "validate:full": "npm run validate && npm run test:e2e && npm run security:audit",
     "images:brand": "node scripts/generate-brand-images.mjs",
@@ -58,7 +59,7 @@
     "eslint-plugin-astro": "3.2.1",
     "eslint-plugin-jsx-a11y-x": "0.2.0",
     "eslint-plugin-regexp": "3.3.1",
-    "fflate": "0.8.2",
+    "fflate": "0.8.3",
     "fontkit": "2.0.4",
     "globals": "17.13.0",
     "happy-dom": "21.0.4",
@@ -72,6 +73,7 @@
     "vitest": "5.0.5"
   },
   "overrides": {
-    "playwright-core": "1.63.0"
+    "playwright-core": "1.63.0",
+    "minimatch": "11.0.1"
   }
 }

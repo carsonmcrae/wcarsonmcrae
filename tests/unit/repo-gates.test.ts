@@ -3,6 +3,8 @@
  * Scope: File listing, the 500-line limit, documentation headers, asset size caps, and the photo
  *   re-encoding choices, including their failure reports.
  * Does NOT belong: Running the gates against this repository (npm run check:repo does that).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import { checkAssetSizes, formatBytes, KB } from '../../scripts/lib/asset-sizes';
@@ -46,6 +48,16 @@ describe('repo files', () => {
 });
 
 describe('line limit', () => {
+  it('checks SQL migration lines and their native documentation headers', () => {
+    expect(isLineChecked('workers/reactions/migrations/0003_identity_lookup.sql')).toBe(true);
+    expect(commentStyleFor('migration.sql')).toBe('dash');
+    const header =
+      '-- Purpose: Index a lookup.\n-- Scope: The visitor index.\n-- Does NOT belong: HTTP handlers.';
+    expect(
+      extractHeader(`${header}\nCREATE INDEX visitor ON reactions(visitor_hash);`, 'dash'),
+    ).toBe(header);
+    expect(checkFileHeaders([{ path: 'migration.sql', text: header }]).errors).toEqual([]);
+  });
   it('counts physical lines', () => {
     expect(countLines('')).toBe(0);
     expect(countLines('a')).toBe(1);

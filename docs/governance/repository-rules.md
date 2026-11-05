@@ -40,11 +40,37 @@ lockfiles, and images are exempt. `npm run check:repo` enforces the shape; revie
 - Strict TypeScript with unchecked index access and exact optional properties.
 - Prettier and ESLint with zero warnings, strict jsx-a11y rules, no nested ternaries, explicit sort
   comparators, `replaceAll` for literal text, and no regexes that can backtrack super-linearly.
-- **100% statements, branches, functions, and lines, per file**, for `src/lib`, `src/data`, and
-  `scripts/lib`. If an extraction leaves a branch nothing can reach, delete the branch.
+- **100% statements, branches, functions, and lines, per file**, for `src/lib`, `src/data`,
+  `src/scripts`, typed page endpoints, all TypeScript scripts and JavaScript CLI entrypoints,
+  Worker entrypoints, and the Astro/Playwright configurations. `vitest.config.ts` lists the executable
+  scope. Composition tests cover adapter behavior at real IO boundaries. If an extraction leaves a
+  branch nothing can reach, delete the branch.
 - No duplicated blocks (jscpd: five lines or fifty tokens) and no unused files, exports, or
   dependencies (Knip).
 - Test behavior and failure paths, not implementation details.
+
+### Prevent recurring scan findings
+
+ESLint rejects functions above **20 modified cyclomatic complexity** and blocks nested more than
+**four levels**. The modified metric counts a `switch` as one branch rather than charging every
+case. These bounds apply to handwritten code, including tests and configuration; they prevent large
+decision trees and deeply nested handlers from growing back after extraction. Split responsibilities
+and test the resulting contracts instead of raising a limit or adding a suppression. Provider output
+under `.wrangler/` is generated cache, like `dist/`, and is not first-party lint input.
+
+The existing nested-ternary prohibition stays in place. Negated conditions with alternatives are
+also rejected; early guard clauses remain useful. Static regex patterns use regex literals, while
+dynamic `RegExp` template patterns containing backslashes use `String.raw` so escaping stays readable. Existing
+regex backtracking guards, explicit sort comparators, literal `replaceAll`, strict a11y rules, and
+zero-warning lint remain required. Behavioral tests in `tests/unit/lint-prevention.test.ts` exercise
+the actual configuration at its boundaries and against examples of the recurring mistakes.
+
+These local checks do not calculate Sonar’s cognitive complexity or structural regex complexity,
+prove correct responsibility boundaries, or inspect historical HTML design-canvas scripts. A
+requested full-scope scan remains necessary for those findings and for coverage/duplication across
+its supported languages. Review findings on their evidence; do not add source, coverage, or
+duplication exclusions to make a scan pass. Native element semantics, privacy behavior, dependency
+advisories, and manual accessibility findings still need their respective checks and review.
 
 ## Dependencies
 
@@ -53,8 +79,14 @@ lockfiles, and images are exempt. `npm run check:repo` enforces the shape; revie
   npm 10, install with `--before=<date 14 days ago>`).
 - Security exceptions to the cooldown, recorded here:
   - `happy-dom@21.0.4` (2026-11-03): fixes GHSA-834v-8h66-3h79 (high) in 21.0.3. Test-only.
-- Production dependencies must pass `npm audit --omit=dev --audit-level=high`. Known moderate advisories
-  in development-only tooling (ESLint's `minimatch`) are tracked, not shipped.
+  - `minimatch@11.0.1` (2026-11-05): fixes CVE-2026-118764 in development tooling. The exact override
+    crosses the upstream major boundary because no patched 10.x version is available; the full
+    lint, duplication, build, and browser gates verify compatibility. Published October 27.
+    Its required `@isaacs/nonrecursive-glob-match@1.0.3` dependency was published October 28 and is
+    included in this same security-fix exception; `brace-expansion@5.0.12` meets the normal cooldown.
+- `fflate@0.8.3` fixes CVE-2026-45820 in test/archive tooling and meets the normal cooldown.
+- Production dependencies must pass `npm audit --omit=dev --audit-level=high`; requested full-scope
+  security scans also include development dependencies. Do not silently accept known findings.
 
 ## Privacy and security
 
@@ -62,6 +94,9 @@ lockfiles, and images are exempt. `npm run check:repo` enforces the shape; revie
   `tests/unit/content.test.ts` scans for phone numbers, email addresses, street addresses, and
   credential patterns; gitleaks runs in CI.
 - Strip photo metadata (`npm run images:strip`) before committing a photo.
+- Preserve first-party copyright/SPDX headers and [upstream licenses](../../COPYRIGHT.md).
+- Keep product releases and [architecture documentation](../architecture/maintenance.md) current;
+  [release checks](releases.md) enforce changes against the reviewed base in CI.
 - The site sets a strict Content-Security-Policy with hashed scripts and styles. Inline `style`
   attributes are not allowed; use classes.
 

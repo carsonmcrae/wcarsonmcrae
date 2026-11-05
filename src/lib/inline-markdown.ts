@@ -5,6 +5,8 @@
  * Constraints: Only http(s) and mailto links are allowed, and every pattern matches in linear
  *   time.
  * Does NOT belong: Block-level markdown, or the content itself (src/data).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { isExternalUrl, withBase } from './paths';
 

@@ -4,6 +4,8 @@
  *   errors, or failed requests; the explain-it toggle; and the achievement notice after visiting
  *   every page. Saves full-page screenshots for review when SCREENSHOTS=1.
  * Does NOT belong: Accessibility audits (accessibility.spec.ts) or navigation (navigation.spec.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow, PAGES, CORE_PAGES } from './helpers';
@@ -13,6 +15,7 @@ const WIDTHS = [320, 375, 390, 768, 1024, 1440];
 test.describe('responsive layout', () => {
   for (const width of WIDTHS) {
     test(`no horizontal overflow at ${width} px`, async ({ page }, testInfo) => {
+      // Sweep widths once in the resizable desktop engine; mobile engines audit native viewports.
       test.skip(testInfo.project.name !== 'desktop-chromium', 'Viewport sweep runs once.');
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: 'reduce' });

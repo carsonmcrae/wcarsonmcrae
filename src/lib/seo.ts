@@ -4,6 +4,8 @@
  *   JSON-LD serialization that cannot break out of its script element.
  * Does NOT belong: Rendering the tags (src/components/SiteHead.astro) or the page copy
  *   (src/data/site.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { absoluteUrl } from './paths';
 
@@ -106,5 +108,5 @@ export function buildPersonJsonLd(person: PersonInput): Record<string, unknown> 
 
 /** Serializes JSON-LD safely for embedding inside a <script> element. */
 export function serializeJsonLd(data: Record<string, unknown>): string {
-  return JSON.stringify(data).replaceAll('<', '\\u003c');
+  return JSON.stringify(data).replaceAll('<', String.raw`\u003c`);
 }

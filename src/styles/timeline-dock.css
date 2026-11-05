@@ -2,6 +2,8 @@
  * Purpose: Keep the date slider and browsing controls together while exploring the feed.
  * Scope: Shared sticky dock, native range placement, safe reflow, and scroll clearance.
  * Does NOT belong: Slider behavior, pinned photos, or menu content.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 .timeline-dock {
   position: sticky;
@@ -17,6 +19,7 @@ section.timeline-feed {
 .timeline-dock .date-rail {
   max-width: 50rem;
   margin: 0 auto;
+  padding-top: 2.75rem;
 }
 .timeline-dock .timeline-toolbar {
   position: relative;
@@ -56,10 +59,6 @@ section.timeline-feed {
 }
 .date-rail__label {
   pointer-events: auto;
-}
-.timeline-dock .date-rail {
-  padding-top: 2.75rem;
-  margin-top: 0;
 }
 @media (max-width: 64rem) {
   .timeline-dock .date-rail {

@@ -2,6 +2,8 @@
  * Purpose: Proportional date positions without inline style attributes.
  * Scope: Emits a static stylesheet positioning only the approved pinned-date labels.
  * Does NOT belong: Slider input handling or choosing pinned content.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { monthIndex } from './timeline-dates';
 export function railStyles(

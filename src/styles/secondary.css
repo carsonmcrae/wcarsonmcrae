@@ -2,6 +2,8 @@
  * Purpose: Editorial layouts for Work, Life, About, and Contact.
  * Scope: Photographic openings, readable content panels, career and interest grids, and contact cards.
  * Does NOT belong: Brand tokens, timeline controls, or post interaction.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 .secondary-page {
   padding-top: 2.5rem;
@@ -158,14 +160,8 @@
 .story-feature__copy > p + p {
   margin-top: 1rem;
 }
-.story-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 2.75rem;
+.story-feature__copy > .destination-link {
   margin-top: 1rem;
-  font-weight: 600;
-  font-size: 0.875rem;
 }
 .secondary-page .dogs {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -203,7 +199,6 @@
   padding: 1.5rem;
   border: 1px solid var(--rule);
   border-radius: 16px;
-  scroll-margin-top: 2rem;
 }
 .interest-cards dt {
   margin-bottom: 0.5rem;
@@ -237,19 +232,6 @@
 .now-panel dd {
   margin-bottom: 0.65rem;
   font-size: 0.875rem;
-}
-.household-details {
-  margin-top: 1.5rem;
-  padding: 1rem 1.25rem;
-  border: 1px solid var(--rule);
-  border-radius: 14px;
-}
-.household-details > summary {
-  min-height: 2.75rem;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-weight: 600;
 }
 .story-timeline {
   display: grid;
@@ -363,14 +345,6 @@
   color: var(--link);
   margin-top: 0.2rem;
 }
-.photo-gallery__link {
-  display: block;
-  text-decoration: none;
-}
-.photo-gallery__link figcaption {
-  color: var(--text);
-  font-weight: 550;
-}
 @media (max-width: 48rem) {
   .secondary-hero {
     gap: 1.5rem;
@@ -421,9 +395,5 @@
   .contact-channel:hover {
     border-color: var(--link);
     background: var(--wash);
-  }
-  .photo-gallery__link:hover figcaption {
-    color: var(--link);
-    text-decoration: underline;
   }
 }

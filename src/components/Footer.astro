@@ -3,10 +3,13 @@
  * Purpose: A clear footer with the Daysforth identity and organized navigation.
  * Scope: Primary destinations, brand/accessibility/source resources, the sign-off, and build date.
  * Does NOT belong: Main header navigation or private contact information.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { footer, navigation, site } from '../data/site';
 import { profile } from '../data/profile';
 import { brand } from '../data/brand';
+import { currentVersion } from '../data/releases';
 import { withBase } from '../lib/paths';
 import { formatDate } from '../lib/text';
 import Icon from './Icon.astro';
@@ -75,6 +78,18 @@ const built = new Date();
           </a>
         </li>
         <li>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={withBase('/releases/')}
+            tabindex="0"
+            aria-label={`Releases · v${currentVersion} (opens in a new tab)`}
+          >
+            Releases · v{currentVersion}
+            <Icon name="arrowRight" />
+          </a>
+        </li>
+        <li>
           <a target="_blank" rel="noopener noreferrer" href={site.repositoryUrl} tabindex="0">
             Source
             <Icon name="github" />
@@ -93,7 +108,7 @@ const built = new Date();
     >
       Privacy
     </a>
-    <button class="control enhancement" data-storage-open>
+    <button class="storage-settings enhancement" data-storage-open>
       Storage settings
     </button>
     <p>
@@ -112,9 +127,9 @@ const built = new Date();
   }
   .site-footer__top {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr;
-    gap: 2rem;
-    padding-bottom: 2rem;
+    grid-template-columns: 1fr 1.4fr 1fr;
+    gap: 1.5rem;
+    padding-bottom: 1.25rem;
   }
   .site-footer__brand {
     display: inline-flex;
@@ -149,7 +164,9 @@ const built = new Date();
     letter-spacing: 0.07em;
   }
   nav ul {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1rem;
   }
   nav li + li {
     margin: 0;
@@ -174,6 +191,7 @@ const built = new Date();
     border-top: 1px solid var(--rule);
     color: var(--muted);
     font-size: 0.75rem;
+    align-items: center;
   }
   @media (hover: hover) {
     nav a:hover {
@@ -189,11 +207,8 @@ const built = new Date();
   }
   @media (max-width: 40rem) {
     .site-footer__top {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.5rem;
-    }
-    .site-footer__identity {
-      grid-column: 1 / -1;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
     }
     .site-footer__identity p {
       max-width: none;

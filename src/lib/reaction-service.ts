@@ -3,6 +3,8 @@
  * Scope: Origin checks, bounded bodies, anonymous idempotent votes, hashed identifiers, and rate limits.
  * Constraints: No raw IPs or visitor IDs are stored; SQL uniqueness and triggers keep totals consistent.
  * Does NOT belong: Worker bindings/deployment or browser interaction.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export interface ReactionStatement {
   bind(...values: (string | number)[]): ReactionStatement;
@@ -18,12 +20,43 @@ export interface ReactionEnvironment {
   RATE_LIMIT_SALT?: string;
   ALLOWED_ORIGINS?: string;
 }
+type JsonResponse = (data: unknown, status?: number) => Response;
+interface ReactionResponse {
+  headers: Record<string, string>;
+  json: JsonResponse;
+}
+interface ReactionRoute {
+  kind: 'totals' | 'identity' | 'reaction';
+  postId?: string;
+}
 async function hashIdentity(value: string, salt: string): Promise<string> {
   const digest = await crypto.subtle.digest(
     'SHA-256',
     new TextEncoder().encode(`${salt}:${value}`),
   );
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+async function allowRequest(
+  request: Request,
+  db: ReactionDatabase,
+  salt: string,
+  now: number,
+  scope: 'reaction' | 'identity',
+): Promise<boolean> {
+  const hour = Math.floor(now / 3_600_000);
+  // Keep existing reaction bucket hashes stable; erasure uses its own namespace and allowance.
+  const prefix = scope === 'identity' ? 'identity:' : '';
+  const bucket = await hashIdentity(
+    `${prefix}${request.headers.get('CF-Connecting-IP') ?? 'local'}:${hour}`,
+    salt,
+  );
+  const rate = await db
+    .prepare(
+      'INSERT INTO reaction_limits (bucket, hits, expires) VALUES (?, 1, ?) ON CONFLICT(bucket) DO UPDATE SET hits = hits + 1 WHERE hits < 20 RETURNING hits',
+    )
+    .bind(bucket, (hour + 1) * 3_600_000)
+    .first<{ hits: number }>();
+  return Boolean(rate);
 }
 async function limitedBody(request: Request): Promise<string> {
   const reader = request.body?.getReader();
@@ -48,12 +81,7 @@ async function limitedBody(request: Request): Promise<string> {
   }
   return new TextDecoder().decode(bytes);
 }
-export async function handleReactions(
-  request: Request,
-  env: ReactionEnvironment,
-  postIds: string[],
-  now = Date.now(),
-): Promise<Response> {
+function responseContext(request: Request, env: ReactionEnvironment) {
   const origin = request.headers.get('Origin');
   const allowed = (env.ALLOWED_ORIGINS ?? 'https://wcarsonmcrae.com')
     .split(',')
@@ -67,99 +95,150 @@ export async function handleReactions(
     'X-Frame-Options': 'DENY',
     'Referrer-Policy': 'no-referrer',
   };
-  const json = (data: unknown, status = 200) =>
+  const json: JsonResponse = (data, status = 200) =>
     new Response(JSON.stringify(data), { status, headers });
-  if (origin && !allowed.includes(origin)) return json({ error: 'Origin not allowed' }, 403);
+  if (origin && !allowed.includes(origin))
+    return { origin, headers, json, early: json({ error: 'Origin not allowed' }, 403) };
   if (origin) headers['Access-Control-Allow-Origin'] = origin;
   headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, OPTIONS';
   headers['Access-Control-Allow-Headers'] = 'Content-Type';
-  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
+  const early = request.method === 'OPTIONS' ? new Response(null, { status: 204, headers }) : null;
+  return { origin, headers, json, early };
+}
+function resolveRoute(request: Request, postIds: string[]): ReactionRoute | null {
   const path = new URL(request.url).pathname.replace(/\/$/, '');
-  const identity = path === '/identity';
+  if (path === '/identity') return { kind: 'identity' };
+  if (path === '/reactions') return { kind: 'totals' };
   const postId = /^\/reactions\/([a-z0-9-]+)$/.exec(path)?.[1];
-  if (!identity && path !== '/reactions' && (!postId || !postIds.includes(postId)))
-    return json({ error: 'Moment not found' }, 404);
-  if (request.method !== 'GET' && request.method !== 'POST' && request.method !== 'DELETE') {
+  return postId && postIds.includes(postId) ? { kind: 'reaction', postId } : null;
+}
+function validateMethod(
+  method: string,
+  route: ReactionRoute,
+  headers: Record<string, string>,
+  json: JsonResponse,
+): Response | null {
+  if (!['GET', 'POST', 'DELETE'].includes(method)) {
     headers['Allow'] = 'GET, POST, DELETE, OPTIONS';
     return json({ error: 'Method not allowed' }, 405);
   }
-  if ((identity && request.method !== 'DELETE') || (!identity && request.method === 'DELETE'))
-    return json({ error: 'Method not allowed' }, 405);
-  if (request.method === 'GET' && path !== '/reactions')
-    return json({ error: 'Route not found' }, 404);
-  if (request.method !== 'GET' && !postId && !identity)
-    return json({ error: 'Moment not found' }, 404);
+  if (route.kind === 'identity')
+    return method === 'DELETE' ? null : json({ error: 'Method not allowed' }, 405);
+  if (method === 'DELETE') return json({ error: 'Method not allowed' }, 405);
+  if (method === 'GET')
+    return route.kind === 'totals' ? null : json({ error: 'Route not found' }, 404);
+  return route.kind === 'totals' ? json({ error: 'Moment not found' }, 404) : null;
+}
+async function readCounts(db: ReactionDatabase, postIds: string[]) {
+  const rows = await db
+    .prepare('SELECT post_id, count FROM reaction_totals')
+    .all<{ post_id: string; count: number }>();
+  const counts = Object.fromEntries(postIds.map((id) => [id, 0]));
+  for (const row of rows.results)
+    if (postIds.includes(row.post_id)) counts[row.post_id] = row.count;
+  return counts;
+}
+async function readVisitor(request: Request, json: JsonResponse): Promise<string | Response> {
+  if (request.headers.get('Content-Type')?.split(';')[0]?.trim() !== 'application/json')
+    return json({ error: 'JSON required' }, 415);
+  let payload: unknown;
+  try {
+    payload = JSON.parse(await limitedBody(request));
+  } catch {
+    return json({ error: 'Invalid request body' }, 400);
+  }
+  if (
+    !payload ||
+    typeof payload !== 'object' ||
+    !('visitorId' in payload) ||
+    typeof payload.visitorId !== 'string' ||
+    !/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i.test(payload.visitorId)
+  )
+    return json({ error: 'Invalid visitor identity' }, 400);
+  return payload.visitorId;
+}
+async function applyMutation(
+  request: Request,
+  route: ReactionRoute,
+  db: ReactionDatabase,
+  salt: string,
+  visitorId: string,
+  now: number,
+  reply: ReactionResponse,
+): Promise<Response> {
+  const { headers, json } = reply;
+  const identity = route.kind === 'identity';
+  const visitor = await hashIdentity(visitorId, salt);
+  const existing = identity
+    ? null
+    : await db
+        .prepare('SELECT post_id FROM reactions WHERE post_id = ? AND visitor_hash = ?')
+        .bind(route.postId!, visitor)
+        .first<{ post_id: string }>();
+  if (
+    !existing &&
+    !(await allowRequest(request, db, salt, now, identity ? 'identity' : 'reaction'))
+  ) {
+    headers['Retry-After'] = '3600';
+    return json({ error: 'Too many requests. Try again later.' }, 429);
+  }
+  if (identity) {
+    await db.prepare('DELETE FROM reactions WHERE visitor_hash = ?').bind(visitor).run();
+    return json({ forgotten: true });
+  }
+  if (!existing) {
+    await db
+      .prepare(
+        'INSERT OR IGNORE INTO reactions (post_id, visitor_hash, created_at) VALUES (?, ?, ?)',
+      )
+      .bind(route.postId!, visitor, now)
+      .run();
+  }
+  const total = await db
+    .prepare('SELECT count FROM reaction_totals WHERE post_id = ?')
+    .bind(route.postId!)
+    .first<{ count: number }>();
+  if (!total) throw new Error('Missing reaction total');
+  return json({ count: total.count });
+}
+async function handleMutation(
+  request: Request,
+  route: ReactionRoute,
+  env: ReactionEnvironment,
+  db: ReactionDatabase,
+  now: number,
+  reply: ReactionResponse,
+) {
+  const { json } = reply;
+  const salt = env.RATE_LIMIT_SALT;
+  if (!salt || salt.length < 32) return json({ error: 'Reactions are unavailable' }, 503);
+  const visitor = await readVisitor(request, json);
+  if (visitor instanceof Response) return visitor;
+  return applyMutation(request, route, db, salt, visitor, now, reply);
+}
+export async function handleReactions(
+  request: Request,
+  env: ReactionEnvironment,
+  postIds: string[],
+  now = Date.now(),
+): Promise<Response> {
+  const reply = responseContext(request, env);
+  const { origin, headers, json, early } = reply;
+  if (early) return early;
+  const route = resolveRoute(request, postIds);
+  if (!route) return json({ error: 'Moment not found' }, 404);
+  const invalidMethod = validateMethod(request.method, route, headers, json);
+  if (invalidMethod) return invalidMethod;
   if (request.method !== 'GET' && !origin) return json({ error: 'Origin required' }, 403);
   const db = env.DB;
   if (!db) return json({ error: 'Reactions are unavailable' }, 503);
   try {
     if (request.method === 'GET') {
-      const rows = await db
-        .prepare('SELECT post_id, count FROM reaction_totals')
-        .all<{ post_id: string; count: number }>();
-      const counts = Object.fromEntries(postIds.map((id) => [id, 0]));
-      for (const row of rows.results)
-        if (postIds.includes(row.post_id)) counts[row.post_id] = row.count;
+      const counts = await readCounts(db, postIds);
       headers['Cache-Control'] = 'public, max-age=15';
       return json(counts);
     }
-    const salt = env.RATE_LIMIT_SALT;
-    if (!salt || salt.length < 32) return json({ error: 'Reactions are unavailable' }, 503);
-    if (request.headers.get('Content-Type')?.split(';')[0]?.trim() !== 'application/json')
-      return json({ error: 'JSON required' }, 415);
-    let payload: unknown;
-    try {
-      payload = JSON.parse(await limitedBody(request));
-    } catch {
-      return json({ error: 'Invalid request body' }, 400);
-    }
-    if (
-      !payload ||
-      typeof payload !== 'object' ||
-      !('visitorId' in payload) ||
-      typeof payload.visitorId !== 'string' ||
-      !/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i.test(payload.visitorId)
-    )
-      return json({ error: 'Invalid visitor identity' }, 400);
-    const visitor = await hashIdentity(payload.visitorId, salt);
-    if (identity) {
-      await db.prepare('DELETE FROM reactions WHERE visitor_hash = ?').bind(visitor).run();
-      return json({ forgotten: true });
-    } else {
-      const existing = await db
-        .prepare('SELECT post_id FROM reactions WHERE post_id = ? AND visitor_hash = ?')
-        .bind(postId!, visitor)
-        .first<{ post_id: string }>();
-      if (!existing) {
-        const hour = Math.floor(now / 3_600_000);
-        const bucket = await hashIdentity(
-          `${request.headers.get('CF-Connecting-IP') ?? 'local'}:${hour}`,
-          salt,
-        );
-        const rate = await db
-          .prepare(
-            'INSERT INTO reaction_limits (bucket, hits, expires) VALUES (?, 1, ?) ON CONFLICT(bucket) DO UPDATE SET hits = hits + 1 WHERE hits < 20 RETURNING hits',
-          )
-          .bind(bucket, (hour + 1) * 3_600_000)
-          .first<{ hits: number }>();
-        if (!rate) {
-          headers['Retry-After'] = '3600';
-          return json({ error: 'Too many reactions. Try again later.' }, 429);
-        }
-        await db
-          .prepare(
-            'INSERT OR IGNORE INTO reactions (post_id, visitor_hash, created_at) VALUES (?, ?, ?)',
-          )
-          .bind(postId!, visitor, now)
-          .run();
-      }
-    }
-    const total = await db
-      .prepare('SELECT count FROM reaction_totals WHERE post_id = ?')
-      .bind(postId!)
-      .first<{ count: number }>();
-    if (!total) throw new Error('Missing reaction total');
-    return json({ count: total.count });
+    return await handleMutation(request, route, env, db, now, reply);
   } catch {
     return json({ error: 'Reactions are unavailable' }, 503);
   }

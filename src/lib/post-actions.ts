@@ -2,6 +2,8 @@
  * Purpose: Restore saved choices and display shared counts before any interaction.
  * Scope: Action markup, consent-aware hydration, cache restoration, and shared update state.
  * Does NOT belong: Lazy mutation or clipboard events (post-action-events.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { loadReactionCounts } from './reaction-api';
 import { reactionKey } from './reaction-keys';

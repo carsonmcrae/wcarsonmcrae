@@ -2,6 +2,8 @@
  * Purpose: The positive reactions available on a Daysforth moment.
  * Scope: Stable reaction IDs, labels, and corresponding interface icons.
  * Does NOT belong: Vote storage, totals, or network calls.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export const reactions = [
   { id: 'heart', label: 'Love', action: 'React to', icon: 'heart' },

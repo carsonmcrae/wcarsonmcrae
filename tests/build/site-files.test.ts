@@ -4,6 +4,8 @@
  *   it, the icons and web manifest, the social preview image, and no stray CNAME file (a custom
  *   Actions workflow ignores it; the domain lives in the repository's Pages settings).
  * Does NOT belong: Per-page checks (pages.test.ts) or size budgets (budgets.test.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';

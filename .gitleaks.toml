@@ -2,6 +2,8 @@
 # Scope: gitleaks' default rules plus a narrow allow-list for known non-secrets: the lockfile's
 #   integrity hashes and the literal consent-storage name, which are public and grant no access.
 # Does NOT belong: Broad path ignores. Add an exact pattern with a reason instead.
+# Copyright (c) 2026 William Carson McRae. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 title = "wcarsonmcrae gitleaks config"
 
 [extend]

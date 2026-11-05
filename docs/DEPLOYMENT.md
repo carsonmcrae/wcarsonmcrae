@@ -73,11 +73,21 @@ Only the primary apex/www are allowed in production. CORS is a browser boundary,
 Quota exhaustion leaves the feed and local Save usable. Salt rotation changes deduplication IDs.
 See [the service guide](../workers/reactions/README.md).
 
+The 1.0.0 release also limits identity erasures independently to 20/network/hour. Apply the
+index-only migration 0003 and deploy the compatible Worker before the site; preserve the secret
+salt and every real aggregate. Keep before/after read-only snapshots outside Git. The Worker remains
+in the public repository by Carson’s choice; production secrets and database contents do not.
+
 Run `npm run validate:full` and inspect CI, CodeQL, and Dependency review. PR #1 established the
 reviewed main branch as default. Its protection requires a PR, passing checks, and resolved review
 conversations; force pushes and deletion are blocked, including for administrators. Every main push
 runs the quality gate before deploying. See [release PR #1](https://github.com/carsonmcrae/wcarsonmcrae/pull/1)
 for final live acceptance; the provisioning checkpoint in design-qa.md predates publication.
+
+The active Owner-reviewed main ruleset names Carson’s user specifically for pull-request review
+bypass; the separate strict status-check protection remains in force. Follow the maintained
+[version/tag process](governance/releases.md) for subsequent releases and verify the tag points to
+the published commit. See [the 1.0.0 record](V1-RELEASE.md) for the current implementation scope.
 
 Verify all four domain/host variants over HTTP/HTTPS, deep paths and queries, direct post/secondary
 pages, custom 404, canonical tags, robots, sitemap, share images, security headers, both themes,

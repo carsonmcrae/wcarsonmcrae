@@ -3,6 +3,8 @@
  * Scope: HTML per page, the JavaScript and CSS each page loads, font payload, and every built image.
  * Constraints: When a budget fails, make the page lighter; never raise a budget to fit.
  * Does NOT belong: Size caps on committed source files (scripts/lib/asset-sizes.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import { BASE, files, htmlPages, parse, sizeOf } from './dist';

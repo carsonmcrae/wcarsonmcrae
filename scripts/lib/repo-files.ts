@@ -3,6 +3,8 @@
  * Scope: Asks git for tracked files plus untracked files that are not ignored, so new work is
  *   checked before it is committed, and returns sorted, repository-relative paths.
  * Does NOT belong: Deciding which files a gate checks (each gate's own module) or reading contents.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { execFileSync } from 'node:child_process';
 

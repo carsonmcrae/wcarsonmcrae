@@ -3,6 +3,8 @@
  * Scope: Titles, canonical and social tags at the root and under a project path, Person data, and
  *   safe JSON-LD.
  * Does NOT belong: Checks on the built pages' tags (tests/build).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import { buildPersonJsonLd, buildSeo, formatTitle, serializeJsonLd } from '../../src/lib/seo';

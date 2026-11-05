@@ -2,6 +2,8 @@
  * Purpose: Return to the exact browser-history entry instead of reloading the timeline at its top.
  * Scope: Native back/forward cache, browser-owned scroll state, and a safe direct-link fallback.
  * Does NOT belong: Persistent browser storage, server-side history, or service workers.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 type PositionWindow = Pick<Window, 'history' | 'location' | 'scrollY'> & {
   navigation?: {

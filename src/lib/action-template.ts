@@ -2,6 +2,8 @@
  * Purpose: Expand the single optional-control template into individually labelled post actions.
  * Scope: Safe DOM cloning and accessible labels; server-rendered stories stay complete without JavaScript.
  * Does NOT belong: Event listeners, persistence, or reaction requests.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 export function fillActionRows(doc: Document) {
   const template = doc.querySelector<HTMLTemplateElement>('#post-action-template');

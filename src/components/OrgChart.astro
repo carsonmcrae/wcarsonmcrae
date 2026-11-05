@@ -1,61 +1,61 @@
 ---
 /**
- * Purpose: The household org chart, drawn in ASCII.
- * Scope: A monospaced diagram (hidden from assistive technology) with the same structure as a
- *   real list for screen readers: management above, staff and their duties below.
- * Does NOT belong: The names and duties (src/data/life.ts).
+ * Purpose: A custom household organization diagram with a visible, semantic text equivalent.
+ * Scope: Approved management, staff, and responsibilities in responsive HTML with SVG connectors.
+ * Does NOT belong: Household facts (src/data/life.ts), substitute portraits, or interaction logic.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { orgChart } from '../data/life';
-
-const [lead1 = '', lead2 = ''] = orgChart.management;
-const [staff1 = '', staff2 = ''] = orgChart.staff;
-const box = (name: string) => `| ${name.padEnd(6)} |`;
-const diagram = [
-  '+--------+   +--------+',
-  `${box(lead1)}   ${box(lead2)}`,
-  '+---+----+   +----+---+',
-  '    |             |',
-  '    +------+------+',
-  '           |',
-  '    +------+------+',
-  '    |             |',
-  '+---+----+   +----+---+',
-  `${box(staff1)}   ${box(staff2)}`,
-  '+--------+   +--------+',
-].join('\n');
+import { dogs, orgChart } from '../data/life';
+import Icon from './Icon.astro';
+import '../styles/household-chart.css';
 ---
 
-<figure class="org">
-  <pre aria-hidden="true">{diagram}</pre>
-  <ul class="visually-hidden">
-    <li>Management: {orgChart.management.join(' and ')}</li>
-    <li>
-      Staff: {orgChart.staff.join(' and ')}, responsible for {orgChart.staffDuties}
-    </li>
-  </ul>
-  <figcaption class="small muted">
-    {orgChart.title}. Staff duties: {orgChart.staffDuties}.
+<figure class="org" aria-labelledby="household-chart-title">
+  <figcaption class="org__heading">
+    <span class="org__eyebrow">At home</span>
+    <h3 id="household-chart-title">{orgChart.title}</h3>
   </figcaption>
+  <div class="org__diagram">
+    <div class="org__tier org__tier--management">
+      <p class="org__tier-label">Management</p>
+      <ul class="org__row" role="list">
+        {dogs.map((dog) => (
+          <li class="org__person org__person--management">
+            <span class="org__seal" aria-hidden="true">
+              <Icon name="life" />
+            </span>
+            <h4>{dog.name}</h4>
+            <p>{dog.title}</p>
+            <span class="org__breed">{dog.breed}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <svg
+      class="org__connectors"
+      viewBox="0 0 600 84"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M150 0V22H450V0M300 22V62M150 84V62H450V84" />
+      <circle cx="300" cy="42" r="5" />
+    </svg>
+    <div class="org__tier org__tier--staff">
+      <p class="org__tier-label">Staff</p>
+      <ul class="org__row" role="list">
+        {orgChart.staff.map((name) => (
+          <li class="org__person org__person--staff">
+            <Icon name="work" />
+            <h4>{name}</h4>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <p class="org__duties">
+      <span>Staff responsibilities</span>
+      {orgChart.staffDuties}
+    </p>
+  </div>
 </figure>
-
-<style>
-  .org {
-    margin-top: 1.5rem;
-  }
-
-  pre {
-    display: inline-block;
-    max-width: 100%;
-    overflow-x: auto;
-    padding: 1rem 1.25rem;
-    border-radius: 4px;
-    background: var(--wash);
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    line-height: 1.35;
-  }
-
-  figcaption {
-    margin-top: 0.5rem;
-  }
-</style>

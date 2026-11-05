@@ -3,6 +3,8 @@
  * Scope: Browser-local Save, canonical Copy, shared counts/votes, persistence failures, and offline resilience.
  * Does NOT belong: SQL rate limiting or screenshot assertions.
  * @vitest-environment happy-dom
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { clearPreferences, recordConsent } from '../../src/lib/consent';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';

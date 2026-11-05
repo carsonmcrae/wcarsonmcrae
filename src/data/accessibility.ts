@@ -5,6 +5,8 @@
  * Constraints: Keep it honest. Never claim full conformance without the complete evaluation
  *   described in docs/governance/accessibility.md; update `reviewed` when the statement changes.
  * Does NOT belong: The engineering rules themselves (docs/governance/accessibility.md).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 
 export const accessibility = {

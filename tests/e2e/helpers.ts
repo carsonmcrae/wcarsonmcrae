@@ -3,11 +3,14 @@
  * Scope: The site's pages (paths relative to the base URL, so tests run at the root or under the
  *   GitHub Pages project path), opening the small-screen menu, and an overflow measurement.
  * Does NOT belong: Test cases (the *.spec.ts files beside it).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { timelinePosts } from '../../src/data/timeline';
+import { releases } from '../../src/data/releases';
 
 export const CORE_PAGES = [
   { name: 'Home', path: '' },
@@ -17,11 +20,16 @@ export const CORE_PAGES = [
   { name: 'Contact', path: 'contact/' },
   { name: 'Accessibility', path: 'accessibility/' },
   { name: 'Privacy', path: 'privacy/' },
+  { name: 'Releases', path: 'releases/' },
 ] as const;
 
 export const PAGES = [
   ...CORE_PAGES,
   { name: 'Brand kit', path: 'brand/' },
+  ...releases.map((release) => ({
+    name: `Release ${release.version}`,
+    path: `releases/${release.version}/`,
+  })),
   ...timelinePosts.map((post) => ({ name: post.title, path: `posts/${post.id}/` })),
 ];
 

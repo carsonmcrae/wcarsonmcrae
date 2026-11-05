@@ -3,6 +3,8 @@
  * Scope: Following the system preference, the labelled toggle and its announced state, persistence
  *   across pages and reloads, inherited icon colors, and no flash of the wrong theme on load.
  * Does NOT belong: Contrast audits (accessibility.spec.ts) or the toggle's unit tests.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { expect, test, type Page } from '@playwright/test';
 import { allowStorage, openMenuIfCollapsed } from './helpers';
@@ -17,7 +19,7 @@ test('follows the system preference until the visitor chooses', async ({ page })
   await page.goto('');
   const dark = await background(page);
   await page.emulateMedia({ colorScheme: 'light' });
-  await expect.poll(() => background(page)).not.toBe(dark);
+  await expect(page.locator('body')).not.toHaveCSS('background-color', dark);
 });
 
 test('the toggle has a visible label, announces its state, and persists', async ({ page }) => {

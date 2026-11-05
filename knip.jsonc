@@ -3,6 +3,8 @@
 //   from package.json, and the Playwright and Vitest suites. Astro pages, the Astro config, and
 //   the test configs are found through Knip's built-in plugins.
 // Does NOT belong: Duplication (.jscpd.json) or lint rules (eslint.config.js).
+// Copyright (c) 2026 William Carson McRae. All rights reserved.
+// SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": [

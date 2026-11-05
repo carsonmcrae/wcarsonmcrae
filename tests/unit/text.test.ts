@@ -3,6 +3,8 @@
  * Scope: English list separators and joining for one, two, and many items, and dates in
  *   Nashville's time zone.
  * Does NOT belong: Markdown rendering (tests/unit/inline-markdown.test.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
 import { formatDate, joinList, listSeparator } from '../../src/lib/text';

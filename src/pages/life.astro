@@ -3,6 +3,8 @@
  * Purpose: Carson’s personal life presented through linked stories and photographs.
  * Scope: Family, dogs, interests, timeline-linked albums, and the approved right-now list.
  * Does NOT belong: Personal facts, image processing, or invented event dates.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import DogEntry from '../components/DogEntry.astro';
 import Markdown from '../components/Markdown.astro';
@@ -11,18 +13,9 @@ import SecondaryHero from '../components/SecondaryHero.astro';
 import PostMedia from '../components/PostMedia.astro';
 import PhotoGallery from '../components/PhotoGallery.astro';
 import Icon from '../components/Icon.astro';
-import { dogPhotos, lifePhotos } from '../data/photo-gallery';
+import { dogGalleries, lifePhotos } from '../data/photo-gallery';
 import Section from '../components/Section.astro';
-import {
-  dogs,
-  dogsIntro,
-  interests,
-  interestsIntro,
-  lifeIntro,
-  nicole,
-  now,
-  orgChart,
-} from '../data/life';
+import { dogs, dogsIntro, interests, interestsIntro, lifeIntro, nicole, now } from '../data/life';
 import { timelinePosts } from '../data/timeline';
 import { pages } from '../data/site';
 import { withBase } from '../lib/paths';
@@ -55,7 +48,7 @@ const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
           {nicole.body.map((paragraph) => (
             <Markdown text={paragraph} />
           ))}
-          <a class="story-link" href={withBase('/posts/married-nicole/')}>
+          <a class="destination-link" href={withBase('/posts/married-nicole/')}>
             <Icon name="images" />
             The wedding, with friends
             <Icon name="arrowRight" />
@@ -69,14 +62,16 @@ const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
           <DogEntry dog={dog} />
         ))}
       </div>
-      <PhotoGallery photos={dogPhotos} />
-      <details class="household-details">
-        <summary>{orgChart.title}</summary>
-        <OrgChart />
-      </details>
+      {dogGalleries.map((gallery) => (
+        <section class="dog-album" id={gallery.id} aria-labelledby={`${gallery.id}-title`}>
+          <h3 id={`${gallery.id}-title`}>{gallery.title}</h3>
+          <PhotoGallery photos={gallery.photos} />
+        </section>
+      ))}
+      <OrgChart />
     </Section>
     <Section title="Out and about" id="photos" wide>
-      <PhotoGallery photos={lifePhotos} />
+      <PhotoGallery photos={lifePhotos} layout="pairs" />
     </Section>
     <Section title={interestsIntro.title} id="interests" lede={interestsIntro.lede} wide>
       <dl class="interest-cards">
@@ -90,3 +85,15 @@ const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
     </Section>
   </div>
 </BaseLayout>
+
+<style>
+  .dog-album {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .dog-album h3 {
+    font-size: 1.25rem;
+    letter-spacing: -0.025em;
+  }
+</style>

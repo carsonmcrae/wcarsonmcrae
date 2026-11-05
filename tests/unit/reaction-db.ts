@@ -2,6 +2,8 @@
  * Purpose: A real SQLite-backed D1 adapter for reaction-service tests.
  * Scope: Runs the production migration and SQL against an isolated in-memory database.
  * Does NOT belong: Production database code or mocked count/rate-limit logic.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';

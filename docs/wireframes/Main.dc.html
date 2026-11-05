@@ -8,27 +8,23 @@
 <body>
 <x-dc>
 <helmet>
-<style>
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#111;background:#fff;line-height:1.45}
-a{color:#1a55c0}a:hover{color:#0f3a8a}
-button{font:inherit;cursor:pointer}
-</style>
+<link rel="stylesheet" href="./wireframe-shell.css">
 </helmet>
-<div style="max-width: 1280px; margin: 0 auto; box-sizing: border-box; padding: 0 0 80px; display: flex; flex-direction: column; gap: 0">
+<div class="wireframe-desktop">
 
-  <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding: 16px 40px; border-bottom: 1px solid #d4d4d4">
-    <div style="display: flex; align-items: center; gap: 12px">
-      <div style="width: 32px; height: 32px; border: 2px dashed #8a8a8a; border-radius: 8px; box-sizing: border-box"></div>
-      <strong style="font-size: 18px">[App name]</strong>
-      <span style="color: #5c5c5c; font-size: 13px">a timeline social network · a concept by Carson McRae</span>
+  <header class="wireframe-header">
+    <div class="wireframe-identity">
+      <div class="wireframe-mark"></div>
+      <strong class="wireframe-app-name">[App name]</strong>
+      <span class="wireframe-concept">a timeline social network · a concept by Carson McRae</span>
     </div>
-    <nav aria-label="Main" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-      <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #111; border-radius: 8px; color: #111; text-decoration: none; font-weight: 600">Timeline</a>
-      <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; color: #111; text-decoration: none">Work</a>
-      <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; color: #111; text-decoration: none">Life</a>
-      <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; color: #111; text-decoration: none">About</a>
-      <a href="#feed" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; color: #111; text-decoration: none">Contact</a>
-      <button type="button" style="min-height: 44px; padding: 0 14px; border: 1px solid #c4c4c4; border-radius: 8px; background: #fff">Dark mode</button>
+    <nav aria-label="Main" class="wireframe-navigation">
+      <a href="#feed" aria-current="page">Timeline</a>
+      <a href="#feed">Work</a>
+      <a href="#feed">Life</a>
+      <a href="#feed">About</a>
+      <a href="#feed">Contact</a>
+      <button type="button">Dark mode</button>
     </nav>
   </header>
 
@@ -79,17 +75,17 @@ button{font:inherit;cursor:pointer}
   <section id="feed" aria-labelledby="feed-title" style="padding: 0 40px; display: flex; flex-direction: column; gap: 20px">
     <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding: 20px 0; border-top: 1px solid #d4d4d4; border-bottom: 1px solid #d4d4d4">
       <h2 id="feed-title" style="margin: 0; font-size: 22px">Timeline</h2>
-      <div role="group" aria-label="Show" style="display: flex; flex-wrap: wrap; gap: 8px">
+      <fieldset class="wireframe-controls" style="display: flex; flex-wrap: wrap; gap: 8px"><legend>Show</legend>
         <sc-for list="{{cats}}" as="c" hint-placeholder-count="4">
           <button type="button" onClick="{{c.pick}}" aria-pressed="{{c.selected}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #111; border-radius: 999px; background: {{c.bg}}; color: {{c.fg}}">{{c.label}}</button>
         </sc-for>
-      </div>
-      <div role="group" aria-label="Zoom" style="display: flex; align-items: center; gap: 8px">
+      </fieldset>
+      <fieldset class="wireframe-controls" style="display: flex; align-items: center; gap: 8px"><legend>Zoom</legend>
         <span style="font-size: 14px; color: #5c5c5c">Zoom</span>
         <button type="button" onClick="{{zoomOut}}" aria-label="Zoom out" style="width: 44px; height: 44px; border: 1px solid #111; border-radius: 8px; background: #fff; font-size: 20px">−</button>
         <span style="min-width: 88px; text-align: center; font-weight: 600">{{zoomLabel}}</span>
         <button type="button" onClick="{{zoomIn}}" aria-label="Zoom in" style="width: 44px; height: 44px; border: 1px solid #111; border-radius: 8px; background: #fff; font-size: 20px">+</button>
-      </div>
+      </fieldset>
     </div>
     <p style="margin: 0; font-size: 14px; color: #5c5c5c">Jump to: <a href="#feed">1999</a> · <a href="#feed">2010</a> · <a href="#feed">2020</a> · <a href="#feed">Today</a> · Showing {{count}} posts</p>
 

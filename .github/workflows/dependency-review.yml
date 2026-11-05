@@ -2,6 +2,8 @@
 # Scope: Manifest and lockfile changes in pull requests. It runs on every pull request (and passes at
 #   once when no dependency changed) so it can be a required check.
 # Does NOT belong: Full audits of the installed tree (the security job in ci.yml).
+# Copyright (c) 2026 William Carson McRae. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
 name: Dependency review
 
 on:

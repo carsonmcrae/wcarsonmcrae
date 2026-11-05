@@ -1,0 +1,31 @@
+# Purpose: Verify immutable public version tags against the release manifest and public notes.
+# Scope: Read-only validation on version-tag pushes using the reviewed package and complete history.
+# Does NOT belong: Creating tags, bypassing checks, deploying Workers, or publishing Pages.
+# Copyright (c) 2026 William Carson McRae. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+name: Verify release tag
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    name: Version tag matches public notes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/node-deps
+      - name: Require a reviewed main-branch commit
+        run: git merge-base --is-ancestor HEAD origin/main
+      - name: Check the tag and visitor-facing release record
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: npm run check:release
