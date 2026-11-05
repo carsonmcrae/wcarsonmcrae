@@ -49,6 +49,9 @@ has separate Explore and Resources groups. Header navigation has decorative Phos
 
 ## Reactions and release sequence
 
+The original PR #5 contract below is historical. The subsequent
+[polish update](POLISH-UPDATE.md) makes reactions permanent and adds consent-gated storage.
+
 Love, Celebrate, Smile, and Applaud are independent shared totals. Heart IDs remain compatible;
 new kinds use suffixed keys. DELETE removes only the requesting visitor’s selected reaction.
 Existing origin, bounded-body, salted-identity, and rate-limit protections remain. The database

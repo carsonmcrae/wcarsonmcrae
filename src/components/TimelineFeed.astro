@@ -5,7 +5,8 @@
  * Does NOT belong: The date rail or browsing behavior (src/lib/timeline-controller.ts).
  */
 import { timelinePosts } from '../data/timeline';
-import { groupMoments } from '../lib/timeline-model';
+import { groupMoments, chronological } from '../lib/timeline-model';
+import Icon from './Icon.astro';
 import PostCard from './PostCard.astro';
 import TimelineControls from './TimelineControls.astro';
 import ActionNotice from './ActionNotice.astro';
@@ -40,6 +41,28 @@ const groups = groupMoments(timelinePosts, 'years');
   <p class="visually-hidden" role="status" aria-live="polite" data-timeline-status></p>
 </section>
 <ActionNotice />
+<div class="timeline-jumps enhancement" role="group" aria-label="Timeline shortcuts">
+  <button
+    class="timeline-jumps__up"
+    data-timeline-edge="newest"
+    data-jump-date={chronological(timelinePosts)[0]!.date}
+    aria-label="Top of timeline, newest moment"
+  >
+    <Icon name="chevron" />
+  </button>
+  <button
+    data-timeline-edge="oldest"
+    data-jump-date={chronological(timelinePosts).at(-1)!.date}
+    aria-label="Bottom of timeline, oldest moment"
+  >
+    <Icon name="chevron" />
+  </button>
+</div>
 <script>
-  import '../scripts/timeline.ts';
+  import '../scripts/site';
+  import { initTimeline } from '../lib/timeline-controller';
+  initTimeline(document, window);
+  if (history.state?.scrollY > 0)
+    window.scrollTo({ top: history.state.scrollY, behavior: 'instant' });
+  document.documentElement.removeAttribute('data-timeline-restore');
 </script>

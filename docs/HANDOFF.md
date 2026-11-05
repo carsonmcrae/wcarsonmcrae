@@ -6,7 +6,9 @@ Read [AGENTS.md](../AGENTS.md), [DAYSFORTH.md](DAYSFORTH.md), and
 
 The subsequent [profile update](PROFILE-UPDATE.md) adds the new photos and stories, albums,
 focused filters, additional reactions, and redesigned secondary pages. The initial launch record
-below is historical; use that update document and `design-qa.md` for the current branch.
+below is historical; the later [polish update](POLISH-UPDATE.md) covers permanent reactions,
+consent-gated storage, enlarged photos, navigation, and the expanded stories. Use those update
+documents and `design-qa.md` for the current branch.
 
 ## Checkout and release
 

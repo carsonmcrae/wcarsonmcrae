@@ -6,7 +6,8 @@
  * Does NOT belong: Theme colors (src/styles/global.css) or the toggle's markup
  *   (src/components/ThemeToggle.astro).
  */
-import { readItem, safeStorage, writeItem, type StorageLike } from './storage';
+import { readItem, writeItem, type StorageLike } from './storage';
+import { preferenceStorage, CONSENT_KEY } from './consent';
 
 export type Theme = 'light' | 'dark';
 
@@ -36,7 +37,7 @@ export function oppositeTheme(theme: Theme): Theme {
  * which progressive enhancements (the mobile menu, reveal motion) rely on.
  * Without a saved choice, CSS follows the operating system setting.
  */
-export const THEME_BOOTSTRAP_SCRIPT = `(function(){var d=document.documentElement;d.classList.add('js');try{var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);}}catch(e){}})();`;
+export const THEME_BOOTSTRAP_SCRIPT = `(function(){var d=document.documentElement;d.classList.add('js');try{var c=JSON.parse(localStorage.getItem('${CONSENT_KEY}')||'null');if(c&&c.allowed===true&&c.expires>Date.now()){var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);}}}catch(e){}if(location.search.includes('date=')){d.setAttribute('data-timeline-restore','');}})();`;
 
 type ThemeWindow = Pick<Window, 'localStorage' | 'matchMedia'>;
 
@@ -46,7 +47,9 @@ type ThemeWindow = Pick<Window, 'localStorage' | 'matchMedia'>;
  */
 export function initThemeToggle(doc: Document, win: ThemeWindow): () => void {
   const root = doc.documentElement;
-  const storage = safeStorage(win);
+  const storage = preferenceStorage(win);
+  const stored = readStoredTheme(storage);
+  if (stored) root.setAttribute('data-theme', stored);
   const media = typeof win.matchMedia === 'function' ? win.matchMedia(DARK_SCHEME_QUERY) : null;
   const buttons = Array.from(doc.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]'));
 

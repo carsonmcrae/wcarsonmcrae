@@ -7,7 +7,8 @@ No paid upgrade or usage plan is authorized.
 
 On November 4, 2026, Carson explicitly authorized the initial launch: merge, enable Pages, deploy,
 configure Cloudflare/reactions, and update DNS. That launch is complete. The current repository
-instructions reserve subsequent merges and deployment for Carson. The separate
+instructions reserve subsequent merges and deployment for Carson unless he explicitly authorizes a
+release, as he did for the November 4 profile-polish update. The separate
 `carsonmcrae.github.io` portfolio repository remains unchanged.
 
 ## Configuration
@@ -93,8 +94,8 @@ Revert the release commit on main or unpublish Pages. Restore prior records from
 if needed. Before moving authoritative DNS away from Cloudflare, remove the DS record at GoDaddy and
 wait for its cached delegation to expire, then change nameservers. Never disable signing while the
 parent DS remains published: that breaks validating resolvers. Never delete protected photo originals,
-backups, or real reactions. SQL triggers maintain totals after targeted vote deletion. A Worker
-rollback must remain compatible with its schema.
+backups, or real reactions. Permanent totals do not decrement when vote identifiers are erased.
+A Worker rollback must remain compatible with its schema and permanent-reaction contract.
 
 ## Official references
 

@@ -1,0 +1,245 @@
+/**
+ * Purpose: Keep app navigation reachable and give mobile a spacious left-side drawer.
+ * Scope: Sticky header, quiet history/menu controls, native scrim, safe areas, and reflow.
+ * Does NOT belong: Pointer or keyboard state.
+ */
+:root {
+  --header-height: 3.5rem;
+}
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+}
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  width: min(100% - 2 * var(--gutter), 72rem);
+  min-height: var(--header-height);
+  margin: auto;
+}
+.site-header__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  font-size: 1.6rem;
+  font-weight: 780;
+  letter-spacing: -0.055em;
+  text-decoration: none;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.site-header__name:visited {
+  color: var(--text);
+}
+.site-header__name img {
+  width: 2rem;
+  height: 2rem;
+}
+.app-history {
+  display: flex;
+  gap: 0;
+}
+.app-history button,
+.site-header__menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  flex: 0 0 44px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 6px;
+}
+.app-history button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.app-history .icon {
+  font-size: 0.875rem;
+}
+.site-header__desktop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: 1;
+}
+.primary-nav ul {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.primary-nav li + li {
+  margin: 0;
+}
+.primary-nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: var(--header-height);
+  min-width: 2.75rem;
+  padding: 0 0.6rem;
+  border-bottom: 3px solid transparent;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9375rem;
+}
+.primary-nav a:visited {
+  color: var(--text);
+}
+.primary-nav a[aria-current='page'] {
+  color: var(--link);
+  border-color: var(--link);
+  font-weight: 650;
+}
+.site-header__menu {
+  display: none;
+  margin-left: auto;
+  gap: 0.3rem;
+}
+.mobile-drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  margin: 0;
+  width: min(86vw, 24rem);
+  max-width: calc(100vw - 2.5rem);
+  height: 100dvh;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--text);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.mobile-drawer::backdrop {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  backdrop-filter: blur(3px);
+}
+.mobile-drawer__inner {
+  display: grid;
+  align-content: start;
+  gap: 1.5rem;
+  padding: max(1rem, env(safe-area-inset-top)) 1.25rem max(1.5rem, env(safe-area-inset-bottom));
+}
+.mobile-drawer__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.mobile-drawer__heading p {
+  font-size: 1.4rem;
+}
+.mobile-drawer .primary-nav ul {
+  display: grid;
+  gap: 0.25rem;
+}
+.mobile-drawer .primary-nav a {
+  min-height: 3.25rem;
+  border: 0;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+.mobile-drawer .primary-nav a[aria-current='page'] {
+  background: var(--selected);
+}
+.mobile-drawer .theme-toggle {
+  justify-self: start;
+}
+html[data-menu-open='true'] {
+  overflow: hidden;
+}
+@media (max-width: 59.99rem) {
+  .site-header__inner {
+    gap: 0.25rem;
+  }
+  .primary-nav a {
+    padding-inline: 0.35rem;
+    font-size: 0.875rem;
+  }
+  .primary-nav .icon {
+    display: none;
+  }
+}
+@media (max-width: 39.99rem) {
+  .site-header__inner {
+    justify-content: space-between;
+  }
+  .site-header__name {
+    font-size: 1.35rem;
+  }
+  .site-header__name img {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  .site-header__desktop {
+    display: block;
+    margin-top: 0.5rem;
+  }
+  .site-header__desktop .primary-nav ul {
+    display: grid;
+  }
+  .site-header__desktop .theme-toggle {
+    margin: 0.5rem;
+  }
+  html.js .site-header__desktop {
+    display: none;
+  }
+  html.js .site-header__menu {
+    display: inline-flex;
+  }
+  .site-header__menu span {
+    display: none;
+  }
+  .mobile-drawer .primary-nav .icon {
+    display: inline-flex;
+  }
+}
+@media (max-height: 28rem) {
+  .site-header {
+    position: relative;
+  }
+}
+@media (max-width: 24rem) {
+  .site-header__name span {
+    display: none;
+  }
+  .site-header__name img {
+    max-width: 44px;
+    max-height: 44px;
+  }
+}
+@media (hover: hover) {
+  .primary-nav a:hover,
+  .app-history button:not(:disabled):hover,
+  .site-header__menu:hover {
+    color: var(--link);
+    background: var(--wash);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-drawer[open] {
+    animation: drawer-in 0.18s ease-out;
+  }
+  @keyframes drawer-in {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}

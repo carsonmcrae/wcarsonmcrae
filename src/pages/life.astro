@@ -50,7 +50,7 @@ const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
     </SecondaryHero>
     <Section title={nicole.title} id="nicole" wide>
       <div class="story-feature">
-        <PostMedia post={wedding} />
+        <PostMedia post={wedding} showCount={false} />
         <div class="story-feature__copy">
           {nicole.body.map((paragraph) => (
             <Markdown text={paragraph} />

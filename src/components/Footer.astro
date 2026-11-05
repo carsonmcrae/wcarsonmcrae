@@ -16,7 +16,13 @@ const built = new Date();
 <footer class="site-footer page">
   <div class="site-footer__top">
     <div class="site-footer__identity">
-      <a class="site-footer__brand" href={withBase('/')}>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        class="site-footer__brand"
+        href={withBase('/')}
+        aria-label="Daysforth (opens in a new tab)"
+      >
         <img src={withBase('/brand/daysforth-mark.svg')} alt="" width="28" height="28" />
         {brand.name}
       </a>
@@ -27,7 +33,13 @@ const built = new Date();
       <ul role="list">
         {navigation.map((item) => (
           <li>
-            <a href={withBase(item.href)} tabindex="0">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={withBase(item.href)}
+              tabindex="0"
+              aria-label={`${item.label} (opens in a new tab)`}
+            >
               <Icon name={item.icon} />
               {item.label}
             </a>
@@ -39,28 +51,51 @@ const built = new Date();
       <h2>More</h2>
       <ul role="list">
         <li>
-          <a href={withBase('/brand/')} tabindex="0">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={withBase('/brand/')}
+            tabindex="0"
+            aria-label="Brand kit (opens in a new tab)"
+          >
             Brand kit
             <Icon name="arrowRight" />
           </a>
         </li>
         <li>
-          <a href={withBase('/accessibility/')} tabindex="0">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={withBase('/accessibility/')}
+            aria-label="Accessibility (opens in a new tab)"
+            tabindex="0"
+          >
             Accessibility
             <Icon name="arrowRight" />
           </a>
         </li>
         <li>
-          <a href={site.repositoryUrl} tabindex="0">
+          <a target="_blank" rel="noopener noreferrer" href={site.repositoryUrl} tabindex="0">
             Source
             <Icon name="github" />
-            <span class="visually-hidden"> on GitHub (external site)</span>
+            <span class="visually-hidden"> on GitHub (external site, opens in a new tab)</span>
           </a>
         </li>
       </ul>
     </nav>
   </div>
   <div class="site-footer__bottom">
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href={withBase('/privacy/')}
+      aria-label="Privacy (opens in a new tab)"
+    >
+      Privacy
+    </a>
+    <button class="control enhancement" data-storage-open>
+      Storage settings
+    </button>
     <p>
       © {built.getFullYear()} {profile.name}. {footer.disclaimer}
     </p>
@@ -145,6 +180,12 @@ const built = new Date();
       color: var(--link);
       text-decoration: underline;
     }
+  }
+  .site-footer__bottom > a {
+    display: inline-flex;
+    align-items: center;
+    min-width: 44px;
+    min-height: 44px;
   }
   @media (max-width: 40rem) {
     .site-footer__top {

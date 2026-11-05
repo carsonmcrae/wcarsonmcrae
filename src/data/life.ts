@@ -42,10 +42,11 @@ export const dogs: Dog[] = [
   {
     name: 'Margot',
     postId: 'margot-arrives',
-    breed: 'Doodle',
+    breed: 'Goldendoodle',
     coat: 'Golden apricot, wavy',
     title: 'Co-CEO (self-appointed)',
-    detail: 'One half of the household’s management team. Nobody voted on this.',
+    detail:
+      'A shark as a puppy; the sweetest goldendoodle now. Still one half of the unelected management team.',
     photo: 'margot-1',
     photoAlt: 'Margot, a golden apricot doodle with a wavy coat',
     swatch: 'margot',
@@ -53,10 +54,11 @@ export const dogs: Dog[] = [
   {
     name: 'Quinn',
     postId: 'quinn-arrives',
-    breed: 'Doodle',
+    breed: 'Aussiedoodle',
     coat: 'Black and shaggy, with white markings',
     title: 'Co-CEO (also self-appointed)',
-    detail: 'The other half of management. Also unelected.',
+    detail:
+      'The smartest dog I’ve ever had and a huge softy. My first and only Craigslist pickup—still wild that it’s how I found her.',
     photo: 'quinn-1',
     photoAlt: 'Quinn, a black doodle with a shaggy coat and white markings',
     swatch: 'quinn',
@@ -92,13 +94,13 @@ export const interests: Interest[] = [
     id: 'golf',
     name: 'Golf',
     detail:
-      'A sport that rewards patience and punishes overconfidence. Good practice for release planning.',
+      'My best 18-hole score as of November 4, 2026 is 130. Plenty of room for improvement. [The golf story](/posts/started-golf/) has the scorecard-level honesty.',
   },
   {
     id: 'watches',
     name: 'Watches',
     detail:
-      'Small machines that do one thing extremely well, built to last for decades. Hard not to respect that.',
+      'I used to repair iPhones and Macs at [Apple](/posts/started-apple/). [Making watches](/posts/made-a-watch/) finally scratches that itch for tiny parts and screws again.',
   },
   {
     id: 'travel',
@@ -119,7 +121,8 @@ export const interests: Interest[] = [
   {
     id: 'pickleball',
     name: 'Pickleball',
-    detail: 'Golf’s faster, louder, and more forgiving cousin.',
+    detail:
+      'Two years of my brother asking, and two years of me mocking it on Reels, before I finally tried it. [I owe him this one](/posts/started-pickleball/).',
   },
 ];
 

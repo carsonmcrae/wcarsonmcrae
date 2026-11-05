@@ -20,6 +20,21 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe('timeline interaction', () => {
+  it('jumps to the visible collection boundaries, including filtered and empty collections', () => {
+    const { controller, change } = setup();
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      '<button data-timeline-edge="newest" data-jump-date="2026-11">Newest</button><button data-timeline-edge="oldest" data-jump-date="1999-11">Oldest</button>',
+    );
+    change('category', 'Milestones');
+    document.querySelector<HTMLButtonElement>('[data-timeline-edge="newest"]')!.click();
+    expect(controller.getState().date).toBe('2026-10');
+    document.querySelector<HTMLButtonElement>('[data-timeline-edge="oldest"]')!.click();
+    expect(controller.getState().date).toBe('1999-11');
+    change('category', 'Saved');
+    document.querySelector<HTMLButtonElement>('[data-timeline-edge="newest"]')!.click();
+    expect(controller.getState().date).toBe('2026-11');
+  });
   it('filters live saved state, handles an empty collection, and refreshes after a bookmark changes', () => {
     const { controller, change, history } = setup();
     const born = document.querySelector<HTMLElement>('#moment-born')!;
@@ -72,6 +87,9 @@ describe('timeline interaction', () => {
   });
   it('switches views using the existing card elements while preserving the selected date', () => {
     const { controller, history } = setup();
+    const position = vi
+      .spyOn(document.querySelector<HTMLElement>('[data-timeline]')!, 'getBoundingClientRect')
+      .mockReturnValue({ top: -100 } as DOMRect);
     const card = document.querySelector('#moment-married-nicole');
     controller.goToDate('2026-10');
     document
@@ -88,6 +106,7 @@ describe('timeline interaction', () => {
       'true',
     );
     expect(history.pushState).toHaveBeenCalled();
+    position.mockReturnValue({ top: 100 } as DOMRect);
     document.querySelector<HTMLButtonElement>('button[data-view="timeline"]')!.click();
     expect(controller.getState().view).toBe('timeline');
   });
@@ -175,7 +194,14 @@ describe('timeline interaction', () => {
     menu.open = false;
     notify(true);
     expect(controller.getState().date).toBe('2022-05');
+    controller.goToDate('1999-11');
+    notify(true);
+    expect(controller.getState().date).toBe('1999-11');
+    document.dispatchEvent(new Event('wheel'));
+    notify(true);
+    expect(controller.getState().date).toBe('2022-05');
     controller.goToDate('2010-05');
+    document.dispatchEvent(new Event('wheel'));
     notify(true);
     expect(controller.getState().date).toBe('2010-05');
   });

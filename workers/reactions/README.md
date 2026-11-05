@@ -8,17 +8,21 @@ An outage or quota limit leaves the feed, Save, and Copy link usable.
 
 - `GET /reactions` returns a count for each approved moment.
 - `POST /reactions/<id>` accepts `{ "visitorId": "<browser UUID>" }` and returns `{ "count": 1 }`.
-- `DELETE /reactions/<id>` accepts the same identity and removes only that browser’s vote; repeated
-  removals are idempotent and return the remaining total.
+- Reactions are permanent. `DELETE /reactions/<id>` returns 405.
+- `DELETE /identity` accepts the same UUID and removes its deduplication records without changing
+  aggregate counts. It cannot remove another browser’s records without knowing its random UUID.
 - Heart keys remain the published moment ID. Celebrate, Smile, and Applaud use the stable suffixes
-  `--celebrate`, `--laugh`, and `--support`. Each option is independently toggleable.
-- An existing browser/moment pair is idempotent. SQL uniqueness and insert/delete triggers keep
-  totals consistent, including concurrent submissions and targeted operator cleanup.
+  `--celebrate`, `--laugh`, and `--support`. Each option can be added independently, once per identity.
+- An existing browser/moment pair is idempotent. SQL uniqueness and the insert trigger prevent
+  duplicate totals, including concurrent submissions. The removal trigger is retired by migration 0002.
 - New votes are limited to 20 per network per hour. Bodies are limited to 512 bytes.
 - POST and DELETE require an approved Origin and JSON content type. Production permits only the personal
   domain and its www host; local development origins must be explicitly configured locally.
 - Raw browser identifiers and network addresses are never stored. SHA-256 hashes use a private salt.
-- Expired rate-limit buckets are deleted hourly. Vote hashes remain to prevent duplicate votes.
+- Expired rate-limit buckets are deleted hourly. Vote hashes become eligible for deletion after
+  90 days; hourly cleanup removes them without reducing permanent aggregate totals.
+- The browser persists the UUID and selected choices only after optional-storage permission.
+  Without permission, votes work with an identifier in memory for the current document.
 
 The implementation lives in `src/lib/reaction-service.ts`; the Worker entry only supplies bindings
 and approved post IDs. Unit tests execute the real migration and queries against in-memory SQLite.
@@ -47,10 +51,16 @@ The production endpoint is `https://daysforth-reactions.wcarsonmcrae.workers.dev
 URLs are disabled. Request logs/observability are disabled, and rate buckets expire hourly. Keep the
 salt in Cloudflare secrets; changing it resets anonymous deduplication identities.
 
-For the profile update, deploy the updated Worker before publishing the four-reaction frontend.
-The existing schema and insert/delete triggers already support these keys; no migration, total reset,
-or salt change is needed. Preserve real votes. The three retired app-start events had zero votes when
-checked before consolidation; they remain accepted by the service for compatibility.
+For the permanent-reactions release, first apply migration 0002 remotely using the `daysforth`
+profile, then deploy the Worker, then publish the frontend. Never reset totals or rotate the salt.
+Migration 0002 drops only the decrement trigger; it preserves every existing vote and total.
+The three retired app-start event IDs remain accepted for compatibility.
+
+Operator canary cleanup now requires a guarded transaction affecting only the known test UUID hash
+and its exact reaction key. Remove the exact test row and subtract exactly its one test increment;
+identifier erasure by itself deliberately leaves the total. Never broadly delete reactions or infer
+that every nonzero count is test data. Preserve real visitor votes and retain read-only before/after
+snapshots outside Git. Worker rollbacks must remain compatible with permanent totals.
 
 ## Local verification
 

@@ -1,0 +1,51 @@
+---
+/**
+ * Purpose: Give visitors an equal, explicit choice about optional persistence.
+ * Scope: A compact first-visit notice, revocable settings, and a browser-data clearing control.
+ * Does NOT belong: Storage access or legal analysis.
+ */
+import { withBase } from '../lib/paths';
+---
+
+<aside
+  class="storage-notice enhancement"
+  data-storage-notice
+  hidden
+  aria-label="Browser storage choice"
+>
+  <p>
+    <strong>Remember this browser?</strong> Save your theme, bookmarks, and reaction choices between
+    visits. No ads or analytics. <a href={withBase('/privacy/')}>Privacy details</a>
+  </p>
+  <div>
+    <button class="control" data-storage-choice="no">
+      Keep storage off
+    </button>
+    <button class="control" data-storage-choice="yes">
+      Allow storage
+    </button>
+  </div>
+</aside>
+<dialog class="storage-dialog" data-storage-dialog aria-labelledby="storage-title">
+  <h2 id="storage-title">Browser storage</h2>
+  <p data-storage-status></p>
+  <p>
+    Optional storage remembers your theme, saved posts, and reaction choices. Turning it off clears
+    those saved preferences. Permanent reaction counts stay.
+  </p>
+  <div class="storage-buttons">
+    <button class="control" data-storage-choice="no">
+      Keep storage off
+    </button>
+    <button class="control" data-storage-choice="yes">
+      Allow storage
+    </button>
+    <button class="control" data-forget-browser>
+      Forget this browser
+    </button>
+    <button class="control" data-storage-close>
+      Close
+    </button>
+  </div>
+  <p data-storage-feedback role="status"></p>
+</dialog>

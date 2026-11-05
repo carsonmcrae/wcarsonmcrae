@@ -38,7 +38,7 @@ const channelIcons = {
     <Section title="Where to find me" id="channels" wide>
       <div class="contact-channels">
         {channels.map((channel) => (
-          <a class="contact-channel" href={channel.href} rel="noopener">
+          <a class="contact-channel" href={channel.href} target="_blank" rel="noopener noreferrer">
             <Icon name={channelIcons[channel.id]} />
             <h3>{channel.label}</h3>
             <p>{channel.description}</p>
@@ -46,7 +46,7 @@ const channelIcons = {
               Visit {channel.label}
               <Icon name="arrowRight" />
             </span>
-            <span class="visually-hidden"> (external site)</span>
+            <span class="visually-hidden"> (external site, opens in a new tab)</span>
           </a>
         ))}
       </div>

@@ -1,0 +1,27 @@
+---
+/**
+ * Purpose: Share the same primary destinations between the desktop bar and mobile drawer.
+ * Scope: Labelled links, active destination, and decorative icons.
+ * Does NOT belong: Drawer state or browser history.
+ */
+import { navigation } from '../data/site';
+import { isActivePath, withBase } from '../lib/paths';
+import Icon from './Icon.astro';
+---
+
+<nav aria-label="Main" class="primary-nav">
+  <ul role="list">
+    {navigation.map((item) => (
+      <li>
+        <a
+          href={withBase(item.href)}
+          tabindex="0"
+          aria-current={isActivePath(Astro.url.pathname, item.href) ? 'page' : undefined}
+        >
+          <Icon name={item.icon} />
+          {item.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

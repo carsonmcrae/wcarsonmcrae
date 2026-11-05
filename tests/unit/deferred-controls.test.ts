@@ -1,0 +1,108 @@
+/**
+ * Purpose: Verify that optional controls load once without swallowing the first interaction.
+ * Scope: Buffered clicks, settings requests, touch gestures, failure fallback, and disposal.
+ * Does NOT belong: The loaded dialog behavior or network fetching.
+ * @vitest-environment happy-dom
+ */
+import { afterEach, expect, it, vi } from 'vitest';
+import { deferControl } from '../../src/lib/deferred-controls';
+const stops: (() => void)[] = [];
+afterEach(() => {
+  for (const stop of stops.splice(0)) stop();
+  document.body.innerHTML = '';
+  vi.restoreAllMocks();
+});
+function pending() {
+  let resolve!: (stop: () => void) => void;
+  let reject!: () => void;
+  const load = vi.fn(
+    () =>
+      new Promise<() => void>((yes, no) => {
+        resolve = yes;
+        reject = no;
+      }),
+  );
+  return { load, resolve: (stop: () => void) => resolve(stop), reject: () => reject() };
+}
+it('buffers primary clicks and explicit requests, ignoring modified clicks and unrelated targets', async () => {
+  document.body.innerHTML = '<button data-open><span>Open</span></button><a href="/">Elsewhere</a>';
+  const task = pending();
+  const stop = deferControl(document, '[data-open]', task.load, { request: 'settings' });
+  stops.push(stop);
+  const button = document.querySelector('button')!;
+  const child = document.querySelector('span')!;
+  const clicked = vi.fn();
+  const requested = vi.fn();
+  for (const options of [
+    { button: 1 },
+    { metaKey: true },
+    { ctrlKey: true },
+    { shiftKey: true },
+    { altKey: true },
+  ])
+    child.dispatchEvent(new MouseEvent('click', { bubbles: true, ...options }));
+  document.dispatchEvent(new MouseEvent('click'));
+  document.dispatchEvent(new Event('click'));
+  document.querySelector('a')!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  expect(task.load).not.toHaveBeenCalled();
+  child.click();
+  document.dispatchEvent(new CustomEvent('settings'));
+  expect(task.load).toHaveBeenCalledTimes(1);
+  button.addEventListener('click', clicked);
+  document.addEventListener('settings', requested, { once: true });
+  const cleanup = vi.fn();
+  task.resolve(cleanup);
+  await Promise.resolve();
+  expect(clicked).toHaveBeenCalledTimes(1);
+  expect(requested).toHaveBeenCalledTimes(1);
+  stop();
+  expect(cleanup).toHaveBeenCalledTimes(1);
+});
+it('disposes pending loads and falls back to native controls after a load failure', async () => {
+  document.body.innerHTML = '<button data-open>Open</button>';
+  const button = document.querySelector('button')!;
+  const first = pending();
+  const stop = deferControl(document, '[data-open]', first.load);
+  button.click();
+  stop();
+  const cleanup = vi.fn();
+  first.resolve(cleanup);
+  await Promise.resolve();
+  expect(cleanup).toHaveBeenCalledOnce();
+  const second = pending();
+  document.documentElement.classList.add('js');
+  stops.push(deferControl(document, '[data-open]', second.load));
+  button.click();
+  second.reject();
+  await Promise.resolve();
+  await Promise.resolve();
+  expect(document.documentElement.classList.contains('js')).toBe(false);
+});
+it('buffers an edge gesture but leaves reserved browser edges and form controls alone', async () => {
+  document.body.innerHTML = '<span>Edge</span><button>Button</button>';
+  const task = pending();
+  stops.push(deferControl(document, '[data-open]', task.load, { edge: true }));
+  const area = document.querySelector('span')!;
+  const touch = (type: string, x?: number, target: EventTarget = area) =>
+    target.dispatchEvent(
+      new TouchEvent(type, {
+        bubbles: true,
+        touches: x === undefined ? [] : [{ clientX: x } as Touch],
+      }),
+    );
+  touch('touchend');
+  document.dispatchEvent(new Event('click'));
+  touch('touchstart');
+  touch('touchstart', 12);
+  touch('touchstart', 55);
+  touch('touchstart', 30, document.querySelector('button')!);
+  expect(task.load).not.toHaveBeenCalled();
+  touch('touchstart', 30, document);
+  touch('touchend', 120, document);
+  const replay = vi.fn();
+  document.addEventListener('touchend', replay, { once: true });
+  task.resolve(vi.fn());
+  await Promise.resolve();
+  expect(replay).toHaveBeenCalledOnce();
+  expect(task.load).toHaveBeenCalledOnce();
+});

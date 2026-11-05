@@ -15,10 +15,10 @@ const { photos } = Astro.props;
 
 <div class="photo-gallery">
   {photos.map((photo) => (
-    <a href={withBase(`/posts/${photo.postId}/`)} class="photo-gallery__link">
-      <Photo name={photo.name} alt={photo.alt} caption={photo.caption} />
-      <span class="visually-hidden">View the post</span>
-    </a>
+    <div class="photo-gallery__link">
+      <Photo name={photo.name} alt={photo.alt} postId={photo.postId} />
+      <a href={withBase(`/posts/${photo.postId}/`)}>{photo.caption}</a>
+    </div>
   ))}
 </div>
 <style>
@@ -34,8 +34,8 @@ const { photos } = Astro.props;
   }
   .photo-gallery :global(img) {
     width: 100%;
-    height: 16rem;
-    object-fit: cover;
+    height: 20rem;
+    object-fit: contain;
     object-position: 50% 35%;
     border-radius: 12px;
   }

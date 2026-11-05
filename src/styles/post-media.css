@@ -52,25 +52,13 @@
 .post-media__open,
 .post-media__count {
   position: absolute;
-  top: 0.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  min-height: 2.75rem;
-  min-width: 2.75rem;
-  border: 1px solid var(--control);
-  border-radius: 10px;
-  background: var(--surface);
   color: var(--text);
 }
-.post-media__open {
-  right: 0.75rem;
-}
 .post-media__count {
-  left: 0.75rem;
-  padding: 0.35rem 0.7rem;
-  font-size: 0.8125rem;
+  background: var(--surface);
   font-weight: 650;
 }
 .post-media__app {

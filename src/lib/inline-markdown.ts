@@ -44,8 +44,10 @@ function renderLink(text: string, href: string, base: string | undefined): strin
     return text;
   }
   const target = external ? href : withBase(href, base);
-  const marker = external ? '<span class="visually-hidden"> (external site)</span>' : '';
-  return `<a href="${escapeHtml(target)}"${external ? ' rel="noopener"' : ''}>${text}${marker}</a>`;
+  const marker = external
+    ? '<span class="visually-hidden"> (external site, opens in a new tab)</span>'
+    : '';
+  return `<a href="${escapeHtml(target)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${text}${marker}</a>`;
 }
 
 export function renderInline(source: string, base?: string): string {

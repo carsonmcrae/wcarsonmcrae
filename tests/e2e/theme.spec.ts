@@ -5,7 +5,9 @@
  * Does NOT belong: Contrast audits (accessibility.spec.ts) or the toggle's unit tests.
  */
 import { expect, test, type Page } from '@playwright/test';
-import { openMenuIfCollapsed } from './helpers';
+import { allowStorage, openMenuIfCollapsed } from './helpers';
+
+test.beforeEach(async ({ page }) => allowStorage(page));
 
 const background = (page: Page) =>
   page.evaluate(() => getComputedStyle(document.body).backgroundColor);
@@ -32,7 +34,7 @@ test('the toggle has a visible label, announces its state, and persists', async 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect.poll(() => background(page)).not.toBe(light);
   const colors = await page
-    .locator('.profile-summary a')
+    .locator('.profile-summary__links a')
     .first()
     .evaluate((link) => ({
       label: getComputedStyle(link).color,

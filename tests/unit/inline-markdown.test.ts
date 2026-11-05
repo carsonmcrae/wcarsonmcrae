@@ -29,7 +29,7 @@ describe('renderInline', () => {
 
   it('marks external links for screen readers', () => {
     expect(renderInline('[TTSNative](https://ttsnative.com)')).toBe(
-      '<a href="https://ttsnative.com" rel="noopener">TTSNative<span class="visually-hidden"> (external site)</span></a>',
+      '<a href="https://ttsnative.com" target="_blank" rel="noopener noreferrer">TTSNative<span class="visually-hidden"> (external site, opens in a new tab)</span></a>',
     );
   });
 

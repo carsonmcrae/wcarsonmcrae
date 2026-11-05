@@ -4,11 +4,12 @@
  * Does NOT belong: Backend SQL guarantees or copying visual implementation into assertions.
  */
 import { expect, test } from '@playwright/test';
-import { expectNoViolations } from './helpers';
+import { allowStorage, expectNoViolations } from './helpers';
 
 test('Saved is useful after refresh and updates immediately when the last item is removed', async ({
   page,
 }) => {
+  await allowStorage(page);
   await page.goto('');
   await expect(page.locator('h1')).toHaveText('William Carson McRae');
   const save = page.getByRole('button', { name: 'Save Built Daysforth', exact: true });
@@ -34,8 +35,8 @@ test('a cover opens its distinct album and the post slider visits other post pag
   page,
 }) => {
   await page.goto('');
-  const cover = page.locator('#moment-married-nicole .post-media');
-  await expect(cover).toHaveAccessibleName('View post: Married Nicole · 3 photos');
+  const cover = page.locator('#moment-married-nicole .post-media__open');
+  await expect(cover).toHaveAccessibleName('View post: Married Nicole');
   await cover.click();
   await expect(page.locator('h1')).toHaveText('Married Nicole');
   await expect(page.locator('.post-album img')).toHaveCount(2);
@@ -59,13 +60,14 @@ test('all covers open posts and app events show real interfaces with app icons',
   await expect(page.locator('[data-moment] .post-media')).toHaveCount(24);
   for (const id of ['ttsnative-1', 'recalen-beta', 'picpledge-wedding', 'built-daysforth']) {
     const cover = page.locator(`#moment-${id} .post-media--screen`);
-    await expect(cover).toHaveAttribute('href', new RegExp(`/posts/${id}/$`));
+    await expect(cover.locator('.post-media__open')).toHaveAttribute(
+      'href',
+      new RegExp(`/posts/${id}/$`),
+    );
     await expect(cover.locator('.post-media__app img')).toHaveAttribute('alt', '');
   }
   await page.goto('posts/high-school-graduation/');
-  await expect(page.locator('main')).toContainText(
-    'I graduated from high school as salutatorian in May 2018.',
-  );
+  await expect(page.locator('main')).toContainText('salutatorian');
 });
 
 test('the date rail remains with the browsing controls while scrolling', async ({ page }) => {

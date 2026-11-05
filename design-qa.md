@@ -254,3 +254,48 @@ Fresh NVDA testing of the new post browser, reactions, and Saved collection was 
 NVDA was left off after Carson’s TTS request. VoiceOver on macOS/iOS remains unavailable on this
 Windows machine. The public statement explicitly records both limitations. The prior NVDA results
 above apply only to the initial release; automated checks do not certify Section 508 conformance.
+
+## November 4 polish release
+
+The complete request is mapped in [POLISH-UPDATE.md](docs/POLISH-UPDATE.md), with the scoped legal
+and provider review in [PRIVACY-REVIEW.md](docs/PRIVACY-REVIEW.md). Carson explicitly authorized
+completion, merge, and production deployment while he was unavailable.
+
+`PW_WEBKIT=1 npm run validate:full` passed locally:
+
+- 266 unit tests; 100% statements, branches, functions, and lines in all 53 covered files.
+- 295 built-site checks at the domain root and 295 under the project subpath. HTML, script, CSS,
+  font, and image budgets are unchanged. SVG sprite references and external/new-tab link notices
+  are checked against the actual build, including the no-JavaScript output.
+- 616 browser checks passed across desktop Chromium, mobile Chromium, and mobile WebKit. The 23
+  conditional skips cover desktop-only/mobile-only layouts, unsupported mobile WebKit resizing,
+  and opt-in screenshots; there are no disabled regression checks or accessibility-rule exclusions.
+- Static checks, zero-warning lint/type checks, duplication/unused checks, and production dependency
+  audit passed. The existing 429-line secondary stylesheet remains below the 500-line limit.
+
+Regression checks cover permanent selected reactions, opt-in persistence, live withdrawal without
+losing filtered-out cards, modal photos and focus return, the mobile drawer and scrim, actual
+desktop range dragging, empty-date guidance, quick jumps, native Back/Forward and exact position
+restoration, reciprocal watch links, external/footer isolation, and media-frame/overlay alignment.
+Both themes, 320px reflow, 200% text, WCAG spacing, forced colors, and no-JavaScript routes are covered.
+
+Manual computer-use review examined the desktop graduation card and sticky date rail, opened a
+graduation photograph in the larger viewer, and inspected the 390px mobile drawer and date controls.
+The subject remains visible, the desktop frame aligns right, overlays are small, navigation has
+icons, and the mobile drawer uses the requested left panel and blue backdrop. Updated production
+screenshots and final live acceptance are attached to the release PR after publication.
+
+Findings resolved during verification included overlapping mobile date hit areas, duplicate slider
+change handling, a scroll observer replacing explicit date choices, narrow-header overflow at 200%
+text, obscured jump headings, and cached-page history availability. Changing view from the profile
+now preserves that position; deep browsing preserves the selected period. Storage changes update
+the existing cards rather than rebuilding a controller from only the currently filtered subset.
+
+The Worker dry run and account/binding check passed; migration 0002 is the only pending migration.
+The production preflight found five real reactions. Release verification must preserve all real
+increments, remove only its identified synthetic canary, and deploy the Worker before the frontend.
+Final Worker version, PR/Pages identifiers, and live outcomes belong in the release PR evidence.
+
+NVDA remains off at Carson’s request. Fresh NVDA and VoiceOver review of these new controls is
+outstanding and disclosed publicly. This evidence does not establish complete accessibility
+conformance or provide a worldwide legal certification.

@@ -1,0 +1,48 @@
+---
+/**
+ * Purpose: Make this personal site’s actual privacy and storage practices easy to inspect.
+ * Scope: Provider disclosures, retention, choices, contacts, and storage controls.
+ * Does NOT belong: Unverified legal guarantees or private contact details.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { privacy } from '../data/privacy';
+import { withBase } from '../lib/paths';
+---
+
+<BaseLayout
+  page={{
+    id: 'privacy',
+    title: privacy.title,
+    description:
+      'Browser storage, permanent reactions, hosting, and your privacy choices on Daysforth.',
+    path: '/privacy/',
+  }}
+>
+  <section class="column section flow">
+    <h1>{privacy.title}</h1>
+    <p class="lede">{privacy.intro}</p>
+    <p>Updated November 4, 2026.</p>
+    <button class="control enhancement" data-storage-open>
+      Storage settings
+    </button>
+    {privacy.sections.map((section) => (
+      <section class="flow">
+        <h2>{section.title}</h2>
+        <p>{section.body}</p>
+      </section>
+    ))}
+    <p>
+      <a href={withBase('/contact/')}>Contact Carson about privacy</a>
+    </p>
+    <ul>
+      {privacy.providers.map((link) => (
+        <li>
+          <a href={link.href} target="_blank" rel="noopener noreferrer">
+            {link.label}
+            <span class="visually-hidden"> (external site, opens in a new tab)</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

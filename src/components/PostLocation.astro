@@ -52,8 +52,12 @@ const index = ordered.findIndex((post) => post.id === id);
   <output for="post-time">
     {ordered[index]!.title} · {dateLabel(date)}
   </output>
-  <a href={withBase(`/?date=${date.slice(0, 7)}#moment-${id}`)}>
+  <a href={withBase(`/?date=${date.slice(0, 7)}#moment-${id}`)} data-return-timeline>
     <Icon name="timeline" />
     See this moment on the full timeline
   </a>
 </nav>
+<script>
+  import { initPostNavigation } from '../lib/post-navigation';
+  initPostNavigation(document, (href) => window.location.assign(href));
+</script>

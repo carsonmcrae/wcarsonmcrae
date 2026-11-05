@@ -4,9 +4,10 @@
  * Does NOT belong: Pure date calculations or backend contracts (tests/unit).
  */
 import { expect, test } from '@playwright/test';
-import { expectNoViolations } from './helpers';
+import { allowStorage, expectNoViolations } from './helpers';
 
 test.beforeEach(async ({ page }) => {
+  await allowStorage(page);
   await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
   await page.goto('');
 });

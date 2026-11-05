@@ -5,7 +5,7 @@
  * Does NOT belong: Browser checks of the real header (tests/e2e).
  * @vitest-environment happy-dom
  */
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { initMenu } from '../../src/lib/menu';
 import { fakeMediaQuery } from './helpers';
 
@@ -33,6 +33,82 @@ afterEach(() => {
 });
 
 describe('initMenu', () => {
+  it('supports a native modal drawer, scrim, close action, and mobile swipes', () => {
+    document.body.innerHTML =
+      '<button data-menu-toggle aria-controls="drawer">Menu</button><dialog id="drawer"><button data-menu-close>Close</button><a href="/work/">Work</a></dialog><main><span>Gesture area</span></main>';
+    const media = fakeMediaQuery(false);
+    const menu = initMenu(document, {
+      matchMedia: () => media as unknown as MediaQueryList,
+    })!;
+    const dialog = document.querySelector('dialog')!;
+    const area = document.querySelector('span')!;
+    const touch = (type: string, x?: number, y = 0, target: Element = area) => {
+      const event = new Event(type, { bubbles: true });
+      Object.defineProperty(event, type === 'touchstart' ? 'touches' : 'changedTouches', {
+        value: x === undefined ? [] : [{ clientX: x, clientY: y }],
+      });
+      target.dispatchEvent(event);
+    };
+    menu.open();
+    menu.open();
+    expect(dialog.open).toBe(true);
+    dialog.querySelector('a')!.focus();
+    expect(menu.isOpen()).toBe(true);
+    dialog.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 0 }));
+    expect(menu.isOpen()).toBe(true);
+    dialog.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 100 }));
+    expect(dialog.open).toBe(false);
+    menu.open();
+    dialog.querySelector('button')!.click();
+    expect(menu.isOpen()).toBe(false);
+    menu.open();
+    dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
+    expect(menu.isOpen()).toBe(false);
+    dialog.dispatchEvent(new Event('click', { bubbles: true }));
+    touch('touchend', 100);
+    touch('touchstart');
+    touch('touchstart', 10);
+    touch('touchend', 100);
+    expect(menu.isOpen()).toBe(false);
+    touch('touchstart', 20, 0, document.querySelector('button')!);
+    touch('touchend', 100);
+    expect(menu.isOpen()).toBe(false);
+    touch('touchstart', 20);
+    touch('touchend');
+    touch('touchstart', 20);
+    touch('touchend', 40);
+    touch('touchstart', 20);
+    touch('touchend', 100, 200);
+    touch('touchstart', 20);
+    touch('touchend', -100);
+    expect(menu.isOpen()).toBe(false);
+    touch('touchstart', 20);
+    touch('touchend', 100);
+    expect(menu.isOpen()).toBe(true);
+    touch('touchstart', 100);
+    touch('touchend', 200);
+    expect(menu.isOpen()).toBe(true);
+    touch('touchstart', 200);
+    touch('touchend', 100);
+    expect(menu.isOpen()).toBe(false);
+    media.change(true);
+    touch('touchstart', 20);
+    touch('touchend', 100);
+    expect(menu.isOpen()).toBe(false);
+    menu.destroy();
+    touch('touchstart', 20);
+    touch('touchend', 100);
+    expect(dialog.open).toBe(false);
+    const fallback = initMenu(document, { matchMedia: undefined } as unknown as Pick<
+      Window,
+      'matchMedia'
+    >)!;
+    touch('touchstart', 20);
+    touch('touchend', 100);
+    expect(fallback.isOpen()).toBe(true);
+    fallback.destroy();
+    vi.restoreAllMocks();
+  });
   it('returns null when the markup is missing', () => {
     document.body.innerHTML = '<nav id="site-nav"></nav>';
     expect(initMenu(document, window)).toBeNull();

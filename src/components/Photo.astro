@@ -1,42 +1,29 @@
 ---
 /**
- * Purpose: An optional, approved photo.
- * Scope: Renders a responsive, optimized picture when src/assets/photos/<name>.* exists, and
- *   nothing at all when it does not, so pages read naturally before photos are added. If the image
- *   fails in the browser, its frame collapses rather than showing a broken image.
+ * Purpose: An approved photograph with optional caption and related moment.
+ * Scope: A responsive, enlargeable photographic figure using the shared PhotoLink.
  * Does NOT belong: Choosing or approving photos (docs/CONTENT.md) or stripping metadata
  *   (scripts/strip-image-metadata.ts).
  */
-import { Picture } from 'astro:assets';
-import { getPhoto } from '../lib/images';
+import PhotoLink from './PhotoLink.astro';
 
 interface Props {
   name: string;
   alt: string;
   caption?: string;
   size?: 'avatar' | 'medium';
+  postId?: string;
 }
 
-const { name, alt, caption, size = 'medium' } = Astro.props;
-const photo = getPhoto(name);
-const sizes = size === 'avatar' ? '6rem' : '(min-width: 40rem) 24rem, 90vw';
+const { name, alt, caption, postId, size = 'medium' } = Astro.props;
 ---
 
-{photo && (
+{
   <figure class:list={['photo', `photo--${size}`]} data-image-frame>
-    <Picture
-      src={photo}
-      width={size === 'avatar' ? 288 : 768}
-      alt={alt}
-      widths={size === 'avatar' ? [96, 192, 288] : [384, 576, 768]}
-      sizes={sizes}
-      formats={['avif', 'webp']}
-      quality={78}
-      data-fallback
-    />
+    <PhotoLink name={name} alt={alt} {...(postId ? { postId } : {})} />
     {caption && <figcaption class="small muted">{caption}</figcaption>}
   </figure>
-)}
+}
 
 <style>
   .photo :global(img) {

@@ -16,6 +16,7 @@ export const CORE_PAGES = [
   { name: 'Life', path: 'life/' },
   { name: 'Contact', path: 'contact/' },
   { name: 'Accessibility', path: 'accessibility/' },
+  { name: 'Privacy', path: 'privacy/' },
 ] as const;
 
 export const PAGES = [
@@ -36,7 +37,7 @@ export async function expectNoViolations(page: Page) {
   expect(
     results.violations.map(
       (violation) =>
-        `${violation.id}: ${violation.nodes.map((node) => node.target.join(' ')).join(', ')}`,
+        `${violation.id}: ${violation.nodes.map((node) => `${node.target.join(' ')} ${node.failureSummary}`).join(', ')}`,
     ),
   ).toEqual([]);
 }
@@ -70,8 +71,18 @@ export async function horizontalOverflow(page: Page): Promise<number> {
 /** Opens the small-screen menu when it is collapsed, so navigation links are reachable. */
 export async function openMenuIfCollapsed(page: Page): Promise<void> {
   await page.locator('html[data-site-ready="true"]').waitFor();
-  const toggle = page.getByRole('button', { name: 'Menu' });
+  const toggle = page.getByRole('button', { name: 'Menu', exact: true });
   if ((await toggle.isVisible()) && (await toggle.getAttribute('aria-expanded')) === 'false') {
     await toggle.click();
   }
+}
+
+/** An explicit allowed decision for tests of optional persistence; privacy tests use the real UI. */
+export async function allowStorage(page: Page) {
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      'daysforth.consent.v1',
+      JSON.stringify({ allowed: true, expires: Date.now() + 86400000 }),
+    ),
+  );
 }

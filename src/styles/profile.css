@@ -90,6 +90,7 @@
 }
 .pinned-moments__grid a {
   display: block;
+  min-height: 44px;
   text-decoration: none;
 }
 .pinned-moments__grid img {
