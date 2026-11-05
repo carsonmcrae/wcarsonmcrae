@@ -53,24 +53,24 @@ test.describe('responsive layout', () => {
   }
 });
 
-test('pages load without console errors or failed requests', async ({ page }) => {
-  const problems: string[] = [];
-  page.on('console', (message) => {
-    if (message.type() === 'error') problems.push(`console: ${message.text()}`);
-  });
-  page.on('pageerror', (error) => problems.push(`page: ${error.message}`));
-  page.on('requestfailed', (request) => problems.push(`request: ${request.url()}`));
-  page.on('response', (response) => {
-    if (response.status() >= 400 && !response.url().includes('missing-page')) {
-      problems.push(`${response.status()}: ${response.url()}`);
-    }
-  });
-  for (const { path } of PAGES) {
+for (const { name, path } of PAGES) {
+  test(`${name} loads without console errors or failed requests`, async ({ page }) => {
+    const problems: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') problems.push(`console: ${message.text()}`);
+    });
+    page.on('pageerror', (error) => problems.push(`page: ${error.message}`));
+    page.on('requestfailed', (request) => problems.push(`request: ${request.url()}`));
+    page.on('response', (response) => {
+      if (response.status() >= 400 && !response.url().includes('missing-page')) {
+        problems.push(`${response.status()}: ${response.url()}`);
+      }
+    });
     await page.goto(path);
     await page.waitForLoadState('networkidle');
-  }
-  expect(problems).toEqual([]);
-});
+    expect(problems).toEqual([]);
+  });
+}
 
 test('the explain-it toggle switches between plain English and engineer-speak', async ({
   page,

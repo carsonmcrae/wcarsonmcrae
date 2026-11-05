@@ -48,6 +48,8 @@ lockfiles, and images are exempt. `npm run check:repo` enforces the shape; revie
 - No duplicated blocks (jscpd: five lines or fifty tokens) and no unused files, exports, or
   dependencies (Knip).
 - Test behavior and failure paths, not implementation details.
+- Give route-wide browser sweeps one named test per route. A growing page list must not share one
+  test’s time budget or stop later pages from being checked when an earlier page fails.
 
 ### Prevent recurring scan findings
 
