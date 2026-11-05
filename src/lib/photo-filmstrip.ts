@@ -32,7 +32,8 @@ export function initPhotoFilmstrip(strip: HTMLElement, select: (index: number) =
   const click = (event: MouseEvent) => {
     if (!(event.target instanceof Element)) return;
     const button = event.target.closest('button');
-    const index = buttons.findIndex((item) => item === button);
+    if (!button) return;
+    const index = buttons.indexOf(button);
     if (index >= 0) choose(index);
   };
   const key = (event: KeyboardEvent) => {

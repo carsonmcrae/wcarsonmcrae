@@ -17,6 +17,8 @@ identify permanent records; they are not a second setting for the current versio
    on later releases unless Carson explicitly corrects a documented historical error. Keep old
    version URLs and old notes. Avoid implementation logs, invented release dates, and unsupported
    accessibility/security claims. Notes for the new version should explain the resulting experience.
+   Build sections with the shared `releaseSection` constructor so the history keeps one section
+   shape rather than copying object scaffolding into every release.
 4. Update [architecture documentation](../architecture/maintenance.md) when its triggers apply.
 5. Run the required validation and record actual manual accessibility checks and any pending work.
 

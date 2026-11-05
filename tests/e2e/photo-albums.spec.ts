@@ -5,7 +5,8 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures';
 import { carsonGallery, dogGalleries } from '../../src/data/photo-gallery';
 import { expectNoViolations } from './helpers';
 const albums = [

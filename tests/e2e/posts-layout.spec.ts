@@ -5,7 +5,8 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures';
 
 test('adjacent Posts cards share heading and action baselines', async ({ page, isMobile }) => {
   // Compare columns only where they exist; mobile intentionally renders a single stacked column.

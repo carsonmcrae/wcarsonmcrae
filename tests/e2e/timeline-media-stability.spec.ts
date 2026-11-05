@@ -5,7 +5,8 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures';
 
 test('a date jump stays on its selected moment as lazy images decode', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });

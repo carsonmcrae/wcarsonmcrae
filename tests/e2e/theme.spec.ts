@@ -6,7 +6,8 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
+import { test } from './fixtures';
 import { allowStorage, openMenuIfCollapsed } from './helpers';
 
 test.beforeEach(async ({ page }) => allowStorage(page));

@@ -5,7 +5,8 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures';
 import { qualifyTimelineShortcuts, timelineShortcuts } from './helpers';
 
 test('timeline shortcuts require user scrolling and hide the direction that is already reached', async ({

@@ -5,7 +5,8 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
+import { test } from './fixtures';
 import { carsonGallery } from '../../src/data/photo-gallery';
 import { reactions } from '../../src/data/reactions';
 import { photoReactionId } from '../../src/lib/photo-reaction-id';

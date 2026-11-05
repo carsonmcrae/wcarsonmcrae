@@ -5,7 +5,8 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures';
 import { allowStorage, expectNoViolations } from './helpers';
 
 test('Saved is useful after refresh and updates immediately when the last item is removed', async ({

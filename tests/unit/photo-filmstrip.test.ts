@@ -79,6 +79,7 @@ it('selects clicked thumbnails and wraps roving arrow keys while isolating keybo
   expect(parentKeys).toHaveBeenCalledOnce();
   document.body.removeEventListener('keydown', parentKeys);
   const calls = f.select.mock.calls.length;
+  f.strip.click();
   f.strip.append(document.createElement('button'));
   f.strip.lastElementChild!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
   const text = document.createTextNode('Unrelated');

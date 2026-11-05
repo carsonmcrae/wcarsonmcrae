@@ -156,6 +156,11 @@ unit coverage, built pages and budgets at root/subpath, browser behavior/accessi
 The Pages deployment workflow builds and verifies the exact publication address after the quality
 gate. A Worker/schema change is released separately and needs its own deployment verification.
 
+Browser test builds use the reserved `reactions.daysforth.test` origin. A shared Playwright fixture
+serves approved read-only counts and rejects unexpected mutations; intentional reaction cases
+provide their own scoped request fixtures. Runtime-health assertions still reject every unexpected
+console error or failed request. Browser tests never need to write to the live reaction service.
+
 Only Carson performs the owner-controlled release actions described in repository rules, unless
 he explicitly authorizes an action. A Git tag describes a source release; it does not by itself
 prove that either live deployment has changed. Do not put an unverified deployment date in notes.
