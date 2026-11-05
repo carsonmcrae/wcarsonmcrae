@@ -12,7 +12,8 @@ this release. The separate `carsonmcrae.github.io` portfolio repository remains 
 ## Configuration
 
 - Pages source: **GitHub Actions**. Custom domain: **wcarsonmcrae.com**. Actions use the Pages
-  setting rather than a CNAME file. Local builds also default to the personal domain.
+  setting rather than a CNAME file. Builds use HTTPS plus Pages' reported hostname and path, including
+  the first deployment while GitHub is provisioning its certificate. Local builds use the personal domain.
 - Repository variable `PUBLIC_REACTIONS_URL`:
   `https://daysforth-reactions.wcarsonmcrae.workers.dev`.
 - Worker and D1 database: `daysforth-reactions`; binding: `DB`. Its account/database IDs are public
@@ -21,6 +22,8 @@ this release. The separate `carsonmcrae.github.io` portfolio repository remains 
   account before deployment; the default CLI profile belongs to another project.
 - Workers and both zones use Free. Version previews, logs, traces, and Issues are off.
 - Bot Preference Sync is off by Carson's explicit choice; retain the app's own robots.txt.
+- Both zones have DNSSEC signing and matching DS records at GoDaddy. Public validating DNS responses
+  were checked after delegation. Both edge configurations require TLS 1.2 or newer.
 
 ## DNS and TLS
 
@@ -60,9 +63,11 @@ Only the primary apex/www are allowed in production. CORS is a browser boundary,
 Quota exhaustion leaves the feed and local Save usable. Salt rotation changes deduplication IDs.
 See [the service guide](../workers/reactions/README.md).
 
-Run `npm run validate:full` and inspect CI, CodeQL, and Dependency review. Merge into the existing
-review base, then establish main from that reviewed result and make it the default, avoiding the
-historical site's accidental publication. Every main push runs the quality gate before deploying.
+Run `npm run validate:full` and inspect CI, CodeQL, and Dependency review. PR #1 established the
+reviewed main branch as default. Its protection requires a PR, passing checks, and resolved review
+conversations; force pushes and deletion are blocked, including for administrators. Every main push
+runs the quality gate before deploying. See [release PR #1](https://github.com/carsonmcrae/wcarsonmcrae/pull/1)
+for final live acceptance; the provisioning checkpoint in design-qa.md predates publication.
 
 Verify all four domain/host variants over HTTP/HTTPS, deep paths and queries, direct post/secondary
 pages, custom 404, canonical tags, robots, sitemap, share images, security headers, both themes,
@@ -75,9 +80,12 @@ limitations recorded.
 
 ## Rollback
 
-Revert the release commit on main or unpublish Pages. Restore prior DNS from the saved inventories
-if needed. Never delete protected photo originals, backups, or real reactions. SQL triggers maintain
-totals after targeted vote deletion. A Worker rollback must remain compatible with its schema.
+Revert the release commit on main or unpublish Pages. Restore prior records from the saved inventories
+if needed. Before moving authoritative DNS away from Cloudflare, remove the DS record at GoDaddy and
+wait for its cached delegation to expire, then change nameservers. Never disable signing while the
+parent DS remains published: that breaks validating resolvers. Never delete protected photo originals,
+backups, or real reactions. SQL triggers maintain totals after targeted vote deletion. A Worker
+rollback must remain compatible with its schema.
 
 ## Official references
 
