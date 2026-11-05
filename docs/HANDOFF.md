@@ -53,8 +53,9 @@ The frontend uses free GitHub Pages. The free Cloudflare Worker/D1 implementatio
 `workers/reactions`; a separate backend repository is unnecessary. Save is browser-only; shared
 counts require the deployed API and `PUBLIC_REACTIONS_URL`.
 
-Keep the primary's four A records and www CNAME DNS-only for automatic GitHub certificate checks
-and renewal. Cloudflare proxies the Daysforth redirect, not the primary frontend. Both zones use
+Keep the primary's four apex A records DNS-only for automatic GitHub certificate checks and renewal.
+The www CNAME is proxied only for a Cloudflare redirect to the canonical apex; its free Universal
+certificate handles that alias. Cloudflare also proxies the Daysforth redirect. Both zones use
 DNSSEC with matching registrar DS records. Final live acceptance is recorded in
 [release PR #1](https://github.com/carsonmcrae/wcarsonmcrae/pull/1).
 

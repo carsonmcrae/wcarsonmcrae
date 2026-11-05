@@ -34,18 +34,24 @@ zone had MX records or enabled DNSSEC at migration time. Never introduce wildcar
 The primary's assigned nameservers are `kara.ns.cloudflare.com` and `kevin.ns.cloudflare.com`.
 Use the exact pair assigned to each zone in GoDaddy's custom nameservers.
 
-| Type  | Primary host | Origin value          |
-| ----- | ------------ | --------------------- |
-| A     | @            | 185.199.108.153       |
-| A     | @            | 185.199.109.153       |
-| A     | @            | 185.199.110.153       |
-| A     | @            | 185.199.111.153       |
-| CNAME | www          | carsonmcrae.github.io |
+| Type | Primary host | Origin value    |
+| ---- | ------------ | --------------- |
+| A    | @            | 185.199.108.153 |
+| A    | @            | 185.199.109.153 |
+| A    | @            | 185.199.110.153 |
+| A    | @            | 185.199.111.153 |
 
-Keep the primary records **DNS-only**, including after enabling HTTPS in Pages. GitHub's certificate
+Keep the primary apex records **DNS-only**, including after enabling HTTPS in Pages. GitHub's certificate
 checks expect its own addresses; proxying can prevent automatic renewal. GitHub already serves the
 site through its CDN. Cloudflare's Full (strict) setting is retained as a safe default, but the
 primary does not send web traffic through that proxy. Domain Connect also stays DNS-only.
+
+The primary's `www` alias uses a **proxied** CNAME to `carsonmcrae.github.io` and a Cloudflare 301
+rule matching only `www.wcarsonmcrae.com`. It redirects directly to `https://wcarsonmcrae.com` plus
+the path, preserving the query string. Cloudflare's active free Universal certificate handles this
+alias; the redirect runs before any origin request. GitHub's certificate covers the canonical apex.
+This avoids depending on GitHub's alternate-host certificate while its DNS checker caches the old
+GoDaddy alias. Do not proxy the canonical apex or remove its direct GitHub records.
 
 Daysforth uses proxied redirect-only records with reserved documentation addresses. A single 301
 rule matches its apex and www over HTTP/HTTPS, redirects to `https://wcarsonmcrae.com` plus the
