@@ -61,13 +61,15 @@ it('disposes pending loads and falls back to native controls after a load failur
   document.body.innerHTML = '<button data-open>Open</button>';
   const button = document.querySelector('button')!;
   const first = pending();
-  const stop = deferControl(document, '[data-open]', first.load);
+  const activate = vi.fn();
+  const stop = deferControl(document, '[data-open]', first.load, { activate });
   button.click();
   stop();
   const cleanup = vi.fn();
   first.resolve(cleanup);
   await Promise.resolve();
   expect(cleanup).toHaveBeenCalledOnce();
+  expect(activate).not.toHaveBeenCalled();
   const second = pending();
   document.documentElement.classList.add('js');
   stops.push(deferControl(document, '[data-open]', second.load));
@@ -76,6 +78,32 @@ it('disposes pending loads and falls back to native controls after a load failur
   await Promise.resolve();
   await Promise.resolve();
   expect(document.documentElement.classList.contains('js')).toBe(false);
+});
+
+it('activates the original detached control directly without replaying a global click into newer navigation', async () => {
+  document.body.innerHTML =
+    '<article><button data-command aria-pressed="false"><span>Save</span></button></article><button id="menu">Open category</button>';
+  const task = pending();
+  const command = document.querySelector<HTMLButtonElement>('[data-command]')!;
+  const activation = vi.fn((control: HTMLElement) => control.setAttribute('aria-pressed', 'true'));
+  stops.push(deferControl(document, '[data-command]', task.load, { activate: activation }));
+  const documentClicks = vi.fn();
+  document.addEventListener('click', documentClicks);
+  command.querySelector('span')!.click();
+  document.querySelector<HTMLButtonElement>('#menu')!.click();
+  document.querySelector('article')!.remove();
+  document.body.insertAdjacentHTML(
+    'beforeend',
+    '<button data-command aria-pressed="false">Replacement</button>',
+  );
+  task.resolve(vi.fn());
+  await Promise.resolve();
+  expect(activation).toHaveBeenCalledExactlyOnceWith(command);
+  expect(command.isConnected).toBe(false);
+  expect(command.getAttribute('aria-pressed')).toBe('true');
+  expect(document.querySelector('[data-command]')!.getAttribute('aria-pressed')).toBe('false');
+  expect(documentClicks).toHaveBeenCalledTimes(2);
+  document.removeEventListener('click', documentClicks);
 });
 it('buffers an edge gesture but leaves reserved browser edges and form controls alone', async () => {
   document.body.innerHTML = '<span>Edge</span><button>Button</button>';

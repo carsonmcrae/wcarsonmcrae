@@ -1,6 +1,6 @@
 /**
  * Purpose: Handle explicit Save, Copy, and permanent-reaction actions on intent.
- * Scope: Consent-aware persistence, idempotent POST votes, and honest feedback.
+ * Scope: Semantic command activation, consent-aware persistence, permanent votes, and honest feedback.
  * Does NOT belong: Initial count hydration or backend rate limiting.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -20,6 +20,7 @@ export function attachPostActionEvents(
 ) {
   const { storage, changed, updateCounts } = state;
   const reactions = createReactionController(win, endpoint, storage);
+  let alive = true;
   const save = (button: HTMLButtonElement, id: string) => {
     const saved = button.getAttribute('aria-pressed') !== 'true';
     if (!writeItem(storage, `daysforth.saved.${id}`, String(saved))) {
@@ -76,17 +77,26 @@ export function attachPostActionEvents(
     }
     button.disabled = button.getAttribute('aria-pressed') === 'true';
   };
-  const onClick = async (event: MouseEvent) => {
-    if (!(event.target instanceof Element)) return;
-    const button = event.target.closest<HTMLButtonElement>('[data-post-actions] button');
-    if (!button) return;
+  const activate = async (target: Element) => {
+    if (!alive) return;
+    const button = target.closest<HTMLButtonElement>('[data-post-actions] button');
+    if (!button || button.matches(':disabled')) return;
     const row = button.closest<HTMLElement>('[data-post-actions]')!;
     const id = row.dataset['postActions']!;
     if (button.dataset['save'] !== undefined) save(button, id);
     if (button.dataset['copy'] !== undefined) await copy(row);
     if (button.dataset['react'] !== undefined) await react(button, id);
   };
+  const onClick = (event: MouseEvent) => {
+    if (event.target instanceof Element) void activate(event.target);
+  };
 
   doc.addEventListener('click', onClick);
-  return () => doc.removeEventListener('click', onClick);
+  return {
+    activate,
+    destroy: () => {
+      alive = false;
+      doc.removeEventListener('click', onClick);
+    },
+  };
 }

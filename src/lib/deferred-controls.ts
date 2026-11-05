@@ -1,6 +1,6 @@
 /**
  * Purpose: Load optional dialog and drawer behavior only when a visitor intends to use it.
- * Scope: Primary-click replay, explicit settings requests, buffered edge gestures, and cleanup.
+ * Scope: Stable primary-click intent, optional direct command activation, settings requests, gestures, and cleanup.
  * Does NOT belong: Dialog content, storage decisions, or native link navigation.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -9,7 +9,15 @@ export function deferControl(
   doc: Document,
   selector: string,
   load: () => Promise<() => void>,
-  { request = '', edge = false }: { request?: string; edge?: boolean } = {},
+  {
+    request = '',
+    edge = false,
+    activate,
+  }: {
+    request?: string;
+    edge?: boolean;
+    activate?: (control: HTMLElement) => void;
+  } = {},
 ) {
   let pending: Promise<void> | undefined;
   let stop: (() => void) | undefined;
@@ -33,13 +41,15 @@ export function deferControl(
         event.ctrlKey ||
         event.shiftKey ||
         event.altKey ||
-        !(target instanceof Element) ||
-        !target.closest(selector)
+        !(target instanceof Element)
       )
         return;
+      const control = target.closest<HTMLElement>(selector);
+      if (!control) return;
       event.preventDefault();
       replay.push(() => {
-        (target.closest(selector) as HTMLElement).click();
+        if (activate) activate(control);
+        else control.click();
       });
     } else if (event.type === request)
       replay.push(() => doc.dispatchEvent(new CustomEvent(request)));

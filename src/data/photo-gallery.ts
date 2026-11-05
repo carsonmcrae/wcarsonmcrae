@@ -183,7 +183,7 @@ export const carsonGallery = {
     soccer: [
       'carson-gallery-6',
       'Carson with friends in the stands at a Nashville SC soccer game',
-      'With friends at a Nashville SC game—the first time I saw Messi play in person.',
+      'With friends at a Nashville SC game—the first time I saw Messi play in person. It was his first game in Nashville after joining the league.',
     ],
     gamingWithJackson: [
       'carson-gallery-7',

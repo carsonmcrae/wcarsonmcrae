@@ -75,6 +75,25 @@ state, and restore the visitor’s place. Query state is shareable; `history.sta
 belong to a browser entry. They are not a server browsing profile. Dialog and action code loads on
 intent to control the script budget.
 
+Deferred post commands retain the original matched control and call the post adapter's explicit
+`activate` method once its modules load. They do not redispatch a global click: a category menu
+opened meanwhile stays open, and Save still resolves the original row if filtering detached its
+card. Native disabled controls and destroyed adapters remain inert. Pending commands belong to the
+current document; disposing it cancels delivery rather than promising Save across a page unload.
+
+Timeline entries take manual scroll-restoration ownership during early page-position setup,
+before departure. Where the Navigation API exists, its non-replacement `navigate` events snapshot
+the current position through `updateCurrentEntry`; the restorer prefers `currentEntry.getState()`
+and uses classic history state when that value is absent. Using the entry-state API during navigation
+preserves native entry identity. The early bootstrap marks a valid native-position return for layout
+restoration even without a date query; timeline initialization uses the same position accessor.
+Classic `replaceState` remains only in the existing explicit-click
+snapshot path, outside that callback. Ordinary post pages retain native automatic restoration.
+Browsers without the Navigation API retain the last explicit link/history-button snapshot; a newer
+position reached only before toolbar navigation is not guaranteed there. Coordinates stay in the
+existing browser-owned history entry, without new local-storage keys, server history or a consent
+purpose. There is no `pagehide` snapshot or periodic scroll-write loop.
+
 Personal albums use the same native photo dialog as individual photographs. Compact previews on
 Life and About expose approved photo links grouped in the rendered page; `photo-viewer.ts` reads
 that group when opened and owns dialog lifecycle and composition, the current photo index,

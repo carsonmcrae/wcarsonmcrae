@@ -216,6 +216,7 @@ test.describe('reader-sized photo captions', () => {
     await expect(caption).toBeFocused();
     await page.keyboard.press('PageDown');
     await expect.poll(() => caption.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+    await page.keyboard.press('End');
     await expect
       .poll(() =>
         caption.evaluate((element) => {

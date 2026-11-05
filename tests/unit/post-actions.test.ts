@@ -1,111 +1,18 @@
 /**
  * Purpose: User-visible guarantees for Daysforth social actions.
- * Scope: Browser-local Save, canonical Copy, shared counts/votes, persistence failures, and offline resilience.
- * Does NOT belong: SQL rate limiting or screenshot assertions.
+ * Scope: Browser-local Save, shared counts/votes, persistence failures, lifecycle and offline resilience.
+ * Does NOT belong: Copy destinations, detached command dispatch, SQL limits or screenshots.
  * @vitest-environment happy-dom
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { clearPreferences, recordConsent } from '../../src/lib/consent';
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-import { attachPostActionEvents } from '../../src/lib/post-action-events';
-import { initPostActions as displayPostActions } from '../../src/lib/post-actions';
+import { describe, expect, it, vi } from 'vitest';
 import { fillActionRows } from '../../src/lib/action-template';
 import { consentingStorage, memoryStorage } from './helpers';
-function initPostActions(
-  doc: Document,
-  win: Parameters<typeof displayPostActions>[1],
-  endpoint: string,
-  announce: (message: string) => void,
-) {
-  const state = displayPostActions(doc, win, endpoint);
-  const stop = attachPostActionEvents(doc, win, endpoint, state, announce);
-  return () => {
-    state.destroy();
-    stop();
-  };
-}
-const identity = '12345678-1234-4234-8234-123456789abc';
-const cleanups: (() => void)[] = [];
-function setup(
-  options: {
-    endpoint?: string;
-    storage?: Storage;
-    fetcher?: typeof fetch;
-    rows?: boolean;
-    multiple?: boolean;
-  } = {},
-) {
-  document.body.innerHTML =
-    options.rows === false
-      ? ''
-      : '<div data-post-actions="born" data-post-title="Born" data-post-url="https://daysforth.com/posts/born/"><button data-react aria-pressed="false"><span data-reaction-count>—</span></button><button data-save aria-pressed="false"><span data-save-label>Save</span></button><button data-copy>Copy link</button></div><button id="outside">Outside</button>';
-  const storage = options.storage ?? consentingStorage();
-  if (options.multiple) {
-    const first = document.querySelector('[data-react]')!;
-    first.setAttribute('data-react', 'heart');
-    for (const kind of ['celebrate', 'laugh', 'support']) {
-      const button = document.createElement('button');
-      button.dataset['react'] = kind;
-      button.dataset['reactionLabel'] = kind;
-      button.setAttribute('aria-pressed', 'false');
-      button.innerHTML = '<span data-reaction-count>—</span>';
-      first.parentElement!.append(button);
-    }
-  }
-  const events = new EventTarget();
-  const win = {
-    addEventListener: events.addEventListener.bind(events),
-    removeEventListener: events.removeEventListener.bind(events),
-    localStorage: storage,
-    location: { origin: 'https://daysforth.com' },
-    navigator: { clipboard: { writeText: vi.fn(async (_text: string) => {}) } },
-    crypto: {
-      randomUUID: vi.fn(() => identity as `${string}-${string}-${string}-${string}-${string}`),
-    },
-    fetch: options.fetcher ?? vi.fn<typeof fetch>().mockResolvedValue(Response.json({ born: 0 })),
-  };
-  const announce = vi.fn<(message: string) => void>();
-  const destroy = initPostActions(document, win, options.endpoint ?? '', announce);
-  cleanups.push(destroy);
-  const click = (action: string) =>
-    document.querySelector<HTMLButtonElement>(`[data-${action}]`)!.click();
-  const button = (action: string) => document.querySelector<HTMLButtonElement>(`[data-${action}]`)!;
-  return { win, events, storage, announce, click, button, destroy };
-}
-beforeEach(() => clearPreferences(null));
-afterEach(() => {
-  for (const cleanup of cleanups.splice(0)) cleanup();
-  document.body.innerHTML = '';
-  document.head.querySelector('link[rel="canonical"]')?.remove();
-  vi.unstubAllEnvs();
-  vi.restoreAllMocks();
-});
+import { identity, initPostActions, setup } from './post-actions-fixture';
 
-describe('Save and Copy', () => {
-  it.each([
-    ['/', 'https://canonical.test/posts/current/', 'https://canonical.test/posts/born/'],
-    ['/project/', 'https://pages.test/project/', 'https://pages.test/project/posts/born/'],
-    ['/', null, 'https://daysforth.com/posts/born/'],
-    ['/project/', null, 'https://daysforth.com/project/posts/born/'],
-  ])(
-    'derives Copy from stable ID at base %s with canonical %s',
-    async (base, canonical, expected) => {
-      vi.stubEnv('BASE_URL', base);
-      const { win, click } = setup();
-      document.querySelector('[data-post-actions]')!.removeAttribute('data-post-url');
-      if (canonical) {
-        const link = document.createElement('link');
-        link.rel = 'canonical';
-        link.href = canonical;
-        document.head.append(link);
-      }
-      click('copy');
-      await vi.waitFor(() =>
-        expect(win.navigator.clipboard.writeText).toHaveBeenCalledWith(expected),
-      );
-    },
-  );
+describe('Save', () => {
   it('updates choices on consent changes without replacing cards or reducing shared counts', async () => {
     const { storage, button, destroy } = setup({ storage: memoryStorage() });
     const original = button('save');
@@ -188,30 +95,6 @@ describe('Save and Copy', () => {
     click('save');
     expect(button('save').getAttribute('aria-pressed')).toBe('false');
     expect(announce).toHaveBeenCalledWith('Your browser could not save this moment.');
-  });
-  it('preserves a legacy explicit permalink and supplies it manually when the clipboard fails', async () => {
-    const { win, click, announce } = setup();
-    document.querySelector<HTMLElement>('[data-post-actions]')!.dataset['postUrl'] =
-      'https://legacy.test/archive/born/';
-    click('copy');
-    await vi.waitFor(() => expect(announce).toHaveBeenLastCalledWith('Link copied.'));
-    expect(win.navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'https://legacy.test/archive/born/',
-    );
-    win.navigator.clipboard.writeText.mockRejectedValueOnce(new Error('blocked'));
-    click('copy');
-    await vi.waitFor(() =>
-      expect(announce).toHaveBeenLastCalledWith(
-        'Copy this link: https://legacy.test/archive/born/',
-      ),
-    );
-    Object.assign(win, { navigator: {} });
-    click('copy');
-    await vi.waitFor(() =>
-      expect(announce).toHaveBeenLastCalledWith(
-        'Copy this link: https://legacy.test/archive/born/',
-      ),
-    );
   });
 });
 describe('shared reactions', () => {
@@ -324,7 +207,7 @@ describe('shared reactions', () => {
     });
     unavailable.destroy();
     clearPreferences(null);
-    const destroy = initPostActions(
+    const { destroy } = initPostActions(
       document,
       unavailable.win,
       'https://api.example.com',

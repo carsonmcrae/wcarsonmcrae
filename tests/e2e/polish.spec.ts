@@ -116,22 +116,42 @@ test('header navigation and post return preserve the native timeline position', 
 }) => {
   await page.goto('?date=2022-05');
   await expect(page.locator('#moment-vanderbilt-graduation')).toBeInViewport();
-  // Font swaps and the browser's click preparation may adjust the initial date-jump position.
+  await page.locator('html[data-site-ready="true"] [data-timeline][data-detail]').waitFor();
   await page.evaluate(() => document.fonts.ready);
-  await page.locator('#moment-vanderbilt-graduation h3 a').scrollIntoViewIfNeeded();
+  const title = page.locator('#moment-vanderbilt-graduation h3 a');
+  await title.scrollIntoViewIfNeeded();
   const position = await page.evaluate(() => scrollY);
-  await page.locator('#moment-vanderbilt-graduation h3 a').click();
+  const titleY = (await title.boundingBox())!.y;
+  expect(await page.evaluate(() => history.scrollRestoration)).toBe('manual');
+  await title.click();
   await expect(page.locator('h1')).toHaveText('Vanderbilt graduation');
+  await page.locator('html[data-site-ready="true"]').waitFor();
+  expect(await page.evaluate(() => history.scrollRestoration)).toBe('auto');
   const nativeEntries = await page.evaluate(() => Boolean(window.navigation));
   if (nativeEntries)
     await page.getByRole('link', { name: 'Back to the timeline', exact: true }).click();
   else await page.getByRole('button', { name: 'Go back', exact: true }).click();
-  await expect(page.locator('[data-timeline]')).toBeVisible();
+  await page.locator('html[data-site-ready="true"] [data-timeline][data-detail]').waitFor();
   await expect.poll(() => page.evaluate(() => scrollY)).toBeCloseTo(position, -1);
+  await expect.poll(async () => (await title.boundingBox())!.y).toBeCloseTo(titleY, -1);
   await page.getByRole('button', { name: 'Go forward', exact: true }).click();
   await expect(page.locator('h1')).toHaveText('Vanderbilt graduation');
+  await page.locator('html[data-site-ready="true"]').waitFor();
   await page.getByRole('button', { name: 'Go back', exact: true }).click();
+  await page.locator('html[data-site-ready="true"] [data-timeline][data-detail]').waitFor();
   await expect(page.locator('#moment-vanderbilt-graduation')).toBeInViewport();
+  // Toolbar traversal has no document click: the native departure snapshot must be current.
+  await page.evaluate(() => window.scrollBy({ top: 120, behavior: 'instant' }));
+  const laterPosition = await page.evaluate(() => scrollY);
+  const laterTitleY = (await title.boundingBox())!.y;
+  expect(laterPosition).toBeGreaterThan(position);
+  await page.goForward();
+  await page.locator('html[data-site-ready="true"]').waitFor();
+  await expect(page.locator('h1')).toHaveText('Vanderbilt graduation');
+  await page.goBack();
+  await page.locator('html[data-site-ready="true"] [data-timeline][data-detail]').waitFor();
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeCloseTo(laterPosition, -1);
+  await expect.poll(async () => (await title.boundingBox())!.y).toBeCloseTo(laterTitleY, -1);
 });
 
 test('returning from a post refreshes a cached bookmark without moving the timeline', async ({

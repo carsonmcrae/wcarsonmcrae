@@ -80,6 +80,21 @@ describe('timeline interaction', () => {
     controller.goToDate('1999-11');
     expect(history.pushState).toHaveBeenLastCalledWith({}, '', expect.any(URL));
   });
+  it('preserves a native entry snapshot during initialization and gives it priority on traversal', () => {
+    const { controller, win, history, scrolling, events } = timelineFixture('?date=2022-05');
+    controller.destroy();
+    scrolling.mockClear();
+    Object.defineProperty(win, 'navigation', {
+      value: { currentEntry: { getState: () => ({ scrollY: 740 }) } },
+    });
+    const restored = initTimeline(document, win)!;
+    cleanups.push(restored.destroy);
+    expect(scrolling).not.toHaveBeenCalled();
+    history.state = { scrollY: 90 };
+    events.dispatchEvent(new Event('popstate'));
+    expect(win.scrollTo).toHaveBeenLastCalledWith({ top: 740, behavior: 'instant' });
+    expect(scrolling).not.toHaveBeenCalled();
+  });
   it('jumps to the visible collection boundaries, including filtered and empty collections', () => {
     const { controller, change } = setup();
     document.body.insertAdjacentHTML(

@@ -5,7 +5,7 @@ through dates, and open a permanent page for any moment. Built with [Astro](http
 for free GitHub Pages hosting at [wcarsonmcrae.com](https://wcarsonmcrae.com).
 [Daysforth.com](https://daysforth.com) forwards to the same canonical site.
 
-See the [current release notes](https://wcarsonmcrae.com/releases/1.0.0/),
+See the [current release notes](https://wcarsonmcrae.com/releases/),
 [architecture](docs/architecture/overview.md), [release rules](docs/governance/releases.md), and
 [security policy](SECURITY.md). Fixes for this project are welcome under [CONTRIBUTING.md](CONTRIBUTING.md).
 
