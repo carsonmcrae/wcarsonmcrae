@@ -115,25 +115,33 @@ function inspect(file: FileText, browser = false): Module {
 }
 function astroScripts(file: FileText): Module[] {
   const text = file.text.replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, '');
+  // Search the original text: lowercasing all source can change Unicode lengths and slice offsets.
+  const openingTag = /<script(?=[\t\n\f\r />])/gi;
+  const closingTag = /<\/script[\t\n\f\r ]*>/gi;
   const modules: Module[] = [];
   let offset = 0;
   while (offset < text.length) {
-    const start = text.indexOf('<script', offset);
-    if (start < 0) break;
-    const end = text.indexOf('>', start);
+    openingTag.lastIndex = offset;
+    const start = openingTag.exec(text);
+    if (!start) break;
+    const end = text.indexOf('>', start.index);
     if (end < 0) break;
-    const opening = text.slice(start, end + 1);
+    const opening = text.slice(start.index, end + 1);
     offset = end + 1;
-    if (!/^<script(?:\s|>)/.test(opening) || opening.endsWith('/>')) continue;
-    const close = text.indexOf('</script>', offset);
-    if (close < 0) break;
+    if (opening.endsWith('/>')) continue;
+    closingTag.lastIndex = offset;
+    const close = closingTag.exec(text);
+    if (!close) break;
     modules.push(
       inspect(
-        { path: `${file.path}#script-${modules.length + 1}`, text: text.slice(offset, close) },
+        {
+          path: `${file.path}#script-${modules.length + 1}`,
+          text: text.slice(offset, close.index),
+        },
         true,
       ),
     );
-    offset = close + '</script>'.length;
+    offset = closingTag.lastIndex;
   }
   return modules;
 }

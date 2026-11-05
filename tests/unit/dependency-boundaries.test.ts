@@ -99,6 +99,7 @@ import fs from 'node:fs';
       'src/lib/reaction-service.ts': 'export const database = true;',
       'src/components/Empty.astro': '<p>No browser script.</p>',
       'src/components/IncompleteOpen.astro': '<script',
+      'src/components/IncompleteAttributes.astro': '<ScRiPt ',
       'src/components/IncompleteBody.astro': '<script>missing close',
       'src/components/SelfClosing.astro': '<script src="/known.js" />',
     });
@@ -107,6 +108,32 @@ import fs from 'node:fs';
       expect.stringContaining('Example.astro#script-2 -> node:fs'),
     ]);
   });
+
+  it.each([
+    ['<SCRIPT>', '</SCRIPT>'],
+    ['<sCrIpT type="module">', '</ScRiPt \t\r\n>'],
+    ['<script>', '</SCRIPT >'],
+  ])(
+    'checks %s browser code through its %s closing tag without changing source offsets',
+    (opening, closing) => {
+      const report = check({
+        'src/components/Cased.astro': `---
+const example = '<SCRIPT>import "node:fs";</SCRIPT>';
+---
+<p>İ and 😀 preserve their original source offsets.</p>
+<SCRIPT is:inline set:html={bootstrap} />
+<Scripture>ordinary markup</Scripture>
+${opening}import 'node:fs';${closing}
+<ScRiPt>import '../lib/reaction-service';</sCrIpT   >`,
+        'src/lib/reaction-service.ts': 'export const database = true;',
+      });
+      expect(report.checked).toBe(3);
+      expect(report.errors).toEqual([
+        expect.stringContaining('Cased.astro#script-1 -> node:fs'),
+        expect.stringContaining('Cased.astro#script-2 -> src/lib/reaction-service.ts'),
+      ]);
+    },
+  );
 
   it.each([
     ['import fs from "node:fs";', 'Node built-ins'],
