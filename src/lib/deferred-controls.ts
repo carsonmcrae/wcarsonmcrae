@@ -12,7 +12,7 @@ export function deferControl(
   {
     request = '',
     edge = false,
-    activate,
+    activate = (control: HTMLElement) => control.click(),
   }: {
     request?: string;
     edge?: boolean;
@@ -47,10 +47,7 @@ export function deferControl(
       const control = target.closest<HTMLElement>(selector);
       if (!control) return;
       event.preventDefault();
-      replay.push(() => {
-        if (activate) activate(control);
-        else control.click();
-      });
+      replay.push(() => activate(control));
     } else if (event.type === request)
       replay.push(() => doc.dispatchEvent(new CustomEvent(request)));
     else if (edge && event instanceof TouchEvent) {

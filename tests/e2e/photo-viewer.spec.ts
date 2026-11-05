@@ -12,12 +12,20 @@ import { reactions } from '../../src/data/reactions';
 import { photoReactionId } from '../../src/lib/photo-reaction-id';
 import { allowStorage, expectNoViolations } from './helpers';
 
-async function openCarsonAlbum(page: Page, remembered = false) {
+async function openCarsonAlbum(
+  page: Page,
+  { remembered = false, textSize }: { remembered?: boolean; textSize?: '200%' } = {},
+) {
   if (remembered) await allowStorage(page);
   await page.goto('about/');
   await expect(page.locator('html')).toHaveAttribute('data-site-ready', 'true');
   if (!remembered)
     await page.getByRole('button', { name: 'Keep storage off', exact: true }).click();
+  await expect(page.locator('[data-storage-notice]')).toBeHidden();
+  if (textSize) {
+    await page.addStyleTag({ content: `html { font-size: ${textSize} !important; }` });
+    await page.evaluate(() => document.fonts.ready);
+  }
   const entry = page.locator('#carson-photos .album-preview__action');
   await entry.click();
   const viewer = page.getByRole('dialog', { name: 'Photo viewer', exact: true });
@@ -151,7 +159,7 @@ for (const remembered of [false, true]) {
     page,
   }) => {
     const fixture = await mockPhotoReactions(page);
-    const { viewer, strip } = await openCarsonAlbum(page, remembered);
+    const { viewer, strip } = await openCarsonAlbum(page, { remembered });
     await expect
       .poll(() => fixture.reads, {
         message:
@@ -199,8 +207,7 @@ test.describe('reader-sized photo captions', () => {
   }) => {
     await page.setViewportSize({ width: 390, height: 664 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    const { viewer, strip } = await openCarsonAlbum(page);
-    await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+    const { viewer, strip } = await openCarsonAlbum(page, { textSize: '200%' });
     const messiPhoto = strip.getByRole('button').nth(5);
     await messiPhoto.click();
     await expect(viewer.locator('[data-photo-caption-output]')).toHaveText(
@@ -214,8 +221,18 @@ test.describe('reader-sized photo captions', () => {
     await messiPhoto.focus();
     await page.keyboard.press('Tab');
     await expect(caption).toBeFocused();
-    await page.keyboard.press('PageDown');
-    await expect.poll(() => caption.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+    const pageDown = await caption.evaluateHandle((element) => ({
+      finished: new Promise<void>((resolve) =>
+        element.addEventListener('scrollend', () => resolve(), { once: true }),
+      ),
+    }));
+    try {
+      await page.keyboard.press('PageDown');
+      await expect.poll(() => caption.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+      await pageDown.evaluate(({ finished }) => finished);
+    } finally {
+      await pageDown.dispose();
+    }
     await page.keyboard.press('End');
     await expect
       .poll(() =>

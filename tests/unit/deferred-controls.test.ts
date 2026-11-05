@@ -105,6 +105,21 @@ it('activates the original detached control directly without replaying a global 
   expect(documentClicks).toHaveBeenCalledTimes(2);
   document.removeEventListener('click', documentClicks);
 });
+it('delivers separately buffered commands in intent order through one initialized adapter', async () => {
+  document.body.innerHTML =
+    '<button data-command><span>First</span></button><button data-command><span>Second</span></button>';
+  const task = pending();
+  const controls = [...document.querySelectorAll<HTMLButtonElement>('[data-command]')];
+  const activate = vi.fn();
+  stops.push(deferControl(document, '[data-command]', task.load, { activate }));
+  for (const control of controls) control.querySelector('span')!.click();
+  controls[0]!.remove();
+  expect(task.load).toHaveBeenCalledOnce();
+  expect(activate).not.toHaveBeenCalled();
+  task.resolve(vi.fn());
+  await Promise.resolve();
+  expect(activate.mock.calls.map(([control]) => control)).toEqual(controls);
+});
 it('buffers an edge gesture but leaves reserved browser edges and form controls alone', async () => {
   document.body.innerHTML = '<span>Edge</span><button>Button</button>';
   const task = pending();
