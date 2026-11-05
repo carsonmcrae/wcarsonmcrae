@@ -5,11 +5,14 @@
  */
 .timeline-dock {
   position: sticky;
-  top: 0;
+  top: var(--header-height);
   z-index: 10;
   padding-top: 0.5rem;
   background: var(--bg);
   border-bottom: 1px solid var(--rule);
+}
+section.timeline-feed {
+  scroll-margin-top: var(--header-height);
 }
 .timeline-dock .date-rail {
   max-width: 50rem;
@@ -23,11 +26,11 @@
 .timeline-menu__panel {
   max-height: 55dvh;
 }
-.moment-group,
-.moment-group > h2,
-.post-card,
-.timeline-empty {
-  scroll-margin-top: 12rem;
+.timeline-feed .moment-group,
+.timeline-feed .moment-group > h2,
+.timeline-feed .post-card,
+.timeline-feed .timeline-empty {
+  scroll-margin-top: calc(var(--header-height) + 12rem);
 }
 @media (max-width: 64rem) {
   .timeline-dock {
@@ -35,21 +38,59 @@
   }
 }
 @media (max-width: 48rem) {
-  .moment-group,
-  .moment-group > h2,
-  .post-card,
-  .timeline-empty {
-    scroll-margin-top: 17rem;
+  .timeline-feed .moment-group,
+  .timeline-feed .moment-group > h2,
+  .timeline-feed .post-card,
+  .timeline-feed .timeline-empty {
+    scroll-margin-top: calc(var(--header-height) + 17rem);
+  }
+}
+.date-rail input {
+  position: relative;
+  z-index: 2;
+  margin-top: 0;
+  touch-action: pan-y;
+}
+.date-rail__labels {
+  pointer-events: none;
+}
+.date-rail__label {
+  pointer-events: auto;
+}
+.timeline-dock .date-rail {
+  padding-top: 2.75rem;
+  margin-top: 0;
+}
+@media (max-width: 64rem) {
+  .timeline-dock .date-rail {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .timeline-dock .date-rail__labels {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    position: static;
+    height: auto;
+  }
+  .timeline-dock .date-rail__label {
+    position: static;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    text-align: center;
+  }
+  .timeline-dock .date-rail__label::after {
+    display: none;
   }
 }
 @media (max-height: 40rem) {
   .timeline-dock {
     position: relative;
   }
-  .moment-group,
-  .moment-group > h2,
-  .post-card,
-  .timeline-empty {
+  .timeline-feed .moment-group,
+  .timeline-feed .moment-group > h2,
+  .timeline-feed .post-card,
+  .timeline-feed .timeline-empty {
     scroll-margin-top: 1rem;
   }
 }

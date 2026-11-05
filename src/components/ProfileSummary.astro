@@ -4,8 +4,7 @@
  * Scope: Portrait, identity, approved short biography, and contact/profile links.
  * Does NOT belong: Pinned moments or feed controls.
  */
-import { Image } from 'astro:assets';
-import portrait from '../assets/photos/carson-profile.jpg';
+import PhotoLink from './PhotoLink.astro';
 import { profile, socialLinks } from '../data/profile';
 import { timelineProfile } from '../data/timeline';
 import { withBase } from '../lib/paths';
@@ -13,18 +12,11 @@ import Icon from './Icon.astro';
 ---
 
 <section class="profile-summary" aria-labelledby="profile-name">
-  <Image
+  <PhotoLink
     class="profile-summary__portrait"
-    src={portrait}
+    name={profile.portrait}
     alt={profile.portraitAlt}
-    width={144}
-    height={144}
-    widths={[144, 288, 432]}
-    sizes="(max-width: 40rem) 72px, 144px"
-    format="webp"
-    quality={88}
-    loading="eager"
-    fetchpriority="high"
+    eager
   />
   <div class="profile-summary__identity">
     <h1 id="profile-name">{profile.fullName}</h1>
@@ -40,10 +32,10 @@ import Icon from './Icon.astro';
     <ul role="list" class="profile-summary__links">
       {socialLinks.map((social) => (
         <li>
-          <a href={social.href}>
+          <a href={social.href} target="_blank" rel="noopener noreferrer">
             <Icon name={social.id as 'linkedin' | 'github' | 'portfolio'} />
             {social.label}
-            <span class="visually-hidden"> (external site)</span>
+            <span class="visually-hidden"> (external site, opens in a new tab)</span>
           </a>
         </li>
       ))}

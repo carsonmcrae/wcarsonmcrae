@@ -110,8 +110,3 @@ export const notFound = {
   title: 'This page wandered off.',
   body: 'Error 404: I checked under the couch cushions. It isn’t there either.',
 };
-
-export const achievement = {
-  title: 'Achievement unlocked: Completionist',
-  body: 'You’ve visited every page on this site. That’s more than most people, and all of the dogs.',
-};

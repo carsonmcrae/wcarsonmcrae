@@ -74,12 +74,14 @@ See [docs/CONTENT.md](docs/CONTENT.md) for adding photos, projects, and interest
 
 A push to `main` runs the full quality gate, then deploys to GitHub Pages. Setup, the custom domain,
 DNS records, and HTTPS are covered step by step in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
-Only Carson performs that release. The existing remote has no `main` branch yet.
+Carson controls releases; an agent may perform a specific release only with his explicit authorization.
 
 See [docs/DAYSFORTH.md](docs/DAYSFORTH.md) for the approved design, confirmed dates, photo protection,
 and brand system. Preview the brand guide at `/brand/`; `npm run images:brand` regenerates its vector,
 PNG, icon, and ZIP exports. Shared reactions require the separately deployed
-[Worker/D1 service](workers/reactions/README.md). Save stays browser-local.
+[Worker/D1 service](workers/reactions/README.md). Save stays browser-local, with optional persistence
+off until permission. See the [privacy review](docs/PRIVACY-REVIEW.md) and
+[November 4 polish update](docs/POLISH-UPDATE.md).
 
 ## Standards
 

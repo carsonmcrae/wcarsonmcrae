@@ -7,8 +7,10 @@
  * Does NOT belong: Size budgets (budgets.test.ts) or browser behavior (tests/e2e).
  */
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { BASE, htmlPages, parse, resolveInternal, SITE, urlPathFor } from './dist';
+import { BASE, DIST, htmlPages, parse, resolveInternal, SITE, urlPathFor } from './dist';
 import { postAliases } from '../../src/data/post-aliases';
 
 const pages = htmlPages.map((file) => ({ file, document: parse(file) }));
@@ -117,6 +119,14 @@ describe.each(pages)('$file', ({ file, document }) => {
   });
 
   it('only links to internal files that exist and external sites over https', () => {
+    for (const link of document.querySelectorAll<HTMLAnchorElement>('a[href]')) {
+      const external = /^https?:/.test(link.href) && new URL(link.href).origin !== SITE;
+      if (external || link.closest('footer')) {
+        expect(link.target, link.outerHTML).toBe('_blank');
+        expect(link.rel).toBe('noopener noreferrer');
+        expect(`${link.getAttribute('aria-label')} ${link.textContent}`).toContain('new tab');
+      }
+    }
     const urls = [
       ...Array.from(document.querySelectorAll('a[href], link[href], use[href]'), (element) =>
         element.getAttribute('href')!,
@@ -151,6 +161,11 @@ describe.each(pages)('$file', ({ file, document }) => {
           targetDocument.getElementById(decodeURIComponent(url.hash.slice(1))),
           `${raw} from ${file}`,
         ).not.toBeNull();
+      }
+      if (url.hash.length > 1 && target?.endsWith('.svg')) {
+        expect(readFileSync(join(DIST, target), 'utf8'), raw).toContain(
+          `id="${decodeURIComponent(url.hash.slice(1))}"`,
+        );
       }
     }
   });

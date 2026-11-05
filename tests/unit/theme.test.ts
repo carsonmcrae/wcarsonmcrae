@@ -5,6 +5,7 @@
  * Does NOT belong: Browser checks of the real page (tests/e2e).
  * @vitest-environment happy-dom
  */
+import { clearPreferences, CONSENT_KEY } from '../../src/lib/consent';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   THEME_BOOTSTRAP_SCRIPT,
@@ -15,13 +16,13 @@ import {
   readStoredTheme,
   resolveTheme,
 } from '../../src/lib/theme';
-import { fakeMediaQuery, memoryStorage, throwingStorage } from './helpers';
+import { fakeMediaQuery, consentingStorage, throwingStorage } from './helpers';
 
 function setup(options: { prefersDark?: boolean; stored?: string; withMatchMedia?: boolean } = {}) {
   document.body.innerHTML = `
     <button type="button" data-theme-toggle aria-pressed="false">Dark mode</button>
     <button type="button" data-theme-toggle aria-pressed="false">Dark mode</button>`;
-  const storage = memoryStorage(options.stored ? { [THEME_STORAGE_KEY]: options.stored } : {});
+  const storage = consentingStorage(options.stored ? { [THEME_STORAGE_KEY]: options.stored } : {});
   const media = fakeMediaQuery(options.prefersDark ?? false);
   const win = {
     localStorage: storage,
@@ -32,6 +33,7 @@ function setup(options: { prefersDark?: boolean; stored?: string; withMatchMedia
 }
 
 beforeEach(() => {
+  clearPreferences(null);
   document.documentElement.removeAttribute('data-theme');
   document.documentElement.className = '';
 });
@@ -60,8 +62,8 @@ describe('theme helpers', () => {
   });
 
   it('ignores invalid or unreadable stored values', () => {
-    expect(readStoredTheme(memoryStorage({ [THEME_STORAGE_KEY]: 'neon' }))).toBeNull();
-    expect(readStoredTheme(memoryStorage({ [THEME_STORAGE_KEY]: 'dark' }))).toBe('dark');
+    expect(readStoredTheme(consentingStorage({ [THEME_STORAGE_KEY]: 'neon' }))).toBeNull();
+    expect(readStoredTheme(consentingStorage({ [THEME_STORAGE_KEY]: 'dark' }))).toBe('dark');
     expect(readStoredTheme(throwingStorage())).toBeNull();
     expect(readStoredTheme(null)).toBeNull();
   });
@@ -78,6 +80,10 @@ describe('THEME_BOOTSTRAP_SCRIPT', () => {
   });
 
   it('applies a saved theme before paint', () => {
+    localStorage.setItem(
+      CONSENT_KEY,
+      JSON.stringify({ allowed: true, expires: Number.MAX_SAFE_INTEGER }),
+    );
     localStorage.setItem(THEME_STORAGE_KEY, 'dark');
     run();
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
@@ -93,6 +99,11 @@ describe('THEME_BOOTSTRAP_SCRIPT', () => {
 });
 
 describe('initThemeToggle', () => {
+  it('restores a permitted saved choice when initialization follows native navigation', () => {
+    const { win, buttons } = setup({ stored: 'dark' });
+    initThemeToggle(document, win);
+    expect(buttons[0]!.getAttribute('aria-pressed')).toBe('true');
+  });
   it('reflects the system preference when nothing is stored', () => {
     const { win, buttons } = setup({ prefersDark: true });
     initThemeToggle(document, win);

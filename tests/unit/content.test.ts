@@ -17,6 +17,7 @@ import * as siteData from '../../src/data/site';
 import * as brandData from '../../src/data/brand';
 import * as timelineData from '../../src/data/timeline';
 import * as galleryData from '../../src/data/photo-gallery';
+import * as privacyData from '../../src/data/privacy';
 import { availableProjectImages } from '../../src/lib/images';
 import { isExternalUrl } from '../../src/lib/paths';
 import { walk } from '../support/walk';
@@ -32,6 +33,7 @@ const allData = {
   brandData,
   timelineData,
   galleryData,
+  privacyData,
 };
 
 /** Every string anywhere in the content layer. */
@@ -58,6 +60,8 @@ const pageFiles = new Set(readdirSync(join(ROOT, 'src/pages')));
 
 function pageExists(path: string): boolean {
   const clean = path.split('#')[0]!;
+  if (clean.startsWith('/posts/'))
+    return timelineData.timelinePosts.some((post) => clean === `/posts/${post.id}/`);
   if (clean === '/') {
     return pageFiles.has('index.astro');
   }

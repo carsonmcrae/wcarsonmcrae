@@ -5,6 +5,7 @@
  * Does NOT belong: SVG definitions or brand assets.
  */
 import type { IconName } from '../lib/icons';
+import { withBase } from '../lib/paths';
 interface Props {
   name: IconName;
 }
@@ -12,7 +13,7 @@ const { name } = Astro.props;
 ---
 
 <svg class="icon" viewBox="0 0 256 256" aria-hidden="true" focusable="false">
-  <use href={`#icon-${name}`} />
+  <use href={`${withBase('/icons.svg')}#icon-${name}`} />
 </svg>
 <style is:global>
   .icon {

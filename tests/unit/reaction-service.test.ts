@@ -45,36 +45,31 @@ const read = (origin?: string) =>
   });
 
 describe('shared totals', () => {
-  it('keeps reaction kinds independent and removes only the requesting visitor’s chosen reaction', async () => {
+  it('keeps all kinds permanent while erasing only a requesting visitor’s identifiers', async () => {
     const kinds = ['born', 'born--celebrate', 'born--laugh', 'born--support'];
     const visitor = randomUUID();
     for (const kind of kinds) await handleReactions(vote(visitor, kind), env, kinds, now);
     await handleReactions(vote(randomUUID(), 'born--celebrate'), env, kinds, now);
-    const remove = () =>
-      handleReactions(vote(visitor, 'born--celebrate', { method: 'DELETE' }), env, kinds, now);
-    expect(await (await remove()).json()).toEqual({ count: 1 });
-    expect(await (await remove()).json()).toEqual({ count: 1 });
+    const erase = () =>
+      handleReactions(
+        new Request('https://reactions.example.com/identity', {
+          method: 'DELETE',
+          headers: { Origin: 'https://wcarsonmcrae.com', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ visitorId: visitor }),
+        }),
+        env,
+        kinds,
+        now,
+      );
+    expect(await (await erase()).json()).toEqual({ forgotten: true });
+    expect(await (await erase()).json()).toEqual({ forgotten: true });
+    expect(database.sqlite.prepare('SELECT * FROM reactions').all()).toHaveLength(1);
     expect(await (await handleReactions(read(), env, kinds, now)).json()).toEqual({
       born: 1,
-      'born--celebrate': 1,
+      'born--celebrate': 2,
       'born--laugh': 1,
       'born--support': 1,
     });
-    expect(
-      await (
-        await handleReactions(vote(visitor, 'graduation', { method: 'DELETE' }), env, ids, now)
-      ).json(),
-    ).toEqual({ count: 0 });
-    const blocked = await handleReactions(
-      vote(visitor, 'born', {
-        method: 'DELETE',
-        headers: { Origin: 'https://unapproved.example.com', 'Content-Type': 'application/json' },
-      }),
-      env,
-      kinds,
-      now,
-    );
-    expect(blocked.status).toBe(403);
   });
   it('returns zeros only from the live database and exposes only approved moments', async () => {
     expect(await (await handleReactions(read(), env, ids, now)).json()).toEqual({
@@ -127,24 +122,34 @@ describe('shared totals', () => {
     expect(stored).not.toContain('192.0.2.1');
     expect(stored).toMatch(/[a-f\d]{64}/);
   });
-  it('keeps totals accurate when an operator removes a specific vote', async () => {
+  it('retains aggregate totals when deduplication identifiers are removed', async () => {
     await handleReactions(vote(), env, ids, now);
     await handleReactions(vote(), env, ids, now);
     database.sqlite.exec(
       'DELETE FROM reactions WHERE rowid = (SELECT rowid FROM reactions LIMIT 1)',
     );
     expect(await (await handleReactions(read(), env, ids, now)).json()).toEqual({
-      born: 1,
+      born: 2,
       graduation: 0,
     });
     database.sqlite.exec('DELETE FROM reactions');
     expect(await (await handleReactions(read(), env, ids, now)).json()).toEqual({
-      born: 0,
+      born: 2,
       graduation: 0,
     });
   });
 });
 describe('abuse limits and resilience', () => {
+  it('expires identifiers after 90 days without reducing permanent totals', async () => {
+    await handleReactions(vote(), env, ids, now - 91 * 86400000);
+    await handleReactions(vote(), env, ids, now);
+    await cleanupReactionLimits(database.db, now);
+    expect(database.sqlite.prepare('SELECT * FROM reactions').all()).toHaveLength(1);
+    expect(await (await handleReactions(read(), env, ids, now)).json()).toEqual({
+      born: 2,
+      graduation: 0,
+    });
+  });
   it('limits new reactions by network/hour, permits a duplicate, and resets next hour', async () => {
     const first = randomUUID();
     await handleReactions(vote(first), env, ids, now);
@@ -232,8 +237,11 @@ describe('HTTP boundary', () => {
     ['/reactions/nope', 'POST', 404],
     ['/reactions/born', 'GET', 404],
     ['/reactions', 'POST', 404],
-    ['/reactions', 'DELETE', 404],
+    ['/reactions', 'DELETE', 405],
     ['/reactions/born', 'PUT', 405],
+    ['/reactions/born', 'DELETE', 405],
+    ['/identity', 'GET', 405],
+    ['/identity', 'POST', 405],
   ])('rejects %s %s with %s', async (path, method, status) => {
     expect(
       (

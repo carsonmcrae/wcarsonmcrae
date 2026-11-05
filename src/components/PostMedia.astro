@@ -1,39 +1,46 @@
 ---
 /**
- * Purpose: A consistently linked post cover with discoverable open and album affordances.
- * Scope: Responsive photography or app art, a 44px expand affordance, and a photo-count indicator.
- * Does NOT belong: Content, galleries, or navigation behavior.
+ * Purpose: Separate photo enlargement from opening a moment, with quiet consistent overlays.
+ * Scope: One photographic frame, small post icon, optional album badge, and app identity.
+ * Does NOT belong: Lightbox behavior or post content.
  */
 import type { TimelinePost } from '../data/timeline';
 import { postMedia } from '../lib/post-media';
 import { withBase } from '../lib/paths';
+import PhotoLink from './PhotoLink.astro';
 import MomentImage from './MomentImage.astro';
 import Icon from './Icon.astro';
 interface Props {
   post: TimelinePost;
+  showCount?: boolean;
 }
-const { post } = Astro.props;
+const { post, showCount = true } = Astro.props;
 const media = postMedia(post);
 ---
 
-<a
-  class:list={['post-media', `post-media--${media.kind}`]}
-  href={withBase(`/posts/${post.id}/`)}
-  aria-label={`View post: ${post.title}${media.count > 1 ? ` · ${media.count} photos` : ''}`}
->
-  <MomentImage name={media.name} alt={media.alt} kind={media.kind} />
+<div class:list={['post-media', `post-media--${media.kind}`]}>
+  {media.kind === 'project' ? (
+    <MomentImage name={media.name} alt={media.alt} kind="project" />
+  ) : (
+    <PhotoLink name={media.name} alt={media.alt} kind={media.kind} />
+  )}
   {post.project && (
     <span class="post-media__app" aria-hidden="true">
       <MomentImage name={post.project} alt="" kind="project" />
     </span>
   )}
-  {media.count > 1 && (
-    <span class="post-media__count" aria-hidden="true">
+  {showCount && media.count > 1 && (
+    <span class="post-media__count" aria-label={`${media.count} photos`}>
       <Icon name="images" />
       {media.count}
     </span>
   )}
-  <span class="post-media__open" aria-hidden="true">
+  <a
+    class="post-media__open"
+    title="Open post"
+    href={withBase(`/posts/${post.id}/`)}
+    aria-label={`View post: ${post.title}`}
+  >
     <Icon name="expand" />
-  </span>
-</a>
+  </a>
+</div>

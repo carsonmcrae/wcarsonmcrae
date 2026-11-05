@@ -1,26 +1,26 @@
 ---
 /**
  * Purpose: The page shell every route renders inside.
- * Scope: The document, <head>, skip link, header, main landmark, footer, achievement notice, the
- *   client script, and the page id the achievement tracker reads.
+ * Scope: Document metadata, landmarks, shared photo/privacy dialogs, and the progressive client entry.
  * Does NOT belong: Page content (src/pages) or metadata details (SiteHead.astro).
  */
 import '../styles/global.css';
-import AchievementToast from '../components/AchievementToast.astro';
+import PhotoViewer from '../components/PhotoViewer.astro';
+import PrivacyControls from '../components/PrivacyControls.astro';
+import '../styles/interaction.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import SiteHead from '../components/SiteHead.astro';
-import { pages, site, type PageMeta } from '../data/site';
+import { site, type PageMeta } from '../data/site';
 
 interface Props {
   page: Pick<PageMeta, 'title' | 'description' | 'path'> & {
-    id: PageMeta['id'] | '404' | 'post' | 'brand';
+    id: PageMeta['id'] | '404' | 'post' | 'brand' | 'privacy';
   };
   noindex?: boolean;
 }
 
 const { page, noindex = false } = Astro.props;
-const trackedPages = Object.keys(pages).join(',');
 ---
 
 <!doctype html>
@@ -29,7 +29,7 @@ const trackedPages = Object.keys(pages).join(',');
     <SiteHead page={page} noindex={noindex} includePerson={page.id === 'home'} />
     <slot name="head" />
   </head>
-  <body data-page-id={page.id} data-all-pages={trackedPages}>
+  <body data-page-id={page.id}>
     <a class="skip-link" href="#main" tabindex="0">
       Skip to content
     </a>
@@ -38,7 +38,8 @@ const trackedPages = Object.keys(pages).join(',');
       <slot />
     </main>
     <Footer />
-    <AchievementToast />
+    <PhotoViewer />
+    <PrivacyControls />
     <script>
       import '../scripts/site.ts';
     </script>

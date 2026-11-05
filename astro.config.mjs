@@ -21,6 +21,8 @@ export default defineConfig({
   trailingSlash: 'always',
   // Browser tests use HTTPS so WebKit can exercise the unchanged production CSP.
   vite: {
+    // Optional dialogs load on intent; avoid a preload runtime for those tiny chunks.
+    build: { modulePreload: false },
     preview: {
       strictPort: true,
       ...(process.env['E2E_TLS_KEY'] && process.env['E2E_TLS_CERT']

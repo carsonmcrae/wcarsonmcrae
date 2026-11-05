@@ -5,6 +5,13 @@
  * Does NOT belong: Assertions or test cases (the *.test.ts files beside it).
  */
 import { vi } from 'vitest';
+import { CONSENT_KEY } from '../../src/lib/consent';
+export function consentingStorage(initial: Record<string, string> = {}) {
+  return memoryStorage({
+    [CONSENT_KEY]: JSON.stringify({ allowed: true, expires: Number.MAX_SAFE_INTEGER }),
+    ...initial,
+  });
+}
 
 export interface FakeMediaQuery {
   matches: boolean;

@@ -11,6 +11,7 @@ export interface PostPhoto {
   name: string;
   alt: string;
   caption: string;
+  postId?: string;
 }
 
 export interface TimelinePost {
@@ -44,7 +45,9 @@ const corePosts: TimelinePost[] = [
     date: '1999-11',
     title: 'Born',
     caption: 'The beginning.',
-    body: [],
+    body: [
+      'No, I didn’t come out this big or with a full head of hair. I just like this picture better than a real baby photo. It also has my childhood best friend in it, who I miss every day.',
+    ],
     category: 'Life',
     milestone: true,
     pinned: true,
@@ -57,7 +60,8 @@ const corePosts: TimelinePost[] = [
     title: 'Built Minetrocity',
     caption: 'A Minecraft server, and my first real taste of building something.',
     body: [
-      'I built a Minecraft server called Minetrocity, working with developers. It caught the attention of the creators of Mineplex.',
+      'I built a Minecraft server called Minetrocity, working with developers. It was my first real taste of building something people could use.',
+      'We had fully working minigames: Castle Siege, Pac-Man, and Temple Run. Mineplex later took inspiration from Minetrocity’s Castle Siege and the currency system in our lobby.',
     ],
     category: 'Projects',
     image: 'minetrocity-server',
@@ -74,7 +78,10 @@ const corePosts: TimelinePost[] = [
     date: '2015-12',
     title: 'First PC build',
     caption: 'It was not the last.',
-    body: ['My first PC build, in December 2015.'],
+    body: [
+      'My first PC build, in December 2015. It was not the last, because gaming has been a pretty consistent part of my life.',
+      'Roblox was my first game. From there it was mostly FPS games: H1Z1, CS:GO, PUBG, and Escape from Tarkov. Apparently spending hours choosing PC parts was the natural next step.',
+    ],
     category: 'Life',
     image: 'my-first-built-pc-13',
     imageAlt: 'Carson’s first desktop PC build',
@@ -84,7 +91,10 @@ const corePosts: TimelinePost[] = [
     date: '2018-08',
     title: 'Started at Vanderbilt',
     caption: 'The beginning of my Vanderbilt chapter.',
-    body: ['Started at Vanderbilt University in August 2018.'],
+    body: [
+      'I started at Vanderbilt University in August 2018, studying Human & Organizational Development and Political Science.',
+      'Over those four years I worked at [Apple](/posts/started-apple/) to help pay for college, served on the Student Alumni Board, and met lifelong friends. I also spent a semester at [UNSW in Sydney, Australia](/posts/sydney-study-abroad/).',
+    ],
     category: 'Life',
     endDate: '2022-05',
     image: '2018-vanderblilt-carson',
@@ -95,7 +105,10 @@ const corePosts: TimelinePost[] = [
     date: '2021-06',
     title: 'InfoWorks',
     caption: 'Consulting and business analysis.',
-    body: ['Joined InfoWorks in June 2021, working in consulting and business analysis.'],
+    body: [
+      'I joined InfoWorks in June 2021 and stayed until September 2022, working in consulting and business analysis.',
+      'It was about learning how organizations actually operate: listening to what people need and turning that into requirements a team can build. That experience became part of the foundation for my [work at Booz Allen](/posts/joined-booz-allen/).',
+    ],
     category: 'Work',
     endDate: '2022-09',
     image: 'infoworks-headshot',
@@ -106,7 +119,10 @@ const corePosts: TimelinePost[] = [
     date: '2022-05',
     title: 'Vanderbilt graduation',
     caption: 'Human & Organizational Development and Political Science.',
-    body: ['Graduated from Vanderbilt University, Class of 2022.'],
+    body: [
+      'I graduated from Vanderbilt University in May 2022, with studies in Human & Organizational Development and Political Science.',
+      'Four years of working at [Apple](/posts/started-apple/) to help pay for college, the Student Alumni Board, [study abroad at UNSW in Australia](/posts/sydney-study-abroad/), and friends I’m keeping for life. A lot happened between move-in and this photo.',
+    ],
     category: 'Work',
     milestone: true,
     pinned: true,
@@ -124,8 +140,11 @@ const corePosts: TimelinePost[] = [
     id: 'margot-arrives',
     date: '2022-07',
     title: 'Margot arrives',
-    caption: 'A golden apricot doodle joins the household.',
-    body: [],
+    caption: 'A goldendoodle puppy with a very convincing shark impression.',
+    body: [
+      'Margot joined us in July 2022. She’s a goldendoodle, and as a puppy she was basically a shark with a very good publicist.',
+      'These days she’s the sweetest dog. The puppy teeth were apparently just a phase.',
+    ],
     category: 'Life',
     image: 'margot-puppy',
     imageAlt: 'Margot as a golden apricot puppy',
@@ -137,7 +156,9 @@ const corePosts: TimelinePost[] = [
     title: 'Joined Booz Allen Hamilton',
     caption: 'Technical program and product leadership.',
     body: [
-      'Supporting software delivery for the Department of Veterans Affairs. Views on this site are my own.',
+      'I joined Booz Allen Hamilton in September 2022. I support software delivery for the Department of Veterans Affairs, coordinating across multiple engineering teams.',
+      'My work brings together technical program management and product leadership: planning releases, managing dependencies and technical risk, and keeping stakeholders aligned around what needs to ship.',
+      'That includes supporting application modernization, APIs and integrations, production-issue response, and better engineering processes. I keep client specifics at work; [the Work page](/work/) has the public version. Views on this site are my own.',
     ],
     category: 'Work',
     image: 'bah-headshot',
@@ -147,8 +168,11 @@ const corePosts: TimelinePost[] = [
     id: 'quinn-arrives',
     date: '2023-07',
     title: 'Quinn arrives',
-    caption: 'A black doodle with white markings joins the household.',
-    body: [],
+    caption: 'An Aussiedoodle, a Craigslist pickup, and an extremely good decision.',
+    body: [
+      'Quinn joined us in July 2023. She’s an Aussiedoodle, and she is the first and only thing I’ve ever found on Craigslist and gone to pick up. It still feels a little crazy that this is how I found her.',
+      'She’s the smartest dog I’ve ever had and a huge softy. A very unexpected Craigslist success story.',
+    ],
     category: 'Life',
     image: 'quinn-puppy',
     imageAlt: 'Quinn as a black puppy with white markings, on the grass',
@@ -159,7 +183,10 @@ const corePosts: TimelinePost[] = [
     date: '2026-07',
     title: 'Recalen private beta begins',
     caption: 'Putting capture and recall into practice.',
-    body: ['Recalen entered its private beta in July 2026.'],
+    body: [
+      'Recalen is my capture-and-recall app for the things that are easy to lose track of: thoughts, links, files, and voice notes. Dump now. Recall later.',
+      'Capture something quickly, then come back to it with organization, search, reminders, and calendar views across the web and native mobile apps. It entered an ongoing private beta in July 2026.',
+    ],
     category: 'Projects',
     project: 'recalen',
     image: 'recalen-interface',
@@ -173,7 +200,9 @@ const corePosts: TimelinePost[] = [
     title: 'TTSNative 1.0 released',
     caption: 'Released as open source (MIT).',
     body: [
-      'TTSNative 1.0.0 was released publicly on October 19, 2026. It reads PDFs, EPUBs, Word documents, and plain text aloud, with read-along highlighting.',
+      'TTSNative is a free, open-source text-to-speech app that runs on your own computer. It reads PDFs, EPUBs, Word documents, and plain text aloud, with read-along highlighting to keep your place.',
+      'The voice studio also supports optional voice cloning with consent. Your documents, voices, and generated audio stay on your machine.',
+      'I designed and built the reader, voice studio, brand, and website end to end. Version 1.0.0 was released on October 19, 2026, under the MIT license.',
     ],
     category: 'Projects',
     project: 'ttsnative',
@@ -205,7 +234,10 @@ const corePosts: TimelinePost[] = [
     date: '2026-10',
     title: 'PicPledge launched at the wedding',
     caption: 'Shipped software at my own wedding. In my defense, it worked.',
-    body: ['I built PicPledge so our wedding guests could share photos as the day happened.'],
+    body: [
+      'PicPledge is a private photo-sharing app for events. Guests contribute to one shared album as the day happens, instead of the photos disappearing into everyone’s camera rolls.',
+      'Guests can download the moments they want to keep, and optional facial matching helps people find photos of themselves. I built it for our wedding and launched it there in October 2026. Shipping software at my own wedding was apparently part of the plan.',
+    ],
     category: 'Projects',
     project: 'picpledge',
     image: 'picpledge-interface',

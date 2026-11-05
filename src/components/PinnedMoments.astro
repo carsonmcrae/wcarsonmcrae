@@ -7,7 +7,7 @@
 import { timelinePosts } from '../data/timeline';
 import { dateLabel } from '../lib/timeline-dates';
 import { withBase } from '../lib/paths';
-import MomentImage from './MomentImage.astro';
+import PhotoLink from './PhotoLink.astro';
 const pins = timelinePosts.filter((post) => post.pinned);
 const oldest = pins[0]!;
 ---
@@ -22,8 +22,8 @@ const oldest = pins[0]!;
   <ul role="list" class="pinned-moments__grid">
     {pins.map((post) => (
       <li>
-        <a href={withBase(`/posts/${post.id}/`)} data-jump-date={post.date}>
-          <MomentImage name={post.image!} alt={post.imageAlt!} eager />
+        <PhotoLink name={post.image!} alt={post.imageAlt!} postId={post.id} eager />
+        <a href={withBase(`/posts/${post.id}/`)}>
           <time datetime={post.date}>{dateLabel(post.date)}</time>
           <span class="pinned-moments__title">{post.title}</span>
         </a>

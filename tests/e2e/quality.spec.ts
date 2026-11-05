@@ -83,17 +83,13 @@ test('the explain-it toggle switches between plain English and engineer-speak', 
   await expect(page.getByText('cross-team dependency management', { exact: false })).toBeHidden();
 });
 
-test('visiting every page unlocks the achievement once', async ({ page }) => {
-  for (const { path } of CORE_PAGES.slice(0, -1)) {
+test('browsing does not create optional storage or cookies without permission', async ({
+  page,
+}) => {
+  for (const { path } of CORE_PAGES) {
     await page.goto(path);
+    await page.locator('html[data-site-ready="true"]').waitFor();
+    expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
   }
-  const notice = page.locator('[data-achievement]');
-  await expect(notice).toBeHidden();
-  await page.goto(CORE_PAGES.at(-1)!.path);
-  await expect(notice).toBeVisible();
-  await expect(notice).toContainText('Achievement unlocked');
-  await notice.getByRole('button', { name: 'Dismiss' }).click();
-  await expect(notice).toBeHidden();
-  await page.goto('');
-  await expect(notice).toBeHidden();
+  expect(await page.context().cookies()).toEqual([]);
 });

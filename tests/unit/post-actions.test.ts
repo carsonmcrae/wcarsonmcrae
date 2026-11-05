@@ -4,10 +4,25 @@
  * Does NOT belong: SQL rate limiting or screenshot assertions.
  * @vitest-environment happy-dom
  */
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { initPostActions } from '../../src/lib/post-actions';
+import { clearPreferences, recordConsent } from '../../src/lib/consent';
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import { attachPostActionEvents } from '../../src/lib/post-action-events';
+import { initPostActions as displayPostActions } from '../../src/lib/post-actions';
 import { fillActionRows } from '../../src/lib/action-template';
-import { memoryStorage, throwingStorage } from './helpers';
+import { consentingStorage, memoryStorage } from './helpers';
+function initPostActions(
+  doc: Document,
+  win: Parameters<typeof displayPostActions>[1],
+  endpoint: string,
+  announce: (message: string) => void,
+) {
+  const state = displayPostActions(doc, win, endpoint);
+  const stop = attachPostActionEvents(doc, win, endpoint, state, announce);
+  return () => {
+    state.destroy();
+    stop();
+  };
+}
 const identity = '12345678-1234-4234-8234-123456789abc';
 const cleanups: (() => void)[] = [];
 function setup(
@@ -23,7 +38,7 @@ function setup(
     options.rows === false
       ? ''
       : '<div data-post-actions="born" data-post-title="Born" data-post-url="https://daysforth.com/posts/born/"><button data-react aria-pressed="false"><span data-reaction-count>—</span></button><button data-save aria-pressed="false"><span data-save-label>Save</span></button><button data-copy>Copy link</button></div><button id="outside">Outside</button>';
-  const storage = options.storage ?? memoryStorage();
+  const storage = options.storage ?? consentingStorage();
   if (options.multiple) {
     const first = document.querySelector('[data-react]')!;
     first.setAttribute('data-react', 'heart');
@@ -53,6 +68,7 @@ function setup(
   const button = (action: string) => document.querySelector<HTMLButtonElement>(`[data-${action}]`)!;
   return { win, storage, announce, click, button, destroy };
 }
+beforeEach(() => clearPreferences(null));
 afterEach(() => {
   for (const cleanup of cleanups.splice(0)) cleanup();
   document.body.innerHTML = '';
@@ -60,6 +76,48 @@ afterEach(() => {
 });
 
 describe('Save and Copy', () => {
+  it('updates choices on consent changes without replacing cards or reducing shared counts', async () => {
+    const { storage, button, destroy } = setup({ storage: memoryStorage() });
+    const original = button('save');
+    storage.setItem('daysforth.saved.born', 'true');
+    storage.setItem('daysforth.reacted.born', 'true');
+    recordConsent(storage, true);
+    document.dispatchEvent(new CustomEvent('daysforth:storage'));
+    expect(button('save')).toBe(original);
+    expect(original.getAttribute('aria-pressed')).toBe('true');
+    expect(button('react').disabled).toBe(true);
+    clearPreferences(storage);
+    recordConsent(storage, false);
+    document.dispatchEvent(new CustomEvent('daysforth:storage'));
+    expect(original.getAttribute('aria-pressed')).toBe('false');
+    expect(button('react').disabled).toBe(false);
+    destroy();
+    storage.setItem('daysforth.saved.born', 'true');
+    document.dispatchEvent(new CustomEvent('daysforth:storage'));
+    expect(original.getAttribute('aria-pressed')).toBe('false');
+  });
+  it('respects an off decision without asking again and describes the memory-only bookmark honestly', () => {
+    const raw = memoryStorage();
+    recordConsent(raw, false);
+    const request = vi.fn();
+    document.addEventListener('daysforth:privacy-request', request);
+    const { click, announce } = setup({ storage: raw });
+    click('save');
+    expect(request).not.toHaveBeenCalled();
+    expect(announce).toHaveBeenCalledWith(
+      'Saved for this page. Allow storage to keep it between visits.',
+    );
+    document.removeEventListener('daysforth:privacy-request', request);
+  });
+  it('keeps a save in memory without permission and offers explicit persistence settings', () => {
+    const raw = memoryStorage();
+    const request = vi.fn();
+    document.addEventListener('daysforth:privacy-request', request, { once: true });
+    const { click } = setup({ storage: raw });
+    click('save');
+    expect(raw.getItem('daysforth.saved.born')).toBeNull();
+    expect(request).toHaveBeenCalledTimes(1);
+  });
   it('hydrates shared controls with distinct safe labels for each story', () => {
     document.body.innerHTML =
       '<template id="post-action-template"><div role="group"><button data-react="heart" data-reaction-label="React to"></button></div><button data-save></button><button data-copy></button></template><div data-post-actions="one" data-post-title="One &amp; two"></div><div data-post-actions="two" data-post-title="Another"></div>';
@@ -92,7 +150,11 @@ describe('Save and Copy', () => {
     expect(restored.announce).toHaveBeenLastCalledWith('Removed from saved moments.');
   });
   it('reports blocked persistence honestly', () => {
-    const { click, button, announce } = setup({ storage: throwingStorage() });
+    const blocked = consentingStorage();
+    vi.spyOn(blocked, 'setItem').mockImplementation(() => {
+      throw new Error('full');
+    });
+    const { click, button, announce } = setup({ storage: blocked });
     click('save');
     expect(button('save').getAttribute('aria-pressed')).toBe('false');
     expect(announce).toHaveBeenCalledWith('Your browser could not save this moment.');
@@ -142,8 +204,7 @@ describe('shared reactions', () => {
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({ born: 4 }))
-      .mockResolvedValueOnce(Response.json({ count: 5 }))
-      .mockResolvedValueOnce(Response.json({ count: 4 }));
+      .mockResolvedValueOnce(Response.json({ count: 5 }));
     const { click, button, storage, announce, win } = setup({
       endpoint: 'https://api.example.com',
       fetcher,
@@ -152,31 +213,32 @@ describe('shared reactions', () => {
     expect(button('react').getAttribute('aria-label')).toBe('React to Born. Reactions: 4.');
     click('react');
     expect(button('react').disabled).toBe(true);
-    await vi.waitFor(() => expect(announce).toHaveBeenLastCalledWith('Reaction added.'));
+    await vi.waitFor(() =>
+      expect(announce).toHaveBeenLastCalledWith('Reaction added. It stays with this moment.'),
+    );
     expect(button('react').textContent).toBe('5');
     expect(button('react').getAttribute('aria-label')).toBe('React to Born. Reactions: 5.');
-    expect(button('react').disabled).toBe(false);
+    expect(button('react').disabled).toBe(true);
     expect(button('react').getAttribute('aria-pressed')).toBe('true');
     expect(storage.getItem('daysforth.visitor')).toBe(identity);
     expect(storage.getItem('daysforth.reacted.born')).toBe('true');
     expect(win.crypto.randomUUID).toHaveBeenCalledTimes(1);
-    click('react');
-    await vi.waitFor(() => expect(announce).toHaveBeenLastCalledWith('Reaction removed.'));
-    expect(fetcher).toHaveBeenCalledTimes(3);
-    expect(fetcher.mock.calls[2]![1]!.method).toBe('DELETE');
-    expect(button('react').textContent).toBe('4');
-    expect(button('react').getAttribute('aria-pressed')).toBe('false');
-    expect(storage.getItem('daysforth.reacted.born')).toBe('false');
+    button('react').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(button('react').textContent).toBe('5');
+    expect(button('react').getAttribute('aria-pressed')).toBe('true');
   });
   it('reuses a valid browser identity and repairs an invalid stored identity', async () => {
-    const stored = memoryStorage({ 'daysforth.visitor': identity });
+    const stored = consentingStorage({ 'daysforth.visitor': identity });
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({}))
       .mockResolvedValueOnce(Response.json({ count: 1 }));
     const first = setup({ endpoint: 'https://api.example.com', storage: stored, fetcher });
     first.click('react');
-    await vi.waitFor(() => expect(first.announce).toHaveBeenCalledWith('Reaction added.'));
+    await vi.waitFor(() =>
+      expect(first.announce).toHaveBeenCalledWith('Reaction added. It stays with this moment.'),
+    );
     expect(first.win.crypto.randomUUID).not.toHaveBeenCalled();
     first.destroy();
     stored.setItem('daysforth.visitor', '-'.repeat(36));
@@ -189,28 +251,39 @@ describe('shared reactions', () => {
         .mockImplementation(async (_url, options) => Response.json(options ? { count: 1 } : {})),
     });
     second.click('react');
-    await vi.waitFor(() => expect(second.announce).toHaveBeenCalledWith('Reaction added.'));
+    await vi.waitFor(() =>
+      expect(second.announce).toHaveBeenCalledWith('Reaction added. It stays with this moment.'),
+    );
     expect(stored.getItem('daysforth.visitor')).toBe(identity);
   });
-  it('restores a previous reaction and gracefully handles storage access failures', async () => {
-    const restored = setup({
-      endpoint: 'https://api.example.com',
-      storage: memoryStorage({ 'daysforth.reacted.born': 'true' }),
-    });
-    expect(restored.button('react').getAttribute('aria-pressed')).toBe('true');
+  it('restores permanent choices and supports ephemeral votes when browser access is blocked', async () => {
+    const restored = setup({ storage: consentingStorage({ 'daysforth.reacted.born': 'true' }) });
+    expect(restored.button('react').disabled).toBe(true);
+    restored.button('react').disabled = false;
+    restored.click('react');
+    expect(restored.announce).not.toHaveBeenCalled();
     restored.destroy();
-    const disabled = setup({ storage: throwingStorage(), endpoint: 'https://api.example.com' });
-    disabled.click('react');
-    expect(disabled.announce).toHaveBeenCalledWith(expect.stringContaining('browser storage'));
-    expect(disabled.win.fetch).toHaveBeenCalledTimes(1);
-    disabled.destroy();
-    const unavailable = setup({ endpoint: 'https://api.example.com' });
+    const blocked = consentingStorage();
+    vi.spyOn(blocked, 'setItem').mockImplementation(() => {
+      throw new Error('full');
+    });
+    const noIdentity = setup({ endpoint: 'https://api.example.com', storage: blocked });
+    noIdentity.click('react');
+    expect(noIdentity.announce).toHaveBeenCalledWith(expect.stringContaining('browser storage'));
+    noIdentity.destroy();
+    const unavailable = setup({
+      endpoint: 'https://api.example.com',
+      fetcher: vi
+        .fn<typeof fetch>()
+        .mockImplementation(async (_url, options) => Response.json(options ? { count: 1 } : {})),
+    });
     Object.defineProperty(unavailable.win, 'localStorage', {
       get() {
         throw new Error('disabled');
       },
     });
     unavailable.destroy();
+    clearPreferences(null);
     const destroy = initPostActions(
       document,
       unavailable.win,
@@ -218,7 +291,7 @@ describe('shared reactions', () => {
       unavailable.announce,
     );
     unavailable.click('react');
-    expect(unavailable.announce).toHaveBeenCalledWith(expect.stringContaining('browser storage'));
+    await vi.waitFor(() => expect(unavailable.button('react').textContent).toBe('1'));
     destroy();
   });
   it('keeps failed votes retryable and never marks them as recorded', async () => {
@@ -265,7 +338,7 @@ describe('shared reactions', () => {
 });
 describe('lifecycle', () => {
   it('keeps reaction choices independent and restores each choice from storage', async () => {
-    const stored = memoryStorage({ 'daysforth.reacted.born--support': 'true' });
+    const stored = consentingStorage({ 'daysforth.reacted.born--support': 'true' });
     const fetcher = vi
       .fn<typeof fetch>()
       .mockImplementation(async (_url, options) =>
@@ -290,8 +363,9 @@ describe('lifecycle', () => {
     expect(storage.getItem('daysforth.reacted.born--celebrate')).toBe('true');
     expect(fetcher.mock.calls[1]![0]).toBe('https://api.example.com/reactions/born--celebrate');
     support.click();
-    await vi.waitFor(() => expect(announce).toHaveBeenLastCalledWith('Reaction removed.'));
-    expect(support.textContent).toBe('0');
+    expect(support.disabled).toBe(true);
+    expect(support.textContent).toBe('1');
+    expect(announce).toHaveBeenLastCalledWith('Reaction added. It stays with this moment.');
     expect(celebrate.getAttribute('aria-pressed')).toBe('true');
   });
   it('handles missing rows, unrelated clicks, and detaches listeners', () => {

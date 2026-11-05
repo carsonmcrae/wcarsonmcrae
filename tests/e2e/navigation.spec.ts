@@ -65,7 +65,7 @@ test.describe('small-screen menu', () => {
 
   test('opens, closes with Escape, and returns focus', async ({ page }) => {
     await page.goto('');
-    const toggle = page.getByRole('button', { name: 'Menu' });
+    const toggle = page.getByRole('button', { name: 'Menu', exact: true });
     const nav = page.getByRole('navigation', { name: 'Main' });
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     await expect(nav.getByRole('link', { name: 'About' })).toBeHidden();
@@ -81,9 +81,10 @@ test.describe('small-screen menu', () => {
 
   test('closes on an outside click and after choosing a page', async ({ page }) => {
     await page.goto('');
-    const toggle = page.getByRole('button', { name: 'Menu' });
+    const toggle = page.getByRole('button', { name: 'Menu', exact: true });
     await toggle.click();
-    await page.locator('main').click({ position: { x: 5, y: 5 } });
+    await expect(page.locator('#site-menu')).toBeVisible();
+    await page.mouse.click(page.viewportSize()!.width - 5, 100);
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 
     await toggle.click();
@@ -92,7 +93,7 @@ test.describe('small-screen menu', () => {
       .getByRole('link', { name: 'Life' })
       .click();
     await expect(page).toHaveURL(/life\/$/);
-    await expect(page.getByRole('button', { name: 'Menu' })).toHaveAttribute(
+    await expect(page.getByRole('button', { name: 'Menu', exact: true })).toHaveAttribute(
       'aria-expanded',
       'false',
     );
@@ -100,7 +101,7 @@ test.describe('small-screen menu', () => {
 
   test('works from the keyboard', async ({ page }) => {
     await page.goto('');
-    const toggle = page.getByRole('button', { name: 'Menu' });
+    const toggle = page.getByRole('button', { name: 'Menu', exact: true });
     await toggle.focus();
     await page.keyboard.press('Enter');
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');

@@ -3,17 +3,16 @@
  * Scope: Runs the production migration and SQL against an isolated in-memory database.
  * Does NOT belong: Production database code or mocked count/rate-limit logic.
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import type { ReactionDatabase, ReactionStatement } from '../../src/lib/reaction-service';
 export function reactionDatabase() {
   const sqlite = new DatabaseSync(':memory:');
-  sqlite.exec(
-    readFileSync(
-      new URL('../../workers/reactions/migrations/0001_reactions.sql', import.meta.url),
-      'utf8',
-    ),
-  );
+  const directory = new URL('../../workers/reactions/migrations/', import.meta.url);
+  for (const file of readdirSync(directory)
+    .filter((name) => name.endsWith('.sql'))
+    .sort((a, b) => a.localeCompare(b)))
+    sqlite.exec(readFileSync(new URL(file, directory), 'utf8'));
   const db: ReactionDatabase = {
     prepare(sql): ReactionStatement {
       let values: (string | number)[] = [];

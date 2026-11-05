@@ -66,10 +66,10 @@ export const roles: Role[] = [
   },
   {
     organization: 'Apple',
-    title: 'Apple',
+    title: 'Genius',
     dates: 'July 2018 – May 2022',
     summary:
-      'I worked at Apple from July 2018 until May 2022, including while studying abroad in Sydney.',
+      'Yes, I was a Genius. Literally. I became the youngest Genius in our market after two tough promotions while working part time and studying full time. I repaired iPhones and Macs throughout four years of paying my way through college, including while studying abroad in Sydney. Watchmaking eventually gave me that same itch for tiny parts and screws again.',
     groups: [],
   },
 ];

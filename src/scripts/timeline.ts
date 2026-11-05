@@ -1,21 +1,32 @@
 /**
  * Purpose: Starts optional Daysforth feed enhancements.
- * Scope: Timeline browsing, native-menu dismissal, and shared post actions.
+ * Scope: Native-menu dismissal, initial shared counts, and post actions loaded on intent.
  * Does NOT belong: Behavior implementations (src/lib).
  */
 import { initDisclosures } from '../lib/disclosures';
-import { initTimeline } from '../lib/timeline-controller';
-import { initActionNotice } from '../lib/notices';
 import { initPostActions } from '../lib/post-actions';
 import { reactionEndpoint } from '../lib/reaction-api';
-import { initPostNavigation } from '../lib/post-navigation';
-initDisclosures(document);
-const notice = initActionNotice(document, window);
-void initPostActions(
-  document,
-  window,
-  reactionEndpoint(import.meta.env['PUBLIC_REACTIONS_URL']),
-  notice.show,
-);
-initTimeline(document, window);
-initPostNavigation(document, (href) => window.location.assign(href));
+import { deferControl } from '../lib/deferred-controls';
+export function startTimeline() {
+  const stopMenus = initDisclosures(document);
+  if (!document.querySelector('[data-action-notice]')) return stopMenus;
+  const endpoint = reactionEndpoint(import.meta.env['PUBLIC_REACTIONS_URL']);
+  const state = initPostActions(document, window, endpoint);
+  const stopActions = deferControl(document, '[data-post-actions] button', async () => {
+    const [{ attachPostActionEvents }, { initActionNotice }] = await Promise.all([
+      import('../lib/post-action-events'),
+      import('../lib/notices'),
+    ]);
+    const notice = initActionNotice(document, window);
+    const stop = attachPostActionEvents(document, window, endpoint, state, notice.show);
+    return () => {
+      notice.destroy();
+      stop();
+    };
+  });
+  return () => {
+    stopMenus();
+    stopActions();
+    state.destroy();
+  };
+}

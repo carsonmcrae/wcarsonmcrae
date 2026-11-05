@@ -12,7 +12,9 @@ export const experiencePosts: TimelinePost[] = [
     category: 'Life',
     milestone: true,
     caption: 'Graduation day · May 2018.',
-    body: ['I graduated from high school as salutatorian in May 2018.'],
+    body: [
+      'I graduated from high school as salutatorian in May 2018. I was a big nerd in high school: name a club and there’s a decent chance I was in it. YIG, FBLA, FFA, Science Olympiad… I apparently took extracurriculars as a challenge.',
+    ],
     image: 'may-2018-highschool-grad',
     imageAlt: 'Carson at his high-school graduation in May 2018',
   },
@@ -51,7 +53,8 @@ export const experiencePosts: TimelinePost[] = [
     milestone: true,
     caption: 'FBLA Digital Video Production · July 2017.',
     body: [
-      'In July 2017, I won first place in Tennessee and sixth place nationally in the FBLA Digital Video Production competition. This is the video from that competition.',
+      'In July 2017, I won first place in Tennessee and sixth place nationally in the FBLA Digital Video Production competition.',
+      'I wrote the entire script and directed the video. A very good excuse to spend far too much time thinking about a shot. The competition video is linked below on YouTube.',
     ],
     image: 'fbla-first-place-state',
     imageAlt: 'Carson’s first-place Tennessee FBLA award',
@@ -69,7 +72,7 @@ export const experiencePosts: TimelinePost[] = [
     ],
     links: [
       {
-        label: 'Watch the FBLA competition video',
+        label: 'Watch my FBLA competition video on YouTube',
         href: 'https://www.youtube.com/watch?v=bIE0WIO9Qds',
       },
     ],
@@ -82,7 +85,8 @@ export const experiencePosts: TimelinePost[] = [
     caption: 'A Fossil in September 2012 started something.',
     body: [
       'I got my first watch, a Fossil Men’s Grant Chronograph, in September 2012, and I’ve been collecting ever since. These are some of my featured watches.',
-      'The collection includes a Lorier Zephyr, Traska Venturer GMT, Tissot Le Locle Powermatic 80, and Hamilton Murph. I even started making watches myself: the green-dial GMT is one I built.',
+      'The collection includes a Lorier Zephyr, Traska Venturer GMT, Tissot Le Locle Powermatic 80, and Hamilton Murph. I even started [making watches myself](/posts/made-a-watch/): the green-dial GMT is one I built.',
+      'Repairing iPhones and Macs at [Apple](/posts/started-apple/) gave me an itch for tiny parts and screws. After I left, watchmaking finally gave me another way to scratch it.',
       'Yes, I mispronounced Tissot in the review. It was supposed to be engagement bait. The engagement apparently declined the invitation.',
     ],
     image: 'watch-first-fossil',
@@ -104,6 +108,7 @@ export const experiencePosts: TimelinePost[] = [
         name: 'watch-i-made',
         alt: 'The green-dial GMT watch Carson built',
         caption: 'Green-dial GMT · Built by me',
+        postId: 'made-a-watch',
       },
     ],
     links: [
@@ -120,7 +125,11 @@ export const experiencePosts: TimelinePost[] = [
     title: 'Started at Apple',
     category: 'Work',
     caption: 'July 2018 – May 2022.',
-    body: ['I started working at Apple in July 2018 and stayed until May 2022.'],
+    body: [
+      'I worked at Apple from July 2018 to May 2022, throughout my four years at Vanderbilt, including while studying abroad in Sydney.',
+      'Yes, I was a Genius. Literally. That was the position I worked my way up to. It took two tough promotions as a part-time employee and full-time student, and I became the youngest Genius in our market.',
+      'I repaired iPhones and Macs, which is probably why I still miss tinkering with tiny parts and screws. [Building watches](/posts/made-a-watch/) finally started scratching that itch again.',
+    ],
     image: 'carson-apple-work',
     imageAlt: 'Carson wearing his Apple shirt',
   },
@@ -136,7 +145,10 @@ export const experiencePosts: TimelinePost[] = [
     image: 'australia-study-abroad',
     imageAlt: 'Carson outside the Sydney Opera House during study abroad',
     links: [
-      { label: 'Watch my study-abroad video', href: 'https://www.youtube.com/watch?v=WKr8NrbeB9Q' },
+      {
+        label: 'Watch my study-abroad video on YouTube',
+        href: 'https://www.youtube.com/watch?v=WKr8NrbeB9Q',
+      },
     ],
   },
   {
@@ -165,9 +177,17 @@ export const experiencePosts: TimelinePost[] = [
     caption: 'Collecting them eventually turned into making one.',
     body: [
       'In December 2024, I built this green-dial GMT watch myself. A new way to spend far too long looking at small parts.',
+      'I used to repair iPhones and Macs as a [Genius at Apple](/posts/started-apple/). I hadn’t quite scratched that itch for tiny parts and screws since leaving, until I started making watches.',
+      'The build tutorial linked below helped me get started. Credit where it’s due—and [the rest of my watch collection is here](/posts/watch-collecting/).',
     ],
     image: 'watch-i-made',
     imageAlt: 'The custom green-dial GMT watch Carson built',
+    links: [
+      {
+        label: 'Watch the build tutorial that helped me on YouTube',
+        href: 'https://www.youtube.com/watch?v=JM7Do8RU90c',
+      },
+    ],
   },
   {
     id: 'started-pickleball',
@@ -175,7 +195,10 @@ export const experiencePosts: TimelinePost[] = [
     title: 'Picked up pickleball',
     category: 'Life',
     caption: 'Golf’s faster, louder, and more forgiving cousin.',
-    body: ['I started playing pickleball in May 2026.'],
+    body: [
+      'I started playing pickleball in May 2026. It only took my brother two years of asking—and me making fun of pickleball on Reels for about as long—to finally give it a try.',
+      'Between [golf](/posts/started-golf/) and pickleball, I’m finding plenty of ways to be humbled by a small ball. At least this one comes with a paddle.',
+    ],
     image: 'carson-pickleball',
     imageAlt: 'Carson playing pickleball',
   },
@@ -185,7 +208,9 @@ export const experiencePosts: TimelinePost[] = [
     title: 'Started playing golf',
     category: 'Life',
     caption: 'Good practice for patience. Less good for overconfidence.',
-    body: ['I started playing golf in August 2026.'],
+    body: [
+      'I started playing golf in August 2026. As of November 4, 2026, my best score for 18 holes is 130. If that tells you anything about how bad I am, I’m choosing to call it room for improvement.',
+    ],
     image: 'carson-golf-brother',
     imageAlt: 'Carson and his brother on a golf course',
   },

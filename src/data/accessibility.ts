@@ -26,7 +26,7 @@ export const accessibility = {
   testing:
     'Automated accessibility checks run on every page, in both themes, in Chromium and WebKit, every time the site changes, along with keyboard, zoom, and text-spacing checks. Core timeline controls and action feedback in the initial release were also checked with NVDA on Windows.',
   limitations: [
-    'The updated post browser, reaction options, and Saved collection still need a fresh NVDA review.',
+    'The updated post browser, permanent reactions, storage controls, photo viewer, and mobile drawer still need a fresh NVDA review.',
     'VoiceOver testing on macOS and iOS hasn’t been completed for this version yet.',
   ],
   feedback:
@@ -35,6 +35,6 @@ export const accessibility = {
   colophon: [
     'Daysforth is set in Inter, an open-source typeface chosen for clear, compact interfaces. The org chart on the Life page uses Atkinson Hyperlegible Mono.',
     'It’s built with [Astro](https://astro.build), hosted on GitHub Pages, and has no tracking, analytics, or cookies. The [source is on GitHub](https://github.com/carsonmcrae/wcarsonmcrae).',
-    'Saved moments and your theme preference stay in your browser. Shared reactions use an anonymous browser identifier to prevent duplicate votes; the service stores hashed identifiers and publishes only counts.',
+    'Optional browser storage is off until you allow it. Shared reactions use a random browser identifier and store a salted hash temporarily; aggregate counts stay permanently. The [privacy notice](/privacy/) explains storage choices, hosting providers, and clearing your browser data.',
   ],
 };

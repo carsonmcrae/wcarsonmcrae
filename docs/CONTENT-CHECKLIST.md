@@ -60,7 +60,9 @@ the matching file in `src/data/`.
 - [ ] A public **email address** for the contact page (`profile.email` in `src/data/profile.ts`;
       currently none is shown).
 - [x] **Start dates** for Booz Allen (September 2022) and InfoWorks (June 2021) confirmed.
-- [ ] Specifics for interests: games you are playing, a watch you like, places you have traveled.
+- [x] **Interests and stories (November 4 polish).** Gaming, watches/watchmaking, Apple Genius,
+      Vanderbilt, golf/pickleball, and the dogs’ breeds and personalities were supplied directly in
+      chat. See [polish update](POLISH-UPDATE.md). No further dates were inferred.
 - [ ] Keep **Right now** (`src/data/life.ts`) current, and update its date when you do.
 - [ ] Idea: a short **TTSNative audio sample** reading the homepage introduction aloud (with a
       transcript) would be a fitting signature detail. Record it with TTSNative and send the file.

@@ -75,16 +75,20 @@ export async function handleReactions(
   headers['Access-Control-Allow-Headers'] = 'Content-Type';
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
   const path = new URL(request.url).pathname.replace(/\/$/, '');
+  const identity = path === '/identity';
   const postId = /^\/reactions\/([a-z0-9-]+)$/.exec(path)?.[1];
-  if (path !== '/reactions' && (!postId || !postIds.includes(postId)))
+  if (!identity && path !== '/reactions' && (!postId || !postIds.includes(postId)))
     return json({ error: 'Moment not found' }, 404);
   if (request.method !== 'GET' && request.method !== 'POST' && request.method !== 'DELETE') {
     headers['Allow'] = 'GET, POST, DELETE, OPTIONS';
     return json({ error: 'Method not allowed' }, 405);
   }
+  if ((identity && request.method !== 'DELETE') || (!identity && request.method === 'DELETE'))
+    return json({ error: 'Method not allowed' }, 405);
   if (request.method === 'GET' && path !== '/reactions')
     return json({ error: 'Route not found' }, 404);
-  if (request.method !== 'GET' && !postId) return json({ error: 'Moment not found' }, 404);
+  if (request.method !== 'GET' && !postId && !identity)
+    return json({ error: 'Moment not found' }, 404);
   if (request.method !== 'GET' && !origin) return json({ error: 'Origin required' }, 403);
   const db = env.DB;
   if (!db) return json({ error: 'Reactions are unavailable' }, 503);
@@ -118,11 +122,9 @@ export async function handleReactions(
     )
       return json({ error: 'Invalid visitor identity' }, 400);
     const visitor = await hashIdentity(payload.visitorId, salt);
-    if (request.method === 'DELETE') {
-      await db
-        .prepare('DELETE FROM reactions WHERE post_id = ? AND visitor_hash = ?')
-        .bind(postId!, visitor)
-        .run();
+    if (identity) {
+      await db.prepare('DELETE FROM reactions WHERE visitor_hash = ?').bind(visitor).run();
+      return json({ forgotten: true });
     } else {
       const existing = await db
         .prepare('SELECT post_id FROM reactions WHERE post_id = ? AND visitor_hash = ?')
@@ -156,12 +158,16 @@ export async function handleReactions(
       .prepare('SELECT count FROM reaction_totals WHERE post_id = ?')
       .bind(postId!)
       .first<{ count: number }>();
-    if (!total && request.method === 'POST') throw new Error('Missing reaction total');
-    return json({ count: total?.count ?? 0 });
+    if (!total) throw new Error('Missing reaction total');
+    return json({ count: total.count });
   } catch {
     return json({ error: 'Reactions are unavailable' }, 503);
   }
 }
 export async function cleanupReactionLimits(db: ReactionDatabase, now: number): Promise<void> {
   await db.prepare('DELETE FROM reaction_limits WHERE expires <= ?').bind(now).run();
+  await db
+    .prepare('DELETE FROM reactions WHERE created_at <= ?')
+    .bind(now - 90 * 86400000)
+    .run();
 }

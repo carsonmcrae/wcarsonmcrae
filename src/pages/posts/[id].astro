@@ -5,6 +5,8 @@
  * Does NOT belong: Post content (src/data/timeline.ts) or action behavior.
  */
 import MomentImage from '../../components/MomentImage.astro';
+import PhotoLink from '../../components/PhotoLink.astro';
+import Markdown from '../../components/Markdown.astro';
 import PostActions from '../../components/PostActions.astro';
 import PostActionTemplate from '../../components/PostActionTemplate.astro';
 import ActionNotice from '../../components/ActionNotice.astro';
@@ -17,7 +19,7 @@ import { timelinePosts, type TimelinePost } from '../../data/timeline';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { postMedia } from '../../lib/post-media';
 import { chronological } from '../../lib/timeline-model';
-import { withBase } from '../../lib/paths';
+import { withBase, isExternalUrl } from '../../lib/paths';
 import '../../styles/timeline.css';
 import '../../styles/post-detail.css';
 import '../../styles/post-media.css';
@@ -46,6 +48,7 @@ const page = {
   <article class="post-detail">
     <a
       class="back-to-timeline"
+      data-return-timeline
       href={withBase(`/?date=${post.date.slice(0, 7)}#moment-${post.id}`)}
     >
       <Icon name="arrow" />
@@ -55,11 +58,15 @@ const page = {
     <h1>{post.title}</h1>
     {post.caption && <p class="post-detail__caption">{post.caption}</p>}
     <div class={`post-detail__photo post-detail__photo--${media.kind}`}>
-      <MomentImage name={media.name} alt={media.alt} kind={media.kind} eager />
+      {media.kind === 'project' ? (
+        <MomentImage name={media.name} alt={media.alt} kind="project" eager />
+      ) : (
+        <PhotoLink name={media.name} alt={media.alt} kind={media.kind} eager />
+      )}
     </div>
     <div class="post-detail__body flow">
       {post.body.map((paragraph) => (
-        <p>{paragraph}</p>
+        <Markdown text={paragraph} />
       ))}
     </div>
     {post.gallery && <PostAlbum photos={post.gallery} />}
@@ -67,9 +74,15 @@ const page = {
       <ul class="post-detail__links" role="list">
         {post.links.map((link) => (
           <li>
-            <a href={link.href}>
+            <a
+              href={isExternalUrl(link.href) ? link.href : withBase(link.href)}
+              target={isExternalUrl(link.href) ? '_blank' : undefined}
+              rel={isExternalUrl(link.href) ? 'noopener noreferrer' : undefined}
+            >
               {link.label}
-              <span class="visually-hidden"> (external site)</span>
+              {isExternalUrl(link.href) && (
+                <span class="visually-hidden"> (external site, opens in a new tab)</span>
+              )}
             </a>
           </li>
         ))}
@@ -100,6 +113,3 @@ const page = {
   </article>
   <ActionNotice />
 </BaseLayout>
-<script>
-  import '../../scripts/timeline.ts';
-</script>

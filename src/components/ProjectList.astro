@@ -45,10 +45,10 @@ const { detailed = false } = Astro.props;
           <ul class="project__links" role="list">
             {project.links.map((link) => (
               <li>
-                <a href={link.href}>
+                <a href={link.href} target="_blank" rel="noopener noreferrer">
                   {link.label}
                   <Icon name="arrowRight" />
-                  <span class="visually-hidden"> (external site)</span>
+                  <span class="visually-hidden"> (external site, opens in a new tab)</span>
                 </a>
               </li>
             ))}

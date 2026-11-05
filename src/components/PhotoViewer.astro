@@ -1,0 +1,31 @@
+---
+/**
+ * Purpose: A native, keyboard-accessible large-photo viewer shared across the app.
+ * Scope: Photo, caption, related-post destination, and visible close action.
+ * Does NOT belong: Album selection or storage.
+ */
+import Icon from './Icon.astro';
+import { withBase } from '../lib/paths';
+---
+
+<dialog class="photo-viewer" data-photo-viewer aria-labelledby="photo-viewer-title">
+  <p id="photo-viewer-title" class="visually-hidden">
+    Photo viewer
+  </p>
+  <button
+    type="button"
+    class="photo-viewer__close control"
+    data-photo-close
+    aria-label="Close photo viewer"
+  >
+    Close <span aria-hidden="true">×</span>
+  </button>
+  <figure>
+    <img data-photo-large alt="" />
+    <figcaption data-photo-caption-output></figcaption>
+  </figure>
+  <a href={withBase('/')} class="control" data-photo-related hidden>
+    <Icon name="arrowRight" />
+    View this moment
+  </a>
+</dialog>

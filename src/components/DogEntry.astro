@@ -23,9 +23,8 @@ const { dog } = Astro.props;
     <span class:list={['swatch', `swatch--${dog.swatch}`]} aria-hidden="true"></span>
     {dog.name}
   </h3>
-  <a href={withBase(`/posts/${dog.postId}/`)} aria-label={`View ${dog.name}’s post`}>
-    <Photo name={dog.photo} alt={dog.photoAlt} />
-  </a>
+  <Photo name={dog.photo} alt={dog.photoAlt} postId={dog.postId} />
+  <a href={withBase(`/posts/${dog.postId}/`)}>Meet {dog.name}</a>
   <dl>
     <dt>Breed</dt>
     <dd>{dog.breed}</dd>

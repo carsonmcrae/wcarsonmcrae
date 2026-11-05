@@ -1,0 +1,51 @@
+---
+/**
+ * Purpose: Enlarge approved photography without losing a useful native-link fallback.
+ * Scope: Optimized large image URL, accessible trigger, and optional related moment.
+ * Does NOT belong: Dialog behavior, content approval, or card overlays.
+ */
+import { getImage } from 'astro:assets';
+import { getPhoto, getProjectImage } from '../lib/images';
+import { withBase } from '../lib/paths';
+import MomentImage from './MomentImage.astro';
+interface Props {
+  name: string;
+  alt: string;
+  kind?: 'photo' | 'screen';
+  eager?: boolean;
+  postId?: string;
+  caption?: string;
+  class?: string;
+}
+const {
+  name,
+  alt,
+  kind = 'photo',
+  eager = false,
+  postId,
+  caption = alt,
+  class: className,
+} = Astro.props;
+const source = kind === 'photo' ? getPhoto(name) : getProjectImage(name);
+const large = source
+  ? await getImage({
+      src: source,
+      width: Math.min(source.width, 1000),
+      format: 'webp',
+      quality: 58,
+    })
+  : null;
+---
+
+{large && (
+  <a
+    href={large.src}
+    class:list={['photo-open', className]}
+    data-photo
+    data-photo-caption={caption === alt ? undefined : caption}
+    data-photo-post={postId ? withBase(`/posts/${postId}/`) : undefined}
+  >
+    <span class="visually-hidden">Enlarge photo: </span>
+    <MomentImage name={name} alt={alt} kind={kind} eager={eager} />
+  </a>
+)}
