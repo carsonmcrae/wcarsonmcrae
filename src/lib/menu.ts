@@ -39,7 +39,10 @@ export function initMenu(doc: Document, win: MenuWindow): MenuController | null 
     panel.dataset['open'] = String(value);
     doc.documentElement.dataset['menuOpen'] = String(value);
     if (modal) {
-      if (value && !modal.open) modal.showModal();
+      if (value && !modal.open) {
+        modal.showModal();
+        modal.querySelector<HTMLButtonElement>('[data-menu-close]')?.focus();
+      }
       if (!value && modal.open) modal.close();
     }
   };

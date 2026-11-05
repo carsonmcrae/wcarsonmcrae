@@ -35,6 +35,11 @@ now has a contents navigation and measured sections that reflow into one column.
 routes using the existing shell, CSP, and consent controls; they introduce no external service or
 new visitor storage.
 
+The static `media-frames.css` endpoint derives cover ratios from existing image metadata. This keeps
+lazy decoding out of the timeline-position contract rather than coupling the controller to image
+events. Its generator is build-only, and its endpoint has the same ordinary static delivery boundary
+as the icon/position stylesheets. Update the dependency gate if its capabilities or consumers change.
+
 The responsibility audit also adds a repository dependency gate for the existing browser, static
 build, Worker, and CLI boundaries. This changes review enforcement, not visitor state or the public
 reaction wire contract. Keep the graph scanner and its adversarial fixtures current when adding

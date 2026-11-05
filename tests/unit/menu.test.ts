@@ -35,6 +35,30 @@ afterEach(() => {
 });
 
 describe('initMenu', () => {
+  it('focuses Close on native opening and preserves visitor focus on an already-open drawer', () => {
+    document.body.innerHTML =
+      '<button data-menu-toggle aria-controls="drawer">Menu</button><dialog id="drawer"><a href="/">Brand</a><button data-menu-close>Close</button><a href="/about/">About</a></dialog>';
+    const menu = initMenu(document, window)!;
+    const close = document.querySelector('[data-menu-close]')!;
+    menu.open();
+    expect(document.activeElement).toBe(close);
+    const brand = document.querySelector<HTMLAnchorElement>('dialog a')!;
+    brand.focus();
+    menu.open();
+    expect(document.activeElement).toBe(brand);
+    menu.close();
+    menu.open();
+    expect(document.activeElement).toBe(close);
+    menu.destroy();
+  });
+  it('retains the native opening behavior if a dialog has no designated close control', () => {
+    document.body.innerHTML =
+      '<button data-menu-toggle aria-controls="drawer">Menu</button><dialog id="drawer"><a href="/">Home</a></dialog>';
+    const menu = initMenu(document, window)!;
+    menu.open();
+    expect(document.querySelector('dialog')!.open).toBe(true);
+    menu.destroy();
+  });
   it('supports a native modal drawer, scrim, close action, and mobile swipes', () => {
     document.body.innerHTML =
       '<button data-menu-toggle aria-controls="drawer">Menu</button><dialog id="drawer"><button data-menu-close>Close</button><a href="/work/">Work</a></dialog><main><span>Gesture area</span></main>';

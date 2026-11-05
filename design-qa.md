@@ -324,8 +324,9 @@ About retains its portrait and adds eight photographs. The new horizontal Fossil
 Life. All 60 incoming originals remain ignored and untouched; the 21 new originals were verified
 again against their separate external SHA-256 backup manifest.
 
-Media frames follow the actual image, placing overlays at its upper-right edge. Lazy images reserve
-separate usable photo/post targets before loading, including mobile WebKit. Media layout now has a
+Media frames follow the actual image, placing overlays at its upper-right edge. Build-time image
+metadata reserves exact frame proportions and separate usable photo/post targets before loading,
+including mobile WebKit. Late image responses do not move a selected moment. Media layout now has a
 single stylesheet owner; obsolete competing 15rem card columns and redundant post-link metadata
 were removed. Both homepage builds remain inside the unchanged 80 KiB HTML cap. The narrow headroom
 and the content-growth trigger are recorded in the architecture review.
@@ -341,8 +342,8 @@ name agreement.
 
 The architecture review checked responsibilities and a 72-module runtime graph (74 internal edges,
 no cycles). New dependency-boundary and complexity rules protect the actual findings without adding
-a framework or splitting cohesive controllers merely for size. The full unit scope has 406 tests
-and 100% per-file coverage across 73 executable files. Maintained architecture, release, security,
+a framework or splitting cohesive controllers merely for size. The full executable unit scope
+maintains 100% per-file coverage; final counts are recorded in the release PR. Maintained architecture, release, security,
 ownership, and contribution rules accompany the code; no coverage/duplication exclusions or relaxed
 budgets were introduced. The Worker stays public, while secrets and database contents remain private.
 
@@ -350,6 +351,11 @@ Carson explicitly authorized merge, the Worker-first release, publication, repos
 and the 1.0.0 tag. Final CI/scanner results, deployment identifiers, preserved reaction totals, and
 published-page acceptance evidence are attached to the release pull request. The versioned visitor
 notes describe capabilities rather than implementation history.
+
+Index-only migration 0003 was applied before the frontend. Worker version
+`930d9eca-c148-41e7-8d7d-6684ba6f5f06` passed live header/rejection checks, and D1’s read-only query
+plan uses the visitor index. No synthetic votes were created or removed; all seven real reactions
+were preserved. The salt, existing deduplication identities, bindings, and hourly schedule remain.
 
 Fresh NVDA evaluation remains outstanding because Carson requested TTS stay off. VoiceOver on
 macOS/iOS is unavailable on this Windows machine. Automated WebKit/axe results and source scans do
