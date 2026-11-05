@@ -8,6 +8,9 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures';
 import { allowStorage, expectNoViolations } from './helpers';
+import { timelinePosts } from '../../src/data/timeline';
+
+const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
 
 test('Saved is useful after refresh and updates immediately when the last item is removed', async ({
   page,
@@ -44,7 +47,7 @@ test('a cover opens its distinct album and the post slider visits other post pag
   await cover.focus();
   await cover.press('Enter');
   await expect(page.locator('h1')).toHaveText('Married Nicole');
-  await expect(page.locator('.post-album img')).toHaveCount(2);
+  await expect(page.locator('.post-album img')).toHaveCount(wedding.gallery!.length);
   await expect(page.locator('.post-meta > i')).toHaveCount(3);
   const neighbors = page.locator('.post-neighbors a');
   await expect(neighbors.nth(0)).toContainText('Earlier moment');

@@ -10,10 +10,7 @@ import { test } from './fixtures';
 import { expectNoViolations, openThemedHome } from './helpers';
 import { timelinePosts } from '../../src/data/timeline';
 
-const timelinePhotoCount = timelinePosts.reduce(
-  (count, post) => count + Number(Boolean(post.image)) + (post.gallery?.length ?? 0),
-  0,
-);
+const timelinePhotoCount = timelinePosts.filter((post) => post.image).length;
 
 for (const colorScheme of ['light', 'dark'] as const) {
   test(`offscreen photo links stay descriptively named after settings and reload in ${colorScheme}`, async ({
