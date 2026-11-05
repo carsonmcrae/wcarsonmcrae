@@ -48,6 +48,7 @@ const large = source
   <a
     href={large.src}
     class:list={['photo-open', className]}
+    aria-label={label ? undefined : alt}
     data-photo
     data-photo-album={album}
     data-photo-alt={label ? alt : undefined}
@@ -61,7 +62,6 @@ const large = source
       </>
     ) : (
       <>
-        <span class="visually-hidden">Enlarge photo: </span>
         <MomentImage name={name} alt={alt} kind={kind} eager={eager} />
       </>
     )}

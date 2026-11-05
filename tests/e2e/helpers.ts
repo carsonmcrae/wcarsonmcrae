@@ -1,7 +1,7 @@
 /**
  * Purpose: Shared page list and helpers for the browser tests.
  * Scope: The site's pages (paths relative to the base URL, so tests run at the root or under the
- *   GitHub Pages project path), opening the small-screen menu, and an overflow measurement.
+ *   GitHub Pages project path), themed home readiness, opening the small-screen menu, and overflow.
  * Does NOT belong: Test cases (the *.spec.ts files beside it).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -36,6 +36,13 @@ export const PAGES = [
 export const NAV_PAGES = CORE_PAGES.filter((page) =>
   ['About', 'Work', 'Life', 'Contact'].includes(page.name),
 );
+
+/** Opens the home page with deterministic theme/motion preferences and initialized site controls. */
+export async function openThemedHome(page: Page, colorScheme: 'light' | 'dark'): Promise<void> {
+  await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
+  await page.goto('');
+  await expect(page.locator('html')).toHaveAttribute('data-site-ready', 'true');
+}
 
 /** Audits actual rendered states against WCAG A/AA rules, without excluding interactive content. */
 export async function expectNoViolations(page: Page) {
