@@ -34,7 +34,7 @@ export async function loadReactionCounts(
   endpoint: string,
   fetcher: typeof fetch,
 ): Promise<Record<string, number>> {
-  const response = await fetcher(`${endpoint}/reactions`);
+  const response = await fetcher(`${endpoint}/reactions`, { cache: 'no-store' });
   if (!response.ok) throw new Error('Reactions are unavailable.');
   const result: unknown = await response.json();
   if (!isCounts(result)) throw new Error('Invalid reaction counts.');

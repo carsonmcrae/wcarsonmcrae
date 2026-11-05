@@ -111,6 +111,9 @@ test('header navigation and post return preserve the native timeline position', 
 }) => {
   await page.goto('?date=2022-05');
   await expect(page.locator('#moment-vanderbilt-graduation')).toBeInViewport();
+  // Font swaps and the browser's click preparation may adjust the initial date-jump position.
+  await page.evaluate(() => document.fonts.ready);
+  await page.locator('#moment-vanderbilt-graduation h3 a').scrollIntoViewIfNeeded();
   const position = await page.evaluate(() => scrollY);
   await page.locator('#moment-vanderbilt-graduation h3 a').click();
   await expect(page.locator('h1')).toHaveText('Vanderbilt graduation');
@@ -124,6 +127,24 @@ test('header navigation and post return preserve the native timeline position', 
   await expect(page.locator('h1')).toHaveText('Vanderbilt graduation');
   await page.getByRole('button', { name: 'Go back', exact: true }).click();
   await expect(page.locator('#moment-vanderbilt-graduation')).toBeInViewport();
+});
+
+test('returning from a post refreshes a cached bookmark without moving the timeline', async ({
+  page,
+}) => {
+  await allowStorage(page);
+  await page.goto('?date=2022-05');
+  await page.locator('#moment-vanderbilt-graduation h3 a').click();
+  await page.getByRole('button', { name: 'Save Vanderbilt graduation', exact: true }).click();
+  await page.getByRole('button', { name: 'Go back', exact: true }).click();
+  const moment = page.locator('#moment-vanderbilt-graduation');
+  await expect(moment).toBeInViewport();
+  await expect(moment.locator('[data-save]')).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Go forward', exact: true }).click();
+  await page.getByRole('button', { name: 'Save Vanderbilt graduation', exact: true }).click();
+  await page.getByRole('button', { name: 'Go back', exact: true }).click();
+  await expect(moment).toBeInViewport();
+  await expect(moment.locator('[data-save]')).toHaveAttribute('aria-pressed', 'false');
 });
 
 test('related watch stories and external destinations are explicit', async ({ page }) => {

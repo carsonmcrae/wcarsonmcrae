@@ -51,7 +51,10 @@ function setup(
       first.parentElement!.append(button);
     }
   }
+  const events = new EventTarget();
   const win = {
+    addEventListener: events.addEventListener.bind(events),
+    removeEventListener: events.removeEventListener.bind(events),
     localStorage: storage,
     location: { origin: 'https://daysforth.com' },
     navigator: { clipboard: { writeText: vi.fn(async (_text: string) => {}) } },
@@ -66,7 +69,7 @@ function setup(
   const click = (action: string) =>
     document.querySelector<HTMLButtonElement>(`[data-${action}]`)!.click();
   const button = (action: string) => document.querySelector<HTMLButtonElement>(`[data-${action}]`)!;
-  return { win, storage, announce, click, button, destroy };
+  return { win, events, storage, announce, click, button, destroy };
 }
 beforeEach(() => clearPreferences(null));
 afterEach(() => {
@@ -248,7 +251,9 @@ describe('shared reactions', () => {
       storage: stored,
       fetcher: vi
         .fn<typeof fetch>()
-        .mockImplementation(async (_url, options) => Response.json(options ? { count: 1 } : {})),
+        .mockImplementation(async (_url, options) =>
+          Response.json(options?.method === 'POST' ? { count: 1 } : {}),
+        ),
     });
     second.click('react');
     await vi.waitFor(() =>
@@ -275,7 +280,9 @@ describe('shared reactions', () => {
       endpoint: 'https://api.example.com',
       fetcher: vi
         .fn<typeof fetch>()
-        .mockImplementation(async (_url, options) => Response.json(options ? { count: 1 } : {})),
+        .mockImplementation(async (_url, options) =>
+          Response.json(options?.method === 'POST' ? { count: 1 } : {}),
+        ),
     });
     Object.defineProperty(unavailable.win, 'localStorage', {
       get() {
@@ -337,14 +344,51 @@ describe('shared reactions', () => {
   });
 });
 describe('lifecycle', () => {
+  it('refreshes cached-page choices and totals without replacing the timeline cards', async () => {
+    let finishInitial!: (response: Response) => void;
+    const initial = new Promise<Response>((resolve) => {
+      finishInitial = resolve;
+    });
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockReturnValueOnce(initial)
+      .mockResolvedValueOnce(Response.json({ born: 7 }));
+    const { events, storage, button, destroy } = setup({
+      endpoint: 'https://api.example.com',
+      fetcher,
+    });
+    const original = button('save');
+    const show = (persisted: boolean) => {
+      const event = new Event('pageshow');
+      Object.defineProperty(event, 'persisted', { value: persisted });
+      events.dispatchEvent(event);
+    };
+    show(false);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    storage.setItem('daysforth.saved.born', 'true');
+    storage.setItem('daysforth.reacted.born', 'true');
+    show(true);
+    expect(button('save')).toBe(original);
+    expect(original.getAttribute('aria-pressed')).toBe('true');
+    expect(button('react').disabled).toBe(true);
+    await vi.waitFor(() => expect(button('react').textContent).toBe('7'));
+    finishInitial(Response.json({ born: 4 }));
+    await initial;
+    await vi.waitFor(() => expect(button('react').textContent).toBe('7'));
+    destroy();
+    storage.setItem('daysforth.saved.born', 'false');
+    show(true);
+    expect(original.getAttribute('aria-pressed')).toBe('true');
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
   it('keeps reaction choices independent and restores each choice from storage', async () => {
     const stored = consentingStorage({ 'daysforth.reacted.born--support': 'true' });
     const fetcher = vi
       .fn<typeof fetch>()
       .mockImplementation(async (_url, options) =>
         Response.json(
-          options
-            ? { count: options.method === 'DELETE' ? 0 : 1 }
+          options?.method === 'POST'
+            ? { count: 1 }
             : { born: 2, 'born--celebrate': 3, 'born--laugh': 0, 'born--support': 1 },
         ),
       );

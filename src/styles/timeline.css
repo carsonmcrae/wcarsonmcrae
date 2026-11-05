@@ -6,6 +6,7 @@
 .timeline-feed {
   container: timeline / inline-size;
   scroll-margin-top: 1rem;
+  overflow-anchor: none;
 }
 .moment-group {
   margin-top: 1.25rem;
