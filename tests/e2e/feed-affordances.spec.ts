@@ -87,6 +87,7 @@ test('a first touch reveals the card, a second photo touch opens the viewer, and
   page,
   isMobile,
 }) => {
+  // Desktop projects lack touch input; their hover and keyboard paths are covered above.
   test.skip(
     !isMobile,
     'This verifies touch input; desktop hover and keyboard reveal have their own case.',
@@ -112,6 +113,7 @@ test('the desktop moment list keeps same-month destinations distinct, opens clus
   page,
   isMobile,
 }) => {
+  // Mobile layouts intentionally omit the desktop gutter rail; touch controls are covered above.
   test.skip(isMobile, 'The moment rail requires the desktop gutter.');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('');

@@ -111,21 +111,7 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
     for (const menu of root.querySelectorAll<HTMLDetailsElement>('[data-timeline-menu]'))
       menu.open = false;
   };
-  const goToDate = (
-    date: string,
-    focus = true,
-    historyMode: 'push' | 'replace' | 'none' = 'push',
-    momentId?: string,
-  ) => {
-    followingScroll = false;
-    state.date = date.slice(0, 7);
-    if (visible.length === 0) {
-      syncDate();
-      if (historyMode !== 'none') saveUrl(historyMode === 'push');
-      closeMenus();
-      if (focus) empty.focus();
-      return;
-    }
+  const dateDestination = (momentId?: string) => {
     const exact = visible.filter((card) => card.date.startsWith(state.date));
     empty.hidden = exact.length > 0;
     let destination: HTMLElement;
@@ -152,6 +138,24 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
       empty.append(link);
       destination = empty;
     }
+    return { destination, focusTarget };
+  };
+  const goToDate = (
+    date: string,
+    focus = true,
+    historyMode: 'push' | 'replace' | 'none' = 'push',
+    momentId?: string,
+  ) => {
+    followingScroll = false;
+    state.date = date.slice(0, 7);
+    if (visible.length === 0) {
+      syncDate();
+      if (historyMode !== 'none') saveUrl(historyMode === 'push');
+      closeMenus();
+      if (focus) empty.focus();
+      return;
+    }
+    const { destination, focusTarget } = dateDestination(momentId);
     syncDate();
     if (historyMode !== 'none') saveUrl(historyMode === 'push');
     closeMenus();
