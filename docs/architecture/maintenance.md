@@ -38,6 +38,10 @@ allowance; family albums add approved content, not a new storage purpose or exte
 
 Release records now carry explicit calendar dates rendered consistently on index/detail pages.
 The format gate checks valid full dates, and content-review policy preserves historical dates.
+Authored release records live in scanned `release-history.json`; `releases.ts` is only a typed
+readonly adapter plus the canonical package version. Keep content separate from executable policy:
+the JSON owns no logic, and `release-policy.ts` still validates every record and date. This boundary
+preserves all historical output without excluding content or relaxing coverage/duplication checks.
 Header container layout and dock-aware shortcut placement remain transient presentation state.
 
 Version 1.0.1 changes album presentation from long page grids to compact entries and a grouped

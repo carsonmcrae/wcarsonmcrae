@@ -12,13 +12,13 @@ interface Release {
   date?: string;
   title: string;
   summary: string;
-  sections: { id: string; title: string; items: string[] }[];
+  sections: readonly { id: string; title: string; items: readonly string[] }[];
 }
 interface ReleaseInput {
   version: string;
   lockVersion: string;
   lockPackageVersion: string;
-  releases: Release[];
+  releases: readonly Release[];
   tag?: string;
   baseVersion?: string;
   changes: { status: string; path: string }[];
@@ -53,7 +53,7 @@ function checkSection(
   return errors;
 }
 
-function checkHistory(releases: Release[]): string[] {
+function checkHistory(releases: readonly Release[]): string[] {
   const errors: string[] = [];
   for (const [index, release] of releases.entries()) {
     if (!STABLE.test(release.version)) errors.push(`Invalid release version: ${release.version}.`);

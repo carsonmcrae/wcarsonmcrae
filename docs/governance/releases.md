@@ -1,7 +1,8 @@
 # Product versions and releases
 
 `package.json` is the single source for the current Daysforth version. The footer and release pages
-read that value through `src/data/releases.ts`. Historical version strings in the release history
+read that value through the typed `src/data/releases.ts` adapter. Authored notes and permanent dates
+live in `src/data/release-history.json`. Historical version strings in the release history
 identify permanent records; they are not a second setting for the current version.
 
 ## Preparing a change
@@ -11,15 +12,15 @@ identify permanent records; they are not a second setting for the current versio
    or established experience. Content changes that alter the published site also need a patch.
 2. Update `package.json` and both root versions in `package-lock.json` together (`npm version
 <version> --no-git-tag-version --ignore-scripts` can do this). Never create an automatic commit.
-3. Prepend a release record in `src/data/releases.ts` with a permanent `date` in `YYYY-MM-DD`
+3. Prepend a release record in `src/data/release-history.json` with a permanent `date` in `YYYY-MM-DD`
    form and useful visitor-facing changes. Confirm the actual calendar date when the release is
    prepared; never derive old release dates from the current clock or rebuild time. Preserve dates
    on later releases unless Carson explicitly corrects a documented historical error. Keep old
    version URLs and old notes. Avoid implementation logs, invented release dates, and unsupported
    accessibility/security claims. Notes for the new version should explain the resulting experience.
-   Build records with the shared `release` constructor and sections with `releaseSection`.
-   These typed constructors own the record/section shapes; history entries contain only approved
-   values, without copying metadata scaffolding into each release.
+   Keep this authored history as static content. `src/data/releases.ts` checks its readonly
+   record/section shape for consumers; the release-policy check validates the full history at
+   runtime. Do not put executable logic or generated clock values in the JSON.
 4. Update [architecture documentation](../architecture/maintenance.md) when its triggers apply.
 5. Run the required validation and record actual manual accessibility checks and any pending work.
 

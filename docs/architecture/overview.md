@@ -147,8 +147,11 @@ not a claim of anonymization.
 
 ## Release and delivery
 
-`package.json` is the canonical product version. `src/data/releases.ts` reads it for the UI and keeps
-permanent historical visitor notes with explicit calendar dates. Release list/detail pages share
+`package.json` is the canonical product version. `src/data/release-history.json` holds authored
+visitor notes and permanent dates as static content. The thin `src/data/releases.ts` adapter reads
+the manifest and exposes the history through readonly record/section interfaces. No record factories
+or runtime content generation are needed; `release-policy.ts` independently validates the full history.
+Release list/detail pages share
 the UTC calendar formatter and semantic time elements; dates do not depend on rebuild time or the
 visitor's time zone. The release gate validates actual full calendar dates, while preserving a
 historical date remains a content-review responsibility. The lockfile must agree. CI checks source quality, full per-file
