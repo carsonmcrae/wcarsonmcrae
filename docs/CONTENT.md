@@ -77,6 +77,10 @@ wedding photograph. `imageKind: 'screen'` resolves a real interface capture from
 Use `endDate` only when Carson confirms it. Each app has one release, launch, or beta event; preserve
 retired permalinks with `post-aliases.ts` and their accessible redirect pages.
 
+Cover proportions are derived from the approved image metadata into `media-frames.css`. Do not
+hand-copy ratios into content or compensate for late image layout with scrolling delays. Verify
+that a selected moment stays visible when its images are delayed and then finish loading.
+
 ## Keeping "Right now" fresh
 
 Edit `now.items` and `now.updated` in `src/data/life.ts` whenever something changes.

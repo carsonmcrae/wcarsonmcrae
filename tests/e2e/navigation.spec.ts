@@ -108,6 +108,12 @@ test.describe('small-screen menu', () => {
     await toggle.focus();
     await page.keyboard.press('Enter');
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    const close = page.getByRole('button', { name: 'Close menu', exact: true });
+    await expect(close).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await expect(page.locator('#site-menu .mobile-drawer__brand')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(close).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(
       page.getByRole('navigation', { name: 'Main' }).getByRole('link').first(),

@@ -64,6 +64,11 @@ document shell. Astro computes CSP hashes for bundled scripts/styles; local font
 images are emitted with the site. `deploy-config.ts` and `paths.ts` keep canonical URLs and asset
 paths correct for either the custom domain root or GitHub Pages project subpaths.
 
+`media-frames.css` is another static build artifact. Its small build-only generator reads approved
+cover metadata and reserves each frame’s actual proportions before lazy images arrive. The shared
+head links it once; no inline style attributes, image-loading waits, or extra scroll corrections
+are needed. Image responses can finish later without pushing a chosen timeline moment away.
+
 The chronological model and date calculations are shared by server rendering and client browsing.
 Client controllers enhance already rendered cards, synchronize filters and dates with URL/history
 state, and restore the visitor’s place. Query state is shareable; `history.state` scroll coordinates
