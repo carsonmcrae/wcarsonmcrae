@@ -1,7 +1,8 @@
 /**
  * Purpose: Shared page list and helpers for the browser tests.
  * Scope: The site's pages (paths relative to the base URL, so tests run at the root or under the
- *   GitHub Pages project path), themed home readiness, menu/shortcut fixtures, and overflow.
+ *   GitHub Pages project path), themed home readiness, native keyboard gesture completion,
+ *   menu/shortcut fixtures, and overflow.
  * Does NOT belong: Test cases (the *.spec.ts files beside it).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -100,13 +101,21 @@ export function timelineShortcuts(page: Page) {
   };
 }
 
-/** Qualifies initially hidden shortcuts with actual keyboard scrolling, preserving both assertions. */
+/** Qualifies shortcuts with a completed native PageDown before the next independent gesture. */
 export async function qualifyTimelineShortcuts(page: Page) {
   await page.evaluate(() => document.fonts.ready);
   const controls = timelineShortcuts(page);
   await expect(controls.up).toBeHidden();
   await expect(controls.down).toBeHidden();
-  await page.keyboard.press('PageDown');
+  await Promise.all([
+    page.evaluate(
+      () =>
+        new Promise<void>((resolve) =>
+          document.addEventListener('scrollend', () => resolve(), { once: true }),
+        ),
+    ),
+    page.keyboard.press('PageDown'),
+  ]);
   await expect(controls.up).toBeVisible();
   await expect(controls.down).toBeVisible();
   return controls;
