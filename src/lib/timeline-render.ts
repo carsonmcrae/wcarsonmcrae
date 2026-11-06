@@ -6,6 +6,7 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { groupMoments, visibleMoments, type Moment, type TimelineState } from './timeline-model';
+import { periodKey } from './timeline-dates';
 export interface MomentCard extends Moment {
   element: HTMLElement;
 }
@@ -21,6 +22,20 @@ export function readMomentCards(root: ParentNode): MomentCard[] {
       return element.querySelector('[data-save]')?.getAttribute('aria-pressed') === 'true';
     },
   }));
+}
+
+/** Adopts the default monthly SSR presentation without detaching an active card descendant. */
+export function adoptMomentGroups(container: HTMLElement): HTMLElement[] {
+  const groups = Array.from(
+    container.querySelectorAll<HTMLElement>('.moment-group--year .moment-group'),
+  );
+  if (groups.length === 0) throw new Error('Missing server-rendered monthly timeline groups');
+  for (const group of groups) {
+    const date = periodKey(group.querySelector('time')!.dateTime, 'months');
+    group.dataset['period'] = date;
+    group.dataset['periodDate'] = date;
+  }
+  return groups;
 }
 
 export function renderMomentGroups(

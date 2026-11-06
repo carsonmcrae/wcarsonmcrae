@@ -96,6 +96,12 @@ real scroll change, and desktop navigation imports in parallel. Failure restores
 feed while the shell remains usable. The shell's head entry executes before page-specific entries,
 so a stalled later entry cannot hold up navigation initialization.
 
+Default mounting adopts the existing monthly groups without detaching cards or their active
+descendants; runtime period metadata comes from their semantic dates. One period list drives
+observation, reading-date inference and first-group jumps. Actual view/filter/grouping changes can
+then rebuild presentation. Native navigator and nearest-moment URLs preserve current browsing
+options and identify their target month/hash, including when opened in another tab.
+
 Saved/reaction flags and template controls hydrate immediately on action pages. Count and command
 composition loads once when a row becomes visible or a command arrives, through one shared pending
 initializer. This avoids a second cold import after first intent. Visibility may load it during

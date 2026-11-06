@@ -8,6 +8,7 @@
 import { dateLabel } from './timeline-dates';
 import { readTimelineViewport } from './timeline-viewport';
 import { readMomentCards, type MomentCard } from './timeline-render';
+import { momentHref } from './timeline-model';
 type NavigatorWindow = Pick<
   Window,
   | 'innerHeight'
@@ -16,6 +17,7 @@ type NavigatorWindow = Pick<
   | 'removeEventListener'
   | 'requestAnimationFrame'
   | 'cancelAnimationFrame'
+  | 'location'
 >;
 
 function previewIndex(key: string, current: number, length: number): number | null {
@@ -122,7 +124,7 @@ export function initMomentNavigator(doc: Document, win: NavigatorWindow): () => 
     for (const card of cards) {
       const id = card.id;
       const link = doc.createElement('a');
-      link.href = `#moment-${id}`;
+      link.href = momentHref(win.location.href, card);
       link.dataset['jumpDate'] = card.date;
       link.dataset['jumpMoment'] = id;
       link.tabIndex = 0;

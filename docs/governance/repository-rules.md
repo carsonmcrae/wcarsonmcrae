@@ -54,6 +54,10 @@ lockfiles, and images are exempt. `npm run check:repo` enforces the shape; revie
   traversing history. A readiness marker or completed click dispatch does not acknowledge a deferred
   mutation. Reuse the native-event helpers; retain real input and state/focus assertions rather than
   adding sleeps, synthetic intent events, or weaker expectations.
+- Deferred initialization must preserve an already focused or touched server-rendered control.
+  Adopt equivalent markup in place; test delayed delivery while that control is active. Loaded
+  link handlers must preserve modified clicks, and native destination URLs must carry the target
+  date rather than a conflicting previous query. Check the opened destination, not only its URL.
 - Built script budgets follow the complete emitted eager module graph, not only script-tag entry
   stubs; deferred edges must also resolve. Verify actual initial and conditional request waterfalls
   when changing loading boundaries. Framework configuration must be checked in emitted output.

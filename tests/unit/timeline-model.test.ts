@@ -21,6 +21,7 @@ import {
   chronological,
   groupMoments,
   nearestMoment,
+  momentHref,
   readTimelineState,
   stateSearch,
 } from '../../src/lib/timeline-model';
@@ -131,6 +132,24 @@ const visible = (category: Parameters<typeof visibleFrom>[1]) =>
   visibleFrom(timelinePosts, category);
 
 describe('shareable browsing state', () => {
+  it('builds native moment destinations from the current or explicitly pending browsing state', () => {
+    const href =
+      'https://daysforth.test/project/?view=timeline&category=All&detail=months&date=2026-11#old';
+    const moment = { id: 'born', date: '1999-11-01' };
+    expect(momentHref(href, moment)).toBe(
+      'https://daysforth.test/project/?view=timeline&category=All&detail=months&date=1999-11#moment-born',
+    );
+    expect(
+      momentHref(href, moment, {
+        view: 'posts',
+        category: 'Work',
+        detail: 'years',
+        date: '2020-01',
+      }),
+    ).toBe(
+      'https://daysforth.test/project/?view=posts&category=Work&detail=years&date=1999-11#moment-born',
+    );
+  });
   it('uses safe defaults for absent or invalid parameters', () => {
     const expected = { view: 'timeline', category: 'All', detail: 'months', date: '2026-11' };
     expect(readTimelineState('', '2026-11')).toEqual(expected);

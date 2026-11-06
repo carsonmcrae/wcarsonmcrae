@@ -155,6 +155,14 @@ export async function scrollPageTo(page: Page, top: number) {
   );
 }
 
+/** Settles deferred reload restoration before measuring or auditing the timeline at the page top. */
+export async function settleRestoredTimelineTop(page: Page) {
+  await page.locator('html[data-timeline-ready="true"]:not([data-timeline-restore])').waitFor();
+  // load may finish while a conditional controller still owns a later restore. A no-op has no scrollend.
+  if ((await page.evaluate(() => scrollY)) !== 0) await scrollPageTo(page, 0);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+}
+
 /** Waits for the browser's resize handler and final viewport, not just its protocol acknowledgement. */
 export async function resizePage(page: Page, viewport: { width: number; height: number }) {
   await completePageChange(page, 'resize', () => page.setViewportSize(viewport));

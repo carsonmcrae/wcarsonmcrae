@@ -15,7 +15,7 @@ const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
 async function holdFirstSaveCommand(page: Page) {
   const requested = Promise.withResolvers<void>();
   const response = Promise.withResolvers<void>();
-  await page.route(/\/post-action-events\.[^/]+\.js$/, async (route) => {
+  await page.route(/\/post-enhancements\.[^/]+\.js$/, async (route) => {
     requested.resolve();
     await response.promise;
     await route.continue();
@@ -26,9 +26,18 @@ async function holdFirstSaveCommand(page: Page) {
     `${timelinePosts.length} moments.`,
   );
   const save = page.getByRole('button', { name: 'Save Built Daysforth', exact: true });
-  await save.click();
-  await requested.promise;
-  return { save, release: () => response.resolve() };
+  try {
+    await save.click();
+    await requested.promise;
+    await expect(save).toHaveAttribute('aria-pressed', 'false');
+    expect(
+      await page.evaluate(() => localStorage.getItem('daysforth.saved.built-daysforth')),
+    ).toBeNull();
+    return { save, release: () => response.resolve() };
+  } catch (error) {
+    response.resolve();
+    throw error;
+  }
 }
 
 test('Saved is useful after refresh and updates immediately when the last item is removed', async ({

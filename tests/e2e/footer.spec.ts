@@ -7,7 +7,12 @@
  */
 import { expect } from '@playwright/test';
 import { test } from './fixtures';
-import { expectNoViolations, horizontalOverflow, openThemedHome } from './helpers';
+import {
+  expectNoViolations,
+  horizontalOverflow,
+  openThemedHome,
+  settleRestoredTimelineTop,
+} from './helpers';
 import { currentVersion } from '../../src/data/releases';
 
 for (const colorScheme of ['light', 'dark'] as const) {
@@ -83,7 +88,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await page.getByRole('button', { name: 'Close', exact: true }).click();
     await page.reload();
     await expect(notice).toBeHidden();
-    await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+    await settleRestoredTimelineTop(page);
     await expectNoViolations(page);
   });
 

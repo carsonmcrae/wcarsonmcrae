@@ -40,6 +40,20 @@ means bounded waste or attribution pressure without evidence of current user har
 
 Further confirmed lifecycle cases were corrected during integration:
 
+- `timeline-controller.ts`, loaded `onClick`: Ctrl/Command-click on a navigator anchor was
+  canceled and changed the current reading date. An execution of the real controller reproduced
+  `defaultPrevented: true` with a changed date. The shared primary-click resolver now preserves
+  native modified and non-primary link intent after initialization as well as before lazy loading.
+  Native navigator/nearest URLs also carry the target month rather than the previous query date;
+  a real new-page fixture confirmed the old conflicting URL left Born 5,220 pixels offscreen.
+  Focused event-boundary cases preserve ordinary nested-control activation, and a native popup
+  regression checks the actual destination's visibility as well as its URL.
+- `timeline-controller.ts`, first deferred default mount: the Windows trace showed cards moved
+  between `h3.focus()` and the next assertion, leaving focus on the body. Initial mounting now
+  adopts the existing monthly groups in place and derives runtime period metadata from semantic
+  dates. The same period list owns observation, reading-date inference and first-group jumps.
+  No card or focused descendant moves until a visitor actually changes grouping/filter/view.
+  Two unit regressions failed before the fix; a held-module real-browser case protects the handoff.
 - `consent.ts`, `recordConsent`: a saved grant followed by failed memory-key promotion switched
   reads to missing persistent values. Promotion now fails closed, attempts to persist denial and
   retains the page's existing memory choices. Tests cover both writable and denied revocation.
@@ -68,6 +82,13 @@ command/focus/history flows require browser verification. Action flags stay imme
 and first command share one enhancement initializer. Conditional transfers are reported separately
 from the static eager graph. Shared initial shell libraries are grouped through supported Rolldown
 configuration, with deferred code kept outside that group.
+
+The [QA record](../qa/1.1.2.md) also records the cost of those boundaries: the complete graph and
+CSS grow, and an uncached full-navigation fixture makes more requests for smaller modules.
+Repeated same-document module requests are absent; fixed journey timings overlap under shared
+workstation load. The result is reduced eager bytes and navigator operations, not proof of a
+general latency or complete-journey bandwidth improvement. Further chunk consolidation should
+respond to measured cold-navigation cost without pulling deferred work back into every page.
 
 The keyboard/visual review also confirmed a medium accessibility defect in
 `src/styles/global.css`, `.skip-link`: its stacking level (10) was below the sticky header (20).

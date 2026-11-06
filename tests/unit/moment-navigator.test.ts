@@ -108,6 +108,26 @@ it('keeps each rendered same-month moment distinct and follows the visible card'
   expect(document.activeElement).toBe(f.links()[0]);
 });
 
+it.each(['/', '/project/'])(
+  'keeps native target URLs aligned with their moment and browsing state at %s',
+  (base) => {
+    const current = `https://daysforth.test${base}?view=timeline&category=Milestones&detail=years&date=2026-10`;
+    vi.spyOn(window.location, 'href', 'get').mockReturnValue(current);
+    const f = fixture();
+    const destination = new URL(f.links()[2]!.getAttribute('href')!, current);
+    expect(destination.origin).toBe('https://daysforth.test');
+    expect(destination.pathname).toBe(base);
+    expect(Object.fromEntries(destination.searchParams)).toEqual({
+      view: 'timeline',
+      category: 'Milestones',
+      detail: 'years',
+      date: '2022-05',
+    });
+    expect(destination.hash).toBe('#moment-three');
+    expect(window.location.href).toBe(current);
+  },
+);
+
 it('supports keyboard previews, Escape, direct rail selection and outside/leave dismissal', () => {
   const f = fixture();
   f.rail.focus();

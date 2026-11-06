@@ -210,3 +210,36 @@ test('the desktop moment list keeps same-month destinations distinct, opens clus
   await page.getByRole('button', { name: 'Posts', exact: true }).click();
   await expect(rail).toBeHidden();
 });
+
+test('a modified desktop navigator click opens its native destination without changing the current reading state', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'The moment rail requires the desktop gutter.');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('?date=2022-05');
+  const rail = page.getByRole('button', { name: 'Browse timeline moments', exact: true });
+  await expect(rail).toBeVisible();
+  await rail.focus();
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('End');
+  const link = page.locator('[data-moment-links] [data-jump-moment="born"]');
+  await expect(link).toBeFocused();
+  await expect(link).toBeInViewport();
+  const before = { url: page.url(), date: await page.locator('[data-current-date]').textContent() };
+  const destination = new URL((await link.getAttribute('href'))!, before.url).href;
+  const [opened] = await Promise.all([
+    page.context().waitForEvent('page'),
+    link.click({ modifiers: ['ControlOrMeta'] }),
+  ]);
+  try {
+    await expect(opened).toHaveURL(destination);
+    await expect(opened.locator('html')).toHaveAttribute('data-timeline-ready', 'true');
+    await expect(opened.locator('#moment-born')).toBeInViewport();
+    await expect(opened.locator('[data-current-date]')).toHaveText('November 1999');
+    await expect(page).toHaveURL(before.url);
+    await expect(page.locator('[data-current-date]')).toHaveText(before.date!);
+  } finally {
+    await opened.close();
+  }
+});
