@@ -1,6 +1,6 @@
 /**
  * Purpose: Carson's core profile content.
- * Scope: Name, approved headline, location, employer, summary, portrait and email settings, social
+ * Scope: Name, approved headline, location, employer, summary, portraits and email settings, social
  *   links, homepage hero copy, the two-register introduction, and the homepage highlights.
  * Constraints: Only approved, public facts. The email stays null until an address is approved for
  *   publication.
@@ -27,6 +27,7 @@ export const profile: Profile = {
   // on the contact page. Left empty until an address is approved for publication.
   email: null,
 };
+export const aboutPortrait = 'carson-solo';
 
 export const socialLinks: SocialLink[] = [
   {

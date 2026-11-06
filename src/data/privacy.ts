@@ -19,7 +19,7 @@ export const privacy = {
     {
       id: 'reactions',
       title: 'Permanent reactions',
-      body: 'A reaction increases a shared aggregate count permanently. Clicking it again does not remove it. A random browser identifier prevents duplicate votes; it is remembered between visits only with your storage permission. The service stores a salted hash of that identifier, the post/reaction key, and a timestamp. Records become eligible for deletion after 90 days and are removed by hourly cleanup. Aggregate counts remain after identifiers are removed. Clearing browser data can allow a new reaction.',
+      body: 'A reaction to a moment or photo increases its shared aggregate count permanently. Clicking it again does not remove it. A random browser identifier prevents duplicate votes; it is remembered between visits only with your storage permission. The service stores a salted hash of that identifier, the moment or photo/reaction key, and a timestamp. Records become eligible for deletion after 90 days and are removed by hourly cleanup. Aggregate counts remain after identifiers are removed. Clearing browser data can allow a new reaction.',
     },
     {
       id: 'security',

@@ -55,7 +55,7 @@ describe('confirmed additions', () => {
       timelinePosts
         .find((post) => post.id === 'married-nicole')!
         .gallery!.map((photo) => photo.name),
-    ).toEqual(['nicole-carson-1', 'carson-friends']);
+    ).toEqual(['nicole-carson-1', 'carson-friends', 'me-my-family', 'me-nicoles-family']);
   });
 });
 describe('focused filters', () => {

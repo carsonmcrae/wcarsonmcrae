@@ -29,13 +29,19 @@ uses it updates. Pages and components contain no personal facts of their own.
 
 ## Photos
 
-All 60 supplied photographs are approved for public use, including everyone pictured. Original
+All 62 supplied photographs are approved for public use, including everyone pictured. Original
 incoming files are ignored and protected by a verified external backup. Never replace them during
 an update. The imported, metadata-stripped copies live in `src/assets/photos/`.
 
 The November 5 batch adds 21 originals: eight Carson gallery photos, six per dog, and the horizontal
 first-watch image. Their separate SHA-256 verified backup is `daysforth-photos-backup-20261105`
 under the task’s external visualization workspace. The original 39 files remain unchanged.
+
+The two additional family originals, `Me_My_Family.jpg` and `Me_Nicoles_Family.jpg`, are approved
+for public use and backed up with verified SHA-256 hashes in `daysforth-photos-backup-20261105-family`
+under that same external workspace. The 62 incoming originals remain unchanged. Their normalized,
+metadata-stripped copies are `me-my-family.jpg` and `me-nicoles-family.jpg`; both appear at the bottom
+of Life and in the wedding album as distinct group photographs.
 
 | Photo              | File (any of .jpg, .png, .webp, .avif)             | Where it appears                               |
 | ------------------ | -------------------------------------------------- | ---------------------------------------------- |
@@ -88,6 +94,20 @@ previews have no per-image caption blocks; captions appear in the viewer. About�
 Quick facts, and the main portrait stays in the introduction. Every photo remains reachable without
 JavaScript; do not replace hidden preview links with an image list held only in browser code.
 
+The 24 dog and Carson album captions use Carson’s supplied descriptions. Keep the glasses mapped
+to `margot-2` and `quinn-1`; Margot is not wearing a bow tie. `carson-gallery-7` shows gaming with
+Jackson, and `carson-gallery-6` is the Nashville SC game where Carson first saw Messi in person.
+Do not infer an exact match date or opponent. The Life hobby introduction includes the confirmed
+travel total of over 15 countries.
+
 ## Keeping "Right now" fresh
 
 Edit `now.items` and `now.updated` in `src/data/life.ts` whenever something changes.
+
+## Release dates
+
+Release records carry permanent date-only values. Version 1.0.1 uses November 5, 2026, as Carson
+requested; version 1.1.0 uses the same preparation date. Version 1.0.0 uses November 3, 2026: the
+earliest retained GitHub `PushEvent` is `2026-11-03T19:03:19Z`, still November 3 in America/Chicago.
+The original root commit’s `pushedDate` was unavailable. Repository creation and converting UTC
+midnight to a local previous day were not used as evidence. These displayed dates do not alter tags.

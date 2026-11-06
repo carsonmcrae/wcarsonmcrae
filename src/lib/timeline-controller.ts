@@ -240,10 +240,7 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
   win.addEventListener('popstate', onPopState);
   doc.addEventListener('daysforth:saved', onSaved);
   for (const intent of scrollIntents) doc.addEventListener(intent, follow, { passive: true });
-  if (
-    new URLSearchParams(win.location.search).has('date') &&
-    win.history.state?.scrollY === undefined
-  )
+  if (new URLSearchParams(win.location.search).has('date') && prepareTimelineRestore(win) === null)
     goToDate(state.date, false, 'replace');
   return {
     getState: () => ({ ...state }),

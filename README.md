@@ -5,7 +5,7 @@ through dates, and open a permanent page for any moment. Built with [Astro](http
 for free GitHub Pages hosting at [wcarsonmcrae.com](https://wcarsonmcrae.com).
 [Daysforth.com](https://daysforth.com) forwards to the same canonical site.
 
-See the [current release notes](https://wcarsonmcrae.com/releases/1.0.0/),
+See the [current release notes](https://wcarsonmcrae.com/releases/),
 [architecture](docs/architecture/overview.md), [release rules](docs/governance/releases.md), and
 [security policy](SECURITY.md). Fixes for this project are welcome under [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -48,6 +48,12 @@ every page at six widths in both themes to `screenshots/`. Browser tests need Pl
 Set `PW_WEBKIT=1` to include WebKit locally. Browser tests generate a temporary loopback HTTPS
 certificate using OpenSSL (bundled with Git for Windows; override `OPENSSL_PATH` if needed).
 They do not install a trust root or change the production Content Security Policy.
+
+For browser verification, set `PUBLIC_REACTIONS_URL=https://reactions.daysforth.test` in your shell
+before both the build and browser commands (or `npm run validate:full`). CI’s browser job does this
+automatically. Photo-reaction tests intercept that reserved endpoint before navigation and require
+it to be configured; they never send votes to the live Worker. Use the real service URL only for
+an explicitly authorized production build.
 
 ## Project structure
 

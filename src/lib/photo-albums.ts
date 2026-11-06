@@ -16,9 +16,12 @@ export function albumPhotos(doc: Document, trigger: HTMLAnchorElement): HTMLAnch
   return [...distinct.values()];
 }
 export function photoDetails(photo: HTMLAnchorElement) {
-  const alt = photo.dataset['photoAlt'] ?? photo.querySelector('img')!.alt;
+  const image = photo.querySelector('img');
+  const alt = photo.dataset['photoAlt'] ?? image!.alt;
   return {
     src: photo.href,
+    thumbnail: image?.getAttribute('srcset')?.split(',')[0]?.trim().split(/\s+/)[0] || photo.href,
+    reactionId: photo.dataset['photo'] ?? '',
     alt,
     caption: photo.dataset['photoCaption'] ?? alt,
     moment:

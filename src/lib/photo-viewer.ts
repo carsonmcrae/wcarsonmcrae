@@ -6,7 +6,9 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { albumPhotos, photoDetails } from './photo-albums';
-export function initPhotoViewer(doc: Document) {
+import { initPhotoFilmstrip } from './photo-filmstrip';
+import { initPhotoReactionControls } from './photo-reaction-controls';
+export function initPhotoViewer(doc: Document, endpoint = '') {
   const dialog = doc.querySelector<HTMLDialogElement>('[data-photo-viewer]')!;
   const image = dialog.querySelector<HTMLImageElement>('[data-photo-large]')!;
   const related = dialog.querySelector<HTMLAnchorElement>('[data-photo-related]')!;
@@ -14,6 +16,16 @@ export function initPhotoViewer(doc: Document) {
   const next = dialog.querySelector<HTMLButtonElement>('[data-photo-next]');
   const count = dialog.querySelector<HTMLElement>('[data-photo-count]');
   const stage = dialog.querySelector<HTMLElement>('[data-photo-stage]') ?? dialog;
+  const strip = dialog.querySelector<HTMLElement>('[data-photo-strip]');
+  const filmstrip = strip
+    ? initPhotoFilmstrip(strip, (next) => {
+        index = next;
+        show();
+      })
+    : null;
+  const reactionControls = dialog.querySelector('[data-photo-reactions]')
+    ? initPhotoReactionControls(dialog, doc.defaultView!, endpoint)
+    : null;
   let trigger: HTMLAnchorElement | null = null;
   let photos: HTMLAnchorElement[] = [];
   let index = 0;
@@ -32,6 +44,11 @@ export function initPhotoViewer(doc: Document) {
       count.hidden = single;
       count.textContent = `Photo ${index + 1} of ${photos.length}`;
     }
+    filmstrip?.paint(index);
+    reactionControls?.select(photo.reactionId);
+    const announcement = dialog.querySelector('[data-photo-announcement]');
+    if (announcement)
+      announcement.textContent = `Photo ${index + 1} of ${photos.length}. ${photo.caption}`;
   };
   const move = (step: number) => {
     if (!dialog.open) return;
@@ -51,6 +68,7 @@ export function initPhotoViewer(doc: Document) {
       trigger = photo;
       photos = albumPhotos(doc, photo);
       index = photos.findIndex((item) => item.href === photo.href);
+      filmstrip?.set(photos, index);
       show();
       const win = doc.defaultView!;
       win.scrollTo({ top: win.scrollY, left: win.scrollX, behavior: 'instant' });
@@ -61,6 +79,7 @@ export function initPhotoViewer(doc: Document) {
     if (event.target.closest('[data-photo-close]') || event.target === dialog) close();
   };
   const keydown = (event: KeyboardEvent) => {
+    if (event.defaultPrevented) return;
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
     event.preventDefault();
     move(event.key === 'ArrowLeft' ? -1 : 1);
@@ -87,6 +106,8 @@ export function initPhotoViewer(doc: Document) {
   stage.addEventListener('touchstart', touchstart, { passive: true });
   stage.addEventListener('touchend', touchend, { passive: true });
   return () => {
+    filmstrip?.destroy();
+    reactionControls?.destroy();
     doc.removeEventListener('click', click);
     dialog.removeEventListener('cancel', cancel);
     dialog.removeEventListener('keydown', keydown);

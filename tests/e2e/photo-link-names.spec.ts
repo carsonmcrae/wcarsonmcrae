@@ -5,8 +5,12 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures';
 import { expectNoViolations, openThemedHome } from './helpers';
+import { timelinePosts } from '../../src/data/timeline';
+
+const timelinePhotoCount = timelinePosts.filter((post) => post.image).length;
 
 for (const colorScheme of ['light', 'dark'] as const) {
   test(`offscreen photo links stay descriptively named after settings and reload in ${colorScheme}`, async ({
@@ -22,7 +26,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await page.reload();
     await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
     const photos = page.locator('[data-timeline-groups] [data-photo]');
-    await expect(photos).toHaveCount(24);
+    await expect(photos).toHaveCount(timelinePhotoCount);
     const offscreen = await photos.evaluateAll(
       (links) => links.filter((link) => link.getBoundingClientRect().top >= innerHeight).length,
     );

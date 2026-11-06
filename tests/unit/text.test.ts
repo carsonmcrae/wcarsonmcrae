@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
-import { formatDate, joinList, listSeparator } from '../../src/lib/text';
+import { formatDate, formatDateOnly, joinList, listSeparator } from '../../src/lib/text';
 
 describe('lists', () => {
   it('joins items the way a person would write them', () => {
@@ -32,5 +32,16 @@ describe('formatDate', () => {
     // 3:00 UTC on November 4 is still November 3 in Nashville.
     expect(formatDate(new Date('2026-11-04T03:00:00Z'))).toBe('November 3, 2026');
     expect(formatDate(new Date('2026-11-04T03:00:00Z'), 'UTC')).toBe('November 4, 2026');
+  });
+});
+
+describe('formatDateOnly', () => {
+  it.each([
+    ['2026-11-03', 'November 3, 2026'],
+    ['2026-11-05', 'November 5, 2026'],
+    ['2024-02-29', 'February 29, 2024'],
+    ['2026-01-01', 'January 1, 2026'],
+  ])('preserves the calendar day for %s', (date, expected) => {
+    expect(formatDateOnly(date)).toBe(expected);
   });
 });

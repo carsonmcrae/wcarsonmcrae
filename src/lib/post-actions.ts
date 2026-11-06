@@ -5,7 +5,7 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { loadReactionCounts } from './reaction-api';
+import { createReactionController } from './reaction-controller';
 import { reactionKey } from './reaction-keys';
 import { fillActionRows } from './action-template';
 import type { ReactionKind } from '../data/reactions';
@@ -32,6 +32,7 @@ function buttonKey(row: HTMLElement, button: HTMLButtonElement) {
 export function initPostActions(doc: Document, win: ActionWindow, endpoint: string) {
   fillActionRows(doc);
   const storage = preferenceStorage(win);
+  const reactions = createReactionController(win, endpoint, storage);
   const rows = Array.from(doc.querySelectorAll<HTMLElement>('[data-post-actions]'));
   const changed = new Set<string>();
   const syncChoices = () => {
@@ -44,7 +45,7 @@ export function initPostActions(doc: Document, win: ActionWindow, endpoint: stri
       for (const button of row.querySelectorAll<HTMLButtonElement>('[data-react]')) {
         button.setAttribute(
           'aria-pressed',
-          String(readItem(storage, `daysforth.reacted.${buttonKey(row, button)}`) === 'true'),
+          String(reactions.hasReacted(id, (button.dataset['react'] || 'heart') as ReactionKind)),
         );
         button.disabled = button.getAttribute('aria-pressed') === 'true';
       }
@@ -76,7 +77,8 @@ export function initPostActions(doc: Document, win: ActionWindow, endpoint: stri
     if (!endpoint || rows.length === 0) return;
     const current = ++request;
     changed.clear();
-    void loadReactionCounts(endpoint, win.fetch)
+    void reactions
+      .load()
       .then((counts) => {
         if (current === request) updateCounts(counts, true);
       })

@@ -29,6 +29,34 @@ these public records. Routine copy edits and tests do not need a new decision do
 
 ## Current release changes
 
+Version 1.1.0 separates photo-viewer lifecycle, native filmstrip navigation, and the photo reaction
+DOM adapter. Both photo and moment adapters use the shared reaction-only controller. Stable
+`photo-`/`screen-` asset identities extend the approved Worker allowlist without changing existing
+moment keys, database schema, secrets, or permanent totals. Deploy this compatible Worker addition
+before the corresponding site. Reactions keep the same consent-gated preferences and shared abuse
+allowance; family albums add approved content, not a new storage purpose or external service.
+
+Release records now carry explicit calendar dates rendered consistently on index/detail pages.
+The format gate checks valid full dates, and content-review policy preserves historical dates.
+Authored release records live in scanned `release-history.json`; `releases.ts` is only a typed
+readonly adapter plus the canonical package version. Keep content separate from executable policy:
+the JSON owns no logic, and `release-policy.ts` still validates every record and date. This boundary
+preserves all historical output without excluding content or relaxing coverage/duplication checks.
+Header container layout and dock-aware shortcut placement remain transient presentation state.
+
+Two delayed-interaction races also receive explicit ownership. The deferred post-action loader
+delivers the original control to semantic `activate`, so it neither emits an outside click into a
+newly opened menu nor loses a command when Saved filtering detaches the card. Destroyed documents
+cancel pending delivery; no cross-page Save queue is introduced. Timeline entries claim manual
+scroll restoration before departure. Navigation API non-replacement events snapshot the current
+entry with `updateCurrentEntry`; restore reads prefer `getState()` over the classic explicit-click
+history fallback. The early bootstrap recognizes valid native positions without a date query, and
+timeline initialization shares the accessor. The navigation callback never calls `history.replaceState`, and no `pagehide`
+listener writes history. Browsers without that API retain their last explicit link/history-button
+snapshot, without a new guarantee for later toolbar-only positions. Ordinary post pages keep native
+automatic restoration. This preserves the existing browser-history purpose and adds no optional
+persistence, service request, Worker change or private server browsing profile.
+
 Version 1.0.1 changes album presentation from long page grids to compact entries and a grouped
 carousel in the shared native photo viewer. The viewer continues to load on intent, keeps its
 selection in memory, and retains ordinary original-photo links without JavaScript. No service,

@@ -10,10 +10,17 @@ import { join } from 'node:path';
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
 import { dogs, orgChart } from '../../src/data/life';
-import { carsonGallery, dogGalleries, lifePhotos } from '../../src/data/photo-gallery';
+import {
+  carsonGallery,
+  dogGalleries,
+  familyPhotos,
+  lifePhotos,
+  weddingPhotos,
+} from '../../src/data/photo-gallery';
 
 const importedNames = [
   ...carsonGallery.photos,
+  ...familyPhotos,
   ...dogGalleries.flatMap((gallery) => gallery.photos.slice(2)),
   lifePhotos.find((photo) => photo.postId === 'watch-collecting')!,
 ].map((photo) => photo.name);
@@ -40,7 +47,7 @@ describe('approved personal albums', () => {
     expect(carsonGallery.photos.map((photo) => photo.name)).toEqual(
       Array.from({ length: 8 }, (_, index) => `carson-gallery-${index + 1}`),
     );
-    expect(new Set(importedNames).size).toBe(21);
+    expect(new Set(importedNames).size).toBe(23);
     const watch = await sharp(
       join(import.meta.dirname, '../../src/assets/photos/first-watch-new-photo.jpg'),
     ).metadata();
@@ -52,6 +59,28 @@ describe('approved personal albums', () => {
       expect(photo.alt.length, photo.name).toBeGreaterThan(15);
       expect(photo.caption.length, photo.name).toBeGreaterThan(0);
     }
+  });
+
+  it('keeps corrected subjects and supplied context attached to the right canonical photographs', () => {
+    const margot = dogGalleries[0]!.photos;
+    const quinn = dogGalleries[1]!.photos;
+    expect(margot[0]!.alt).toContain('yellow duck');
+    expect(margot[1]!.alt).toContain('glasses');
+    expect(margot[1]!.alt).not.toContain('bow tie');
+    expect(quinn[0]!.alt).toContain('glasses');
+    expect(quinn[1]!.caption).toContain('haircut');
+    expect(carsonGallery.photos[5]!.caption).toContain('Nashville SC');
+    expect(carsonGallery.photos[5]!.caption).toContain('Messi');
+    expect(carsonGallery.photos[6]!.alt).toContain('Jackson playing video games');
+    expect(carsonGallery.photos[0]!.postId).toBe('married-nicole');
+  });
+
+  it('adds two distinct approved family frames to Life and the existing wedding album', () => {
+    expect(familyPhotos.map((photo) => photo.name)).toEqual(['me-my-family', 'me-nicoles-family']);
+    expect(familyPhotos.every((photo) => photo.postId === 'married-nicole')).toBe(true);
+    expect(weddingPhotos.slice(-2)).toEqual(familyPhotos);
+    expect(new Set(weddingPhotos.map((photo) => photo.name)).size).toBe(weddingPhotos.length);
+    expect(weddingPhotos.every((photo) => !photo.name.includes('b-w'))).toBe(true);
   });
 
   it('keeps the household chart tied to the approved management, staff, and duties', () => {

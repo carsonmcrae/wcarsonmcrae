@@ -1,7 +1,7 @@
 /**
- * Purpose: Compact personal albums and their shared photo carousel.
- * Scope: Preview composition, native viewer controls, full-subject imagery, and responsive caption layout.
- * Does NOT belong: Shared dialog foundations, navigation, or content facts.
+ * Purpose: Preview complete personal albums without repeating captions below every image.
+ * Scope: Preview composition, hidden native fallback links and the remaining-photo badge.
+ * Does NOT belong: The shared viewer (photo-viewer.css), navigation, or content facts.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
@@ -60,69 +60,6 @@
   font-size: 0.8125rem;
   font-weight: 650;
   pointer-events: none;
-}
-.photo-viewer {
-  width: min(94vw, 65rem);
-  padding: clamp(0.75rem, 2vw, 1.5rem);
-}
-.photo-viewer figure {
-  margin: 0;
-  min-width: 0;
-}
-.photo-viewer img {
-  display: block;
-  width: 100%;
-  height: min(66dvh, 42rem);
-  object-fit: contain;
-  background: var(--wash);
-  border-radius: 12px;
-  touch-action: pan-y pinch-zoom;
-}
-.photo-viewer figcaption {
-  margin: 1rem auto 0;
-  max-width: 40rem;
-  color: var(--text);
-  font-size: 0.9375rem;
-  line-height: 1.6;
-}
-.photo-viewer__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
-}
-.photo-viewer .photo-viewer__close {
-  order: 1;
-  margin-left: auto;
-}
-.photo-viewer__position {
-  color: var(--muted);
-  font-size: 0.8125rem;
-  margin: 0;
-}
-.photo-viewer__navigation {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-.photo-viewer__navigation .control {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 2.75rem;
-}
-.photo-viewer [data-photo-related] {
-  margin-top: 1rem;
-}
-@media (max-width: 30rem) {
-  .photo-viewer img {
-    height: 55dvh;
-  }
-  .photo-viewer figcaption {
-    font-size: 0.875rem;
-  }
 }
 @media (forced-colors: active) {
   .album-preview__remaining {

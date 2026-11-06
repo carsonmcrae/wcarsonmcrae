@@ -6,21 +6,28 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { initPhotoViewer } from '../../src/lib/photo-viewer';
 import { albumPhotos, photoDetails } from '../../src/lib/photo-albums';
 const stops: (() => void)[] = [];
 afterEach(() => {
   for (const stop of stops.splice(0)) stop();
   document.body.innerHTML = '';
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
-function fixture() {
-  document.body.innerHTML = `<a href="/1.webp" data-photo data-photo-album="dogs" data-photo-alt="First dog" data-photo-caption="First caption" data-photo-post="/posts/dogs/" id="entry">View photos</a>
-  <div>${[1, 2, 3].map((number) => `<a href="/${number}.webp" data-photo data-photo-album="dogs"><img alt="Dog ${number}"></a>`).join('')}</div>
+function fixture(enhanced = false) {
+  document.body.innerHTML = `<a href="/1.webp" data-photo="photo-dog-1" data-photo-album="dogs" data-photo-alt="First dog" data-photo-caption="First caption" data-photo-post="/posts/dogs/" id="entry">View photos</a>
+  <div>${[1, 2, 3].map((number) => `<a href="/${number}.webp" data-photo="photo-dog-${number}" data-photo-album="dogs"><img alt="Dog ${number}"></a>`).join('')}</div>
   <a href="/other.webp" data-photo data-photo-album="other"><img alt="Other photo"></a>
   <dialog data-photo-viewer><button data-photo-close>Close</button><p data-photo-count></p><figure data-photo-stage><img data-photo-large><figcaption data-photo-caption-output></figcaption></figure><button data-photo-previous>Previous</button><button data-photo-next>Next</button><a data-photo-related hidden>Moment</a></dialog>`;
-  stops.push(initPhotoViewer(document));
   const dialog = document.querySelector('dialog')!;
+  if (enhanced)
+    dialog.insertAdjacentHTML(
+      'beforeend',
+      '<div data-photo-strip></div><p data-photo-announcement></p><div data-photo-reactions><button data-photo-react="heart"><span data-photo-reaction-count>—</span></button></div><p data-photo-reaction-status></p>',
+    );
+  stops.push(initPhotoViewer(document, enhanced ? 'https://api.test' : ''));
   const entry = document.querySelector<HTMLAnchorElement>('#entry')!;
   const key = (value: string) =>
     dialog.dispatchEvent(
@@ -60,6 +67,8 @@ it('resolves distinct album photos in order and preserves native single-photo de
     alt: 'First dog',
     caption: 'First caption',
     moment: '/posts/dogs/',
+    reactionId: 'photo-dog-1',
+    thumbnail: f.entry.href,
   });
   const standalone = document.createElement('a');
   standalone.innerHTML = '<img alt="Standalone">';
@@ -69,7 +78,47 @@ it('resolves distinct album photos in order and preserves native single-photo de
     alt: 'Standalone',
     caption: 'Standalone',
     moment: undefined,
+    reactionId: '',
+    thumbnail: standalone.href,
   });
+  standalone.querySelector('img')!.srcset = '  /tiny.webp 320w, /large.webp 800w';
+  expect(photoDetails(standalone).thumbnail).toBe('/tiny.webp');
+  standalone.querySelector('img')!.srcset = '  ';
+  expect(photoDetails(standalone).thumbnail).toBe(standalone.href);
+});
+
+it('composes thumbnail selection, announcements and photo-specific totals without double-moving or losing return focus', async () => {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn<typeof fetch>().mockResolvedValue(Response.json({ 'photo-dog-1': 4, 'photo-dog-2': 8 })),
+  );
+  const f = fixture(true);
+  const scroll = vi.spyOn(window, 'scrollTo');
+  f.entry.click();
+  const thumbnails = [...f.dialog.querySelectorAll<HTMLButtonElement>('[data-photo-strip] button')];
+  const total = f.dialog.querySelector('[data-photo-reaction-count]')!;
+  await vi.waitFor(() => expect(total.textContent).toBe('4'));
+  expect(fetch).toHaveBeenCalledWith('https://api.test/reactions', { cache: 'no-store' });
+  thumbnails[0]!.dispatchEvent(
+    new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }),
+  );
+  expect(f.count.textContent).toBe('Photo 2 of 3');
+  expect(f.image.alt).toBe('Dog 2');
+  expect(document.activeElement).toBe(thumbnails[1]);
+  expect(total.textContent).toBe('8');
+  expect(f.dialog.querySelector('[data-photo-announcement]')!.textContent).toBe(
+    'Photo 2 of 3. Dog 2',
+  );
+  expect(scroll).toHaveBeenCalledOnce();
+  const prevented = new KeyboardEvent('keydown', { key: 'ArrowRight', cancelable: true });
+  prevented.preventDefault();
+  f.dialog.dispatchEvent(prevented);
+  expect(f.count.textContent).toBe('Photo 2 of 3');
+  f.dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
+  expect(document.activeElement).toBe(f.entry);
+  const stop = stops.pop()!;
+  stop();
+  expect(f.dialog.querySelector('[data-photo-strip]')!.childNodes).toHaveLength(0);
 });
 it('opens at the chosen photo, wraps with buttons and arrows, and returns focus to its exact entry', () => {
   const f = fixture();

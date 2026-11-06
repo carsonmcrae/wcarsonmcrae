@@ -8,7 +8,7 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-const DESKTOP_QUERY = '(min-width: 40rem)';
+const DESKTOP_QUERY = '(min-width: 56rem)';
 
 export interface MenuController {
   open(): void;
@@ -29,6 +29,8 @@ export function initMenu(doc: Document, win: MenuWindow): MenuController | null 
   }
 
   const desktop = typeof win.matchMedia === 'function' ? win.matchMedia(DESKTOP_QUERY) : null;
+  const desktopVisible = () => doc.defaultView!.getComputedStyle(button).display === 'none';
+  const resize = typeof ResizeObserver === 'function' ? new ResizeObserver(onViewportChange) : null;
   let expanded = false;
   const modal = panel instanceof HTMLDialogElement ? panel : null;
   let touch: { x: number; y: number; open: boolean } | null = null;
@@ -71,6 +73,7 @@ export function initMenu(doc: Document, win: MenuWindow): MenuController | null 
       doc.removeEventListener('click', onDocumentClick);
       doc.removeEventListener('focusin', onFocusIn);
       desktop?.removeEventListener('change', onViewportChange);
+      resize?.disconnect();
       panel.removeEventListener('cancel', onCancel);
       doc.removeEventListener('touchstart', onTouchStart);
       doc.removeEventListener('touchend', onTouchEnd);
@@ -118,7 +121,7 @@ export function initMenu(doc: Document, win: MenuWindow): MenuController | null 
   }
   function onTouchStart(event: TouchEvent) {
     const point = event.touches[0];
-    if (!point || desktop?.matches) return;
+    if (!point || desktopVisible()) return;
     if (event.target instanceof Element && event.target.closest('a,button,input,select,textarea'))
       return;
     if (expanded || (point.clientX > 16 && point.clientX <= 48))
@@ -137,8 +140,8 @@ export function initMenu(doc: Document, win: MenuWindow): MenuController | null 
     }
   }
 
-  function onViewportChange(event: MediaQueryListEvent) {
-    if (event.matches) {
+  function onViewportChange() {
+    if (desktopVisible()) {
       controller.close();
     }
   }
@@ -149,6 +152,7 @@ export function initMenu(doc: Document, win: MenuWindow): MenuController | null 
   doc.addEventListener('click', onDocumentClick);
   doc.addEventListener('focusin', onFocusIn);
   desktop?.addEventListener('change', onViewportChange);
+  resize?.observe(button);
   panel.addEventListener('cancel', onCancel);
   doc.addEventListener('touchstart', onTouchStart, { passive: true });
   doc.addEventListener('touchend', onTouchEnd, { passive: true });

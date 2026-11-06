@@ -22,7 +22,7 @@ const start = () => {
   stops.push(
     deferControl(document, '[data-photo]', async () => {
       const { initPhotoViewer } = await import('../lib/photo-viewer');
-      return initPhotoViewer(document);
+      return initPhotoViewer(document, reactionEndpoint(import.meta.env['PUBLIC_REACTIONS_URL']));
     }),
     deferControl(
       document,

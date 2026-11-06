@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { clearPreferences, CONSENT_KEY } from '../../src/lib/consent';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   THEME_BOOTSTRAP_SCRIPT,
   THEME_STORAGE_KEY,
@@ -42,6 +42,7 @@ beforeEach(() => {
 
 afterEach(() => {
   document.body.innerHTML = '';
+  vi.unstubAllGlobals();
 });
 
 describe('theme helpers', () => {
@@ -73,6 +74,22 @@ describe('theme helpers', () => {
 
 describe('THEME_BOOTSTRAP_SCRIPT', () => {
   const run = () => new Function(THEME_BOOTSTRAP_SCRIPT)();
+  it('marks native entry restoration before paint even without a date query', () => {
+    const getState = vi.fn();
+    vi.stubGlobal('navigation', { currentEntry: { getState } });
+    for (const scrollY of [740, 0]) {
+      document.documentElement.removeAttribute('data-timeline-restore');
+      getState.mockReturnValue({ scrollY });
+      run();
+      expect(document.documentElement.hasAttribute('data-timeline-restore')).toBe(true);
+    }
+    for (const scrollY of [-1, NaN, Infinity, '740']) {
+      document.documentElement.removeAttribute('data-timeline-restore');
+      getState.mockReturnValue({ scrollY });
+      run();
+      expect(document.documentElement.hasAttribute('data-timeline-restore')).toBe(false);
+    }
+  });
 
   it('marks the document as JavaScript-enabled', () => {
     localStorage.clear();

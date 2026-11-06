@@ -39,7 +39,7 @@ export function oppositeTheme(theme: Theme): Theme {
  * which progressive enhancements (the mobile menu, reveal motion) rely on.
  * Without a saved choice, CSS follows the operating system setting.
  */
-export const THEME_BOOTSTRAP_SCRIPT = `(function(){var d=document.documentElement;d.classList.add('js');try{var c=JSON.parse(localStorage.getItem('${CONSENT_KEY}')||'null');if(c&&c.allowed===true&&c.expires>Date.now()){var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);}}}catch(e){}if(location.search.includes('date=')){d.setAttribute('data-timeline-restore','');}})();`;
+export const THEME_BOOTSTRAP_SCRIPT = `(function(){var d=document.documentElement;d.classList.add('js');try{var c=JSON.parse(localStorage.getItem('${CONSENT_KEY}')||'null');if(c&&c.allowed===true&&c.expires>Date.now()){var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);}}}catch(e){}var p=window.navigation?.currentEntry?.getState()?.scrollY;if(location.search.includes('date=')||(typeof p==='number'&&Number.isFinite(p)&&p>=0)){d.setAttribute('data-timeline-restore','');}})();`;
 
 type ThemeWindow = Pick<Window, 'localStorage' | 'matchMedia'>;
 

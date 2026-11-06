@@ -5,7 +5,8 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures';
 import { carsonGallery, dogGalleries } from '../../src/data/photo-gallery';
 import { expectNoViolations } from './helpers';
 const albums = [
@@ -23,23 +24,23 @@ for (const album of albums) {
     await expect(preview.locator('figcaption')).toHaveCount(0);
     const entry = preview.locator('.album-preview__action');
     await entry.scrollIntoViewIfNeeded();
-    const position = await page.evaluate(() => scrollY);
     await entry.click();
     const viewer = page.locator('[data-photo-viewer]');
     await expect(viewer).toBeVisible();
+    const position = await page.evaluate(() => scrollY);
     await expectNoViolations(page);
     const count = viewer.locator('[data-photo-count]');
     for (const [index, photo] of album.photos.entries()) {
       await expect(count).toHaveText(`Photo ${index + 1} of ${album.photos.length}`);
-      await expect(viewer.locator('img')).toHaveAttribute('alt', photo.alt);
+      await expect(viewer.locator('[data-photo-large]')).toHaveAttribute('alt', photo.alt);
       await expect
         .poll(() =>
           viewer
-            .locator('img')
+            .locator('[data-photo-large]')
             .evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0),
         )
         .toBe(true);
-      await expect(viewer.locator('figcaption')).toHaveText(photo.caption);
+      await expect(viewer.locator('[data-photo-caption-output]')).toHaveText(photo.caption);
       if (photo.postId)
         await expect(viewer.locator('[data-photo-related]')).toHaveAttribute(
           'href',
@@ -79,7 +80,7 @@ for (const album of albums) {
     const thirdPreview = preview.locator('.photo-gallery > li:visible [data-photo]').nth(2);
     const selectedAlt = await thirdPreview.locator('img').getAttribute('alt');
     await thirdPreview.click();
-    await expect(viewer.locator('img')).toHaveAttribute('alt', selectedAlt!);
+    await expect(viewer.locator('[data-photo-large]')).toHaveAttribute('alt', selectedAlt!);
     if (album.path === 'life/') {
       await page.keyboard.press('Escape');
       await page.locator(`.dog > .photo [data-photo-album="${album.id}"]`).click();

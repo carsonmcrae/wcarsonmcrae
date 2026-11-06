@@ -11,6 +11,7 @@ import { currentVersion, releases } from '../../src/data/releases';
 
 const release = (version = '1.0.0') => ({
   version,
+  date: '2026-11-03',
   title: 'An update',
   summary: 'Useful changes.',
   sections: [{ id: 'changes', title: 'Changes', items: ['Browse moments.'] }],
@@ -68,6 +69,39 @@ describe('release consistency', () => {
         'Release history must be unique and newest first.',
       );
     expect(check({ releases: [release(), release('0.9.1'), release('0.9.0')] })).toEqual([]);
+  });
+  it.each([
+    '',
+    '2026-11',
+    '2026-1-05',
+    '2026-11-05T00:00:00Z',
+    '2026-00-01',
+    '2026-13-01',
+    '2026-02-29',
+    '2026-04-31',
+    '1900-02-29',
+  ])('rejects a missing, partial, or impossible release date: %s', (date) => {
+    expect(check({ releases: [{ ...release(), date }] })).toContain(
+      'Release 1.0.0 needs a real YYYY-MM-DD calendar date.',
+    );
+  });
+  it.each(['2024-02-29', '2000-02-29', '2026-11-05'])(
+    'accepts a real full calendar date: %s',
+    (date) => expect(check({ releases: [{ ...release(), date }] })).toEqual([]),
+  );
+  it('preserves the approved historical calendar dates', () => {
+    expect(Object.fromEntries(releases.map(({ version, date }) => [version, date]))).toMatchObject({
+      '1.0.0': '2026-11-03',
+      '1.0.1': '2026-11-05',
+      '1.1.0': '2026-11-05',
+    });
+  });
+  it('reports an omitted date as a policy error rather than crashing the release check', () => {
+    const undated = release();
+    Reflect.deleteProperty(undated, 'date');
+    expect(check({ releases: [undated] })).toContain(
+      'Release 1.0.0 needs a real YYYY-MM-DD calendar date.',
+    );
   });
   it('requires meaningful note content', () => {
     for (const patch of [{ title: ' ' }, { summary: '' }, { sections: [] }])

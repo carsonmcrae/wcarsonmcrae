@@ -5,24 +5,21 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures';
+import { qualifyTimelineShortcuts, timelineShortcuts } from './helpers';
 
 test('timeline shortcuts require user scrolling and hide the direction that is already reached', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('');
-  const up = page.getByRole('button', { name: 'Top of timeline, newest moment' });
-  const down = page.getByRole('button', { name: 'Bottom of timeline, oldest moment' });
+  const { up, down } = timelineShortcuts(page);
   await expect(up).toBeHidden();
   await expect(down).toBeHidden();
   await page.goto('?date=2022-05');
   await expect(page.locator('#moment-vanderbilt-graduation')).toBeInViewport();
-  await expect(up).toBeHidden();
-  await expect(down).toBeHidden();
-  await page.keyboard.press('PageDown');
-  await expect(up).toBeVisible();
-  await expect(down).toBeVisible();
+  await qualifyTimelineShortcuts(page);
   await up.click();
   await expect(up).toBeHidden();
   await expect(down).toBeVisible();

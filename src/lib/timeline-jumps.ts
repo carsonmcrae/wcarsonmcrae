@@ -1,6 +1,6 @@
 /**
  * Purpose: Offer timeline edge shortcuts only after an actual user scroll into the feed.
- * Scope: Scroll intent qualification, shared reading geometry, edge visibility, and cleanup.
+ * Scope: Scroll intent qualification, dock-relative placement, useful directions, and cleanup.
  * Does NOT belong: Date navigation or programmatic scroll restoration.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -14,21 +14,31 @@ const SCROLL_KEYS = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home
 
 export function initTimelineJumps(doc: Document, win: JumpWindow): () => void {
   const root = doc.querySelector<HTMLElement>('[data-timeline]');
-  const group = doc.querySelector<HTMLElement>('.timeline-jumps');
-  if (!root || !group) return () => {};
-  const up = group.querySelector<HTMLButtonElement>('[data-timeline-edge="newest"]')!;
-  const down = group.querySelector<HTMLButtonElement>('[data-timeline-edge="oldest"]')!;
+  const up = doc.querySelector<HTMLButtonElement>('[data-timeline-edge="newest"]');
+  const down = doc.querySelector<HTMLButtonElement>('[data-timeline-edge="oldest"]');
+  if (!root || !up || !down) return () => {};
+  const dockSlot = up.parentElement!;
+  const pageSlot = down.parentElement!;
+  const position = (dockVisible: boolean) => {
+    const slot = dockVisible ? dockSlot : pageSlot;
+    if (up.parentElement !== slot) {
+      const focused = doc.activeElement === up;
+      slot.prepend(up);
+      if (focused) up.focus({ preventScroll: true });
+    }
+    up.toggleAttribute('data-dock-detached', !dockVisible);
+  };
   let userScroll = false;
   let qualified = false;
   let previous = win.scrollY;
   const update = () => {
     const view = readTimelineViewport(root, win);
+    position(view.dockVisible);
     if (!view.inside && userScroll) qualified = false;
     if (view.inside && userScroll && previous !== win.scrollY) qualified = true;
     previous = win.scrollY;
     up.hidden = !view.inside || !qualified || view.atStart;
     down.hidden = !view.inside || !qualified || view.atEnd;
-    group.hidden = up.hidden && down.hidden;
   };
   const arm = () => {
     userScroll = true;
@@ -70,6 +80,8 @@ export function initTimelineJumps(doc: Document, win: JumpWindow): () => void {
     win.removeEventListener('scrollend', disarm);
     win.removeEventListener('resize', resize);
     doc.removeEventListener('daysforth:history', update);
-    group.hidden = true;
+    up.hidden = true;
+    down.hidden = true;
+    position(true);
   };
 }

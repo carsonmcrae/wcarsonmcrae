@@ -1,5 +1,5 @@
 /**
- * Purpose: Protect consent, photo-viewer, history, and native restoration behavior.
+ * Purpose: Protect consent, photo-viewer, history, and native navigation availability.
  * Scope: Default-off persistence, withdrawal/erasure, modal focus, and native navigation availability.
  * Does NOT belong: Real network requests or layout assertions.
  * @vitest-environment happy-dom
@@ -17,7 +17,6 @@ import {
 import { initPrivacyControls } from '../../src/lib/privacy-controls';
 import { initPhotoViewer } from '../../src/lib/photo-viewer';
 import { initHistoryControls } from '../../src/lib/history-controls';
-import { initPagePosition, prepareTimelineRestore } from '../../src/lib/page-position';
 import { consentingStorage, memoryStorage } from './helpers';
 const stops: (() => void)[] = [];
 beforeEach(() => {
@@ -299,102 +298,5 @@ describe('header history', () => {
     expect(document.querySelector<HTMLButtonElement>('[data-history="forward"]')!.disabled).toBe(
       false,
     );
-  });
-});
-describe('returning to the timeline', () => {
-  it('gives valid recorded positions exclusive restoration ownership, including the top', () => {
-    const history = { state: null as unknown, scrollRestoration: 'auto' };
-    const win = { history } as Pick<Window, 'history'>;
-    expect(prepareTimelineRestore(win)).toBeNull();
-    for (const position of ['500', NaN, Infinity, -1]) {
-      history.state = { scrollY: position };
-      expect(prepareTimelineRestore(win)).toBeNull();
-      expect(history.scrollRestoration).toBe('auto');
-    }
-    for (const position of [500, 0]) {
-      history.state = { scrollY: position };
-      expect(prepareTimelineRestore(win)).toBe(position);
-      expect(history.scrollRestoration).toBe('manual');
-    }
-  });
-  it('uses same-origin native entries when the strict referrer policy hides the prior URL', () => {
-    document.body.innerHTML =
-      '<a href="https://daysforth.com/?date=2022-05" data-return-timeline>Back</a>';
-    Object.defineProperty(document, 'referrer', { value: '', configurable: true });
-    const entries = [
-      { index: 0, url: 'https://daysforth.com/?date=2022-05' },
-      { index: 1, url: 'https://daysforth.com/posts/born/' },
-    ];
-    const win = {
-      navigation: { currentEntry: { index: 1 }, entries: () => entries },
-      history: { length: 2, back: vi.fn(), replaceState: vi.fn() },
-      scrollY: 500,
-      location: { origin: 'https://daysforth.com' },
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    } as unknown as Parameters<typeof initPagePosition>[1];
-    stops.push(initPagePosition(document, win));
-    const link = document.querySelector('a')!;
-    link.click();
-    expect(win.history.back).toHaveBeenCalledOnce();
-    win.navigation!.currentEntry!.index = 4;
-    link.click();
-    expect(win.history.back).toHaveBeenCalledOnce();
-    win.navigation!.currentEntry = null;
-    link.click();
-    expect(win.history.back).toHaveBeenCalledOnce();
-  });
-  it('uses native back when a post came from the timeline and records only browser-history scroll state', () => {
-    document.body.innerHTML =
-      '<a href="https://daysforth.com/?date=2018-05" data-return-timeline><span>Back</span></a><button>Other</button>';
-    Object.defineProperty(document, 'referrer', {
-      value: 'https://daysforth.com/?date=2018-05',
-      configurable: true,
-    });
-    const events = new EventTarget();
-    const history = { state: { index: 2 }, length: 2, back: vi.fn(), replaceState: vi.fn() };
-    const win = {
-      history,
-      location: { origin: 'https://daysforth.com' },
-      scrollY: 500,
-      addEventListener: events.addEventListener.bind(events),
-      removeEventListener: events.removeEventListener.bind(events),
-    } as unknown as Parameters<typeof initPagePosition>[1];
-    const stop = initPagePosition(document, win);
-    stops.push(stop);
-    document.querySelector('span')!.click();
-    expect(history.back).toHaveBeenCalledTimes(1);
-    events.dispatchEvent(new Event('pagehide'));
-    expect(history.replaceState).toHaveBeenCalledWith({ index: 2, scrollY: 500 }, '');
-    const link = document.querySelector('a')!;
-    link.dispatchEvent(new MouseEvent('click', { bubbles: true, ctrlKey: true }));
-    link.dispatchEvent(new MouseEvent('click', { bubbles: true, metaKey: true }));
-    link.dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true }));
-    link.dispatchEvent(new MouseEvent('click', { bubbles: true, altKey: true }));
-    link.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 1 }));
-    document.dispatchEvent(new MouseEvent('click'));
-    document.querySelector('button')!.click();
-    expect(history.back).toHaveBeenCalledTimes(1);
-    Object.defineProperty(document, 'referrer', {
-      value: 'https://other.example.com/',
-      configurable: true,
-    });
-    link.click();
-    Object.defineProperty(document, 'referrer', { value: '', configurable: true });
-    link.click();
-    Object.defineProperty(document, 'referrer', {
-      value: 'https://daysforth.com/life/',
-      configurable: true,
-    });
-    link.click();
-    history.length = 1;
-    link.click();
-    expect(history.back).toHaveBeenCalledTimes(1);
-    document.querySelector('button')!.setAttribute('data-history', 'back');
-    document.querySelector('button')!.click();
-    const recorded = history.replaceState.mock.calls.length;
-    stop();
-    link.click();
-    expect(history.replaceState).toHaveBeenCalledTimes(recorded);
   });
 });

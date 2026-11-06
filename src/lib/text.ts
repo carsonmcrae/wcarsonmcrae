@@ -1,7 +1,7 @@
 /**
  * Purpose: Small helpers for writing lists and dates the way a person would.
  * Scope: The separator before each item of an English list ("A and B", "A, B, and C"), joining
- *   plain strings into such a list, and long-form dates in Nashville's time zone.
+ *   plain strings into such a list, long-form timestamps in Nashville, and timezone-stable calendar dates.
  * Does NOT belong: Markdown rendering (src/lib/inline-markdown.ts) or the content (src/data).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -29,4 +29,9 @@ export function formatDate(date: Date, timeZone = 'America/Chicago'): string {
     year: 'numeric',
     timeZone,
   }).format(date);
+}
+
+/** Date-only content retains its calendar day, independently of the visitor’s time zone. */
+export function formatDateOnly(date: string): string {
+  return formatDate(new Date(`${date}T12:00:00Z`), 'UTC');
 }

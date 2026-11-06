@@ -22,18 +22,26 @@ export function startTimeline() {
   if (document.querySelector('[data-action-notice]')) {
     const endpoint = reactionEndpoint(import.meta.env['PUBLIC_REACTIONS_URL']);
     const state = initPostActions(document, globalThis, endpoint);
-    const stopActions = deferControl(document, '[data-post-actions] button', async () => {
-      const [{ attachPostActionEvents }, { initActionNotice }] = await Promise.all([
-        import('../lib/post-action-events'),
-        import('../lib/notices'),
-      ]);
-      const notice = initActionNotice(document, globalThis);
-      const stop = attachPostActionEvents(document, globalThis, endpoint, state, notice.show);
-      return () => {
-        notice.destroy();
-        stop();
-      };
-    });
+    let activate: (target: Element) => Promise<void>;
+    const stopActions = deferControl(
+      document,
+      '[data-post-actions] button',
+      async () => {
+        const [{ attachPostActionEvents }, { initActionNotice }] = await Promise.all([
+          import('../lib/post-action-events'),
+          import('../lib/notices'),
+        ]);
+        const notice = initActionNotice(document, globalThis);
+        const events = attachPostActionEvents(document, globalThis, endpoint, state, notice.show);
+        activate = events.activate;
+        return () => {
+          notice.destroy();
+          events.destroy();
+        };
+      },
+      // deferControl initializes the adapter before delivering each buffered command.
+      { activate: (target) => void activate(target) },
+    );
     stops.push(stopActions, state.destroy);
   }
   return () => {

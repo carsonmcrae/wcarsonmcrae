@@ -11,6 +11,7 @@ import { getPhoto, getProjectImage } from '../lib/images';
 import { withBase } from '../lib/paths';
 import MomentImage from './MomentImage.astro';
 import Icon from './Icon.astro';
+import { photoReactionId } from '../lib/photo-reaction-id';
 interface Props {
   name: string;
   alt: string;
@@ -49,7 +50,7 @@ const large = source
     href={large.src}
     class:list={['photo-open', className]}
     aria-label={label ? undefined : alt}
-    data-photo
+    data-photo={photoReactionId(name, kind)}
     data-photo-album={album}
     data-photo-alt={label ? alt : undefined}
     data-photo-caption={caption === alt ? undefined : caption}

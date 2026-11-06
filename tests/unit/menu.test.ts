@@ -9,7 +9,8 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { initMenu } from '../../src/lib/menu';
-import { fakeMediaQuery } from './helpers';
+import { disposeDocument, fakeMediaQuery } from './helpers';
+const stops: (() => void)[] = [];
 
 function setup({ withMatchMedia = true } = {}) {
   document.body.innerHTML = `
@@ -25,13 +26,15 @@ function setup({ withMatchMedia = true } = {}) {
     matchMedia: withMatchMedia ? () => media : undefined,
   } as unknown as Pick<Window, 'matchMedia'>;
   const menu = initMenu(document, win);
+  stops.push(menu!.destroy);
   const button = document.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
   const panel = document.getElementById('site-nav')!;
   return { menu: menu!, media, button, panel };
 }
 
 afterEach(() => {
-  document.body.innerHTML = '';
+  disposeDocument(stops);
+  vi.unstubAllGlobals();
 });
 
 describe('initMenu', () => {
@@ -117,6 +120,7 @@ describe('initMenu', () => {
     touch('touchstart', 200);
     touch('touchend', 100);
     expect(menu.isOpen()).toBe(false);
+    document.querySelector<HTMLElement>('[data-menu-toggle]')!.style.display = 'none';
     media.change(true);
     touch('touchstart', 20);
     touch('touchend', 100);
@@ -125,6 +129,7 @@ describe('initMenu', () => {
     touch('touchstart', 20);
     touch('touchend', 100);
     expect(dialog.open).toBe(false);
+    document.querySelector<HTMLElement>('[data-menu-toggle]')!.style.display = '';
     const fallback = initMenu(document, { matchMedia: undefined } as unknown as Pick<
       Window,
       'matchMedia'
@@ -210,10 +215,46 @@ describe('initMenu', () => {
   });
 
   it('closes when the viewport grows to the desktop layout', () => {
-    const { menu, media } = setup();
+    const { menu, media, button } = setup();
     menu.open();
     media.change(false);
     expect(menu.isOpen()).toBe(true);
+    button.style.display = 'none';
+    media.change(true);
+    expect(menu.isOpen()).toBe(false);
+  });
+
+  it('follows the visible container layout when enlarged text disagrees with the viewport query', () => {
+    let resized!: ResizeObserverCallback;
+    const observe = vi.fn();
+    const disconnect = vi.fn();
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: ResizeObserverCallback) {
+          resized = callback;
+        }
+        observe = observe;
+        disconnect = disconnect;
+      },
+    );
+    const { menu, button, media } = setup();
+    menu.open();
+    media.change(true);
+    expect(menu.isOpen()).toBe(true);
+    expect(observe).toHaveBeenCalledWith(button);
+    button.style.display = 'none';
+    resized([], {} as ResizeObserver);
+    expect(menu.isOpen()).toBe(false);
+    menu.destroy();
+    expect(disconnect).toHaveBeenCalled();
+  });
+
+  it('keeps native viewport notifications usable when ResizeObserver is unavailable', () => {
+    vi.stubGlobal('ResizeObserver', undefined);
+    const { menu, button, media } = setup();
+    menu.open();
+    button.style.display = 'none';
     media.change(true);
     expect(menu.isOpen()).toBe(false);
   });

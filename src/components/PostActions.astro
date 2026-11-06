@@ -6,7 +6,6 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { absoluteUrl } from '../lib/paths';
 interface Props {
   id: string;
   title: string;
@@ -14,9 +13,4 @@ interface Props {
 const { id, title } = Astro.props;
 ---
 
-<div
-  class="post-actions enhancement"
-  data-post-actions={id}
-  data-post-title={title}
-  data-post-url={absoluteUrl(`/posts/${id}/`, Astro.site!.origin)}
-></div>
+<div class="post-actions enhancement" data-post-actions={id} data-post-title={title}></div>

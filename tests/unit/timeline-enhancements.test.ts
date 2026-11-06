@@ -21,7 +21,7 @@ afterEach(() => {
 
 function timeline() {
   document.body.innerHTML =
-    '<header class="site-header"></header><section data-timeline><div class="timeline-dock"></div><div data-timeline-groups></div></section><div class="timeline-jumps" hidden><button data-timeline-edge="newest"></button><button data-timeline-edge="oldest"></button></div><input>';
+    '<header class="site-header"></header><section data-timeline><div class="timeline-dock"><div class="timeline-jumps"><button data-timeline-edge="newest" hidden></button></div></div><div data-timeline-groups></div></section><div class="timeline-jumps"><button data-timeline-edge="oldest" hidden></button></div><input>';
   const root = document.querySelector<HTMLElement>('[data-timeline]')!;
   const geometry = {
     header: 56,
@@ -43,8 +43,7 @@ function timeline() {
     height: geometry.height,
   }));
   vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(800);
-  const group = document.querySelector<HTMLElement>('.timeline-jumps')!;
-  const [up, down] = Array.from(group.querySelectorAll('button')) as [
+  const [up, down] = Array.from(document.querySelectorAll('button')) as [
     HTMLButtonElement,
     HTMLButtonElement,
   ];
@@ -52,7 +51,7 @@ function timeline() {
     window.scrollTo(0, value);
     window.dispatchEvent(new Event('scroll'));
   };
-  return { root, geometry, group, up, down, scroll };
+  return { root, geometry, up, down, scroll, isHidden: () => up.hidden && down.hidden };
 }
 
 it('shares geometry that excludes the profile, empty feed, footer and offscreen header', () => {
@@ -64,6 +63,7 @@ it('shares geometry that excludes the profile, empty feed, footer and offscreen 
     atStart: true,
     atEnd: false,
     readingTop: 250,
+    dockVisible: true,
   });
   Object.assign(f.geometry, { contentTop: -50, contentBottom: 780 });
   expect(readTimelineViewport(f.root, window)).toEqual({
@@ -71,6 +71,7 @@ it('shares geometry that excludes the profile, empty feed, footer and offscreen 
     atStart: false,
     atEnd: true,
     readingTop: 250,
+    dockVisible: true,
   });
   f.geometry.height = 0;
   expect(readTimelineViewport(f.root, window).inside).toBe(false);
@@ -86,9 +87,11 @@ it('has no shortcuts to initialize on other pages or without their controls', ()
   stops.push(initTimelineJumps(document, window), initMediaAffordances(document, window));
   document.body.innerHTML = '<section data-timeline></section>';
   stops.push(initTimelineJumps(document, window));
+  document.querySelector('[data-timeline]')!.innerHTML = '<button data-timeline-edge="newest">';
+  stops.push(initTimelineJumps(document, window));
   expect(listen).not.toHaveBeenCalled();
   expect(input).not.toHaveBeenCalled();
-  expect(document.querySelector('[data-timeline]')!.children).toHaveLength(0);
+  expect(document.querySelector('[data-timeline-edge="newest"]')!.textContent).toBe('');
 });
 
 it('ignores layout/date jumps, qualifies actual scrolling, and suppresses useless edge directions', () => {
@@ -97,20 +100,20 @@ it('ignores layout/date jumps, qualifies actual scrolling, and suppresses useles
   stops.push(stop);
   window.dispatchEvent(new Event('wheel'));
   f.scroll(100);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   window.dispatchEvent(new Event('scrollend'));
   Object.assign(f.geometry, { top: 50, contentTop: 260 });
   f.scroll(700);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   window.dispatchEvent(new Event('wheel'));
   f.scroll(700);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   f.scroll(710);
   expect([f.up.hidden, f.down.hidden]).toEqual([true, false]);
   window.dispatchEvent(new Event('scrollend'));
   f.geometry.top = 100;
   f.scroll(720);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   f.geometry.top = 50;
   f.scroll(730);
   expect([f.up.hidden, f.down.hidden]).toEqual([true, false]);
@@ -123,22 +126,22 @@ it('ignores layout/date jumps, qualifies actual scrolling, and suppresses useles
   expect([f.up.hidden, f.down.hidden]).toEqual([false, true]);
   f.geometry.bottom = 30;
   f.scroll(1000);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   window.dispatchEvent(new Event('scrollend'));
   f.geometry.bottom = 2400;
   f.scroll(800);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   window.dispatchEvent(new Event('touchmove'));
   f.scroll(810);
   expect(f.up.hidden).toBe(false);
   f.geometry.height = 0;
   document.dispatchEvent(new CustomEvent('daysforth:history'));
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   stop();
   f.geometry.height = 1000;
   window.dispatchEvent(new Event('wheel'));
   f.scroll(900);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
 });
 
 it('distinguishes scroll keys and scrollbar intent from form/date controls or resize', () => {
@@ -148,17 +151,17 @@ it('distinguishes scroll keys and scrollbar intent from form/date controls or re
   const input = document.querySelector('input')!;
   input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
   f.scroll(10);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
   f.scroll(20);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'PageDown', bubbles: true }));
   window.dispatchEvent(new Event('resize'));
   f.scroll(30);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
   f.scroll(40);
-  expect(f.group.hidden).toBe(true);
+  expect(f.isHidden()).toBe(true);
   vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(500);
   document.documentElement.dispatchEvent(
     new PointerEvent('pointerdown', { clientX: 520, bubbles: true }),
@@ -171,6 +174,33 @@ it('distinguishes scroll keys and scrollbar intent from form/date controls or re
   document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'PageDown', bubbles: true }));
   f.scroll(60);
   expect(f.down.hidden).toBe(false);
+});
+
+it('keeps the upper shortcut at the viewport after an unstuck dock scrolls away, preserving focus', () => {
+  const f = timeline();
+  const home = f.up.parentElement;
+  Object.assign(f.geometry, { top: 50, contentTop: 100 });
+  const stop = initTimelineJumps(document, window);
+  stops.push(stop);
+  window.dispatchEvent(new Event('touchmove'));
+  f.scroll(10);
+  f.up.focus();
+  f.geometry.dock = -20;
+  f.scroll(20);
+  expect(f.up.parentElement).toBe(f.down.parentElement);
+  expect(f.up.hasAttribute('data-dock-detached')).toBe(true);
+  expect(document.activeElement).toBe(f.up);
+  f.geometry.dock = 200;
+  f.scroll(30);
+  expect(f.up.parentElement).toBe(home);
+  expect(f.up.hasAttribute('data-dock-detached')).toBe(false);
+  f.up.blur();
+  f.geometry.dock = 0;
+  f.scroll(40);
+  expect(f.up.parentElement).toBe(f.down.parentElement);
+  stop();
+  expect(f.up.parentElement).toBe(home);
+  expect(f.up.hidden).toBe(true);
 });
 
 function media() {

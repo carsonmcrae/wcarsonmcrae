@@ -15,6 +15,9 @@ import { describe, expect, it } from 'vitest';
 import { BASE, DIST, htmlPages, parse, resolveInternal, SITE, urlPathFor } from './dist';
 import { postAliases } from '../../src/data/post-aliases';
 import { releases } from '../../src/data/releases';
+import { timelinePosts } from '../../src/data/timeline';
+import { readMomentCards } from '../../src/lib/timeline-render';
+import { visibleMoments } from '../../src/lib/timeline-model';
 
 const pages = htmlPages.map((file) => ({ file, document: parse(file) }));
 const meta = (document: Document, key: string) =>
@@ -22,6 +25,15 @@ const meta = (document: Document, key: string) =>
   '';
 
 describe('the build', () => {
+  it('keeps optional milestone metadata readable by the client filter', () => {
+    const home = parse('index.html');
+    const cards = readMomentCards(home);
+    expect(new Set(visibleMoments(cards, 'Milestones').map((card) => card.id))).toEqual(
+      new Set(timelinePosts.filter((post) => post.milestone).map((post) => post.id)),
+    );
+    expect(home.querySelector('[data-milestone="false"]')).toBeNull();
+  });
+
   it('produced every page', () => {
     for (const file of [
       'index.html',

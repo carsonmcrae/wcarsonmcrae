@@ -18,7 +18,7 @@ import regexp from 'eslint-plugin-regexp';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-export default defineConfig([
+const configuration = defineConfig([
   globalIgnores([
     'dist/',
     'dist-*/',
@@ -89,4 +89,14 @@ export default defineConfig([
       ],
     },
   },
+  {
+    files: ['src/components/PhotoViewer.astro'],
+    rules: {
+      // At 200% text, WebKit clips the caption unless its named scroll region can receive Tab focus.
+      // Keep static tab stops forbidden; allow this component’s region role without disabling the rule.
+      'astro/jsx-a11y/no-noninteractive-tabindex': ['error', { roles: ['region'] }],
+    },
+  },
 ]);
+
+export default configuration;

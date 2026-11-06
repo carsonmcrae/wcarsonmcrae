@@ -13,9 +13,19 @@ import SecondaryHero from '../components/SecondaryHero.astro';
 import PostMedia from '../components/PostMedia.astro';
 import PhotoGallery from '../components/PhotoGallery.astro';
 import Icon from '../components/Icon.astro';
-import { dogGalleries, lifePhotos } from '../data/photo-gallery';
+import { dogGalleries, familyPhotos, lifePhotos } from '../data/photo-gallery';
 import Section from '../components/Section.astro';
-import { dogs, dogsIntro, interests, interestsIntro, lifeIntro, nicole, now } from '../data/life';
+import {
+  dogs,
+  dogsIntro,
+  familyIntro,
+  interests,
+  interestsIntro,
+  lifeIntro,
+  nicole,
+  now,
+  outAndAbout,
+} from '../data/life';
 import { timelinePosts } from '../data/timeline';
 import { pages } from '../data/site';
 import { withBase } from '../lib/paths';
@@ -64,7 +74,7 @@ const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
       </div>
       <OrgChart />
     </Section>
-    <Section title="Out and about" id="photos" wide>
+    <Section title={outAndAbout.title} id="photos" lede={outAndAbout.lede} wide>
       <PhotoGallery photos={lifePhotos} id="life-photos" layout="pairs" />
     </Section>
     <Section title={interestsIntro.title} id="interests" lede={interestsIntro.lede} wide>
@@ -76,6 +86,9 @@ const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
           </div>
         ))}
       </dl>
+    </Section>
+    <Section title={familyIntro.title} id="family" lede={familyIntro.lede} wide>
+      <PhotoGallery photos={familyPhotos} id="family-photos" layout="pairs" />
     </Section>
   </div>
 </BaseLayout>

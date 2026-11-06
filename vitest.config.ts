@@ -28,6 +28,7 @@ export default defineConfig({
         'scripts/*.mjs',
         'workers/**/src/*.ts',
         'astro.config.mjs',
+        'eslint.config.js',
         'playwright.config.ts',
       ],
       exclude: ['**/*.d.ts', 'src/data/types.ts'],

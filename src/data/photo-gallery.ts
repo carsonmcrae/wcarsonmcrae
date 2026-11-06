@@ -1,6 +1,6 @@
 /**
  * Purpose: Approved albums and links from Life photographs to their timeline moments.
- * Scope: Distinct wedding photographs, dog albums, Carson’s gallery, and hobby photographs.
+ * Scope: Distinct wedding and family photographs, dog albums, Carson’s gallery, and hobbies.
  * Does NOT belong: Rendering, image processing, or unconfirmed dates.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -10,42 +10,64 @@ import { galleryPhotos } from '../lib/content-records';
 export interface GalleryPhoto extends PostPhoto {
   postId?: string;
 }
-export const weddingPhotos = galleryPhotos({
-  weddingInside: [
-    'nicole-carson-1',
-    'Nicole and Carson inside on their wedding day',
-    'October 2026',
+export const familyPhotos = galleryPhotos({
+  carsonsFamily: [
+    'me-my-family',
+    'Nicole and Carson with Carson’s family at their outdoor wedding ceremony',
+    'The family I’ve had by my side my whole life, together on our wedding day.',
     'married-nicole',
   ],
-  withFriends: [
-    'carson-friends',
-    'Carson with friends at the wedding',
-    'With friends · October 2026',
+  nicolesFamily: [
+    'me-nicoles-family',
+    'Nicole and Carson with Nicole’s family at their outdoor wedding ceremony',
+    'My new family, together on our wedding day.',
     'married-nicole',
   ],
 });
+export const weddingPhotos = [
+  ...galleryPhotos({
+    weddingInside: [
+      'nicole-carson-1',
+      'Nicole and Carson inside on their wedding day',
+      'October 2026',
+      'married-nicole',
+    ],
+    withFriends: [
+      'carson-friends',
+      'Carson with friends at the wedding',
+      'With friends · October 2026',
+      'married-nicole',
+    ],
+  }),
+  ...familyPhotos,
+];
 export const margotPhotos = galleryPhotos({
   grownMargot: [
     'margot-1',
-    'Margot, a golden apricot doodle',
-    'Margot, a little more grown up',
+    'Margot sitting beside a bed with a yellow duck toy on her head',
+    'Margot, feeling silly.',
     'margot-arrives',
   ],
   margotGlasses: [
     'margot-2',
-    'Margot wearing glasses and a dark bow tie',
-    'The glasses and bow tie',
+    'Margot wearing glasses on a gray sofa',
+    'A reminder that Margot is management.',
     'margot-arrives',
   ],
 });
 export const quinnPhotos = galleryPhotos({
   grownQuinn: [
     'quinn-1',
-    'Quinn, a black doodle with white markings',
-    'Quinn, a little more grown up',
+    'Quinn wearing glasses on a gray sofa, with white markings on her chest and paws',
+    'The less serious of our two managers.',
     'quinn-arrives',
   ],
-  quinnAtHome: ['quinn-2', 'Quinn sitting indoors with her mouth open', 'At home', 'quinn-arrives'],
+  quinnAtHome: [
+    'quinn-2',
+    'Quinn smiling beside a gray loveseat after a short haircut',
+    'Still smiling after a haircut that went a little too short.',
+    'quinn-arrives',
+  ],
 });
 export const dogGalleries = [
   {
@@ -58,32 +80,32 @@ export const dogGalleries = [
         gardenSwing: [
           'margot-gallery-1',
           'Carson holding Margot as a puppy on a garden swing',
-          'On the garden swing',
+          'Margot’s first photoshoot. She looked so much like a golden retriever puppy.',
         ],
         snowAtNight: [
           'margot-gallery-2',
           'Margot sitting in the snow at night',
-          'A snow day, after dark',
+          'Her first time seeing snow.',
         ],
         christmasTree: [
           'margot-gallery-3',
           'Margot in front of a decorated Christmas tree',
-          'By the Christmas tree',
+          'Margot’s first Christmas.',
         ],
         rockView: [
           'margot-gallery-4',
           'Carson and Margot sitting on a rock above a wooded landscape',
-          'Taking in the view',
+          'Margot likes an adventure. We’ve taken her on a few hikes; she even learned to swim on one.',
         ],
         garden: [
           'margot-gallery-5',
-          'Margot sitting in the garden with her tongue out',
-          'In the garden',
+          'Margot posing on the lawn with her wavy golden coat and tongue out',
+          'Very good at posing, with a beautiful wavy coat to show off.',
         ],
         fireplaceDecoration: [
           'margot-gallery-6',
           'Margot touching noses with a dog decoration beside the fireplace',
-          'Meeting the decorations',
+          'Worried I’d brought home another dog like Quinn. Luckily, this one was just a Christmas decoration.',
         ],
       }),
     ],
@@ -97,25 +119,33 @@ export const dogGalleries = [
       ...galleryPhotos({
         bed: [
           'quinn-gallery-1',
-          'Quinn resting on a bed, with Margot behind her',
-          'Together at home',
+          'Quinn looking at the camera on a bed, with Margot asleep behind her',
+          'I knew she’d be trouble after seeing that cute face.',
         ],
         autumnLeaves: [
           'quinn-gallery-2',
           'Quinn and Margot standing in autumn leaves',
-          'Out in the leaves',
+          'The longest her hair got before her one-year haircut, when we said goodbye to the puppy fur.',
         ],
-        snow: ['quinn-gallery-3', 'Quinn standing in the snow beside a wooden post', 'In the snow'],
-        patio: ['quinn-gallery-4', 'Quinn lying in the grass near a patio', 'A spot in the shade'],
+        snow: [
+          'quinn-gallery-3',
+          'Quinn standing in deep snow beside a wooden post',
+          'Quinn’s first snow was a big one. She was very excited.',
+        ],
+        patio: [
+          'quinn-gallery-4',
+          'Quinn lying on the grass outside her first home',
+          'Her first home, and the only one she knew for two years.',
+        ],
         grass: [
           'quinn-gallery-5',
           'Quinn lying in green grass with her tongue out',
-          'In the grass',
+          'Cooling down after running around the grass at Belmont.',
         ],
         sofa: [
           'quinn-gallery-6',
-          'Quinn resting her head on the edge of a sofa',
-          'At home on the sofa',
+          'Quinn looking up with her head on the edge of a gray sofa',
+          'A master of baby eyes when she wants something.',
         ],
       }),
     ],
@@ -127,34 +157,43 @@ export const carsonGallery = {
     danceFloor: [
       'carson-gallery-1',
       'Wedding guests gathered on a dance floor with their arms raised',
-      'On the dance floor',
+      'The end of our wedding was a hit. And yes, that is actually a cup of water. Literally. I’m not joking.',
+      'married-nicole',
     ],
     baseball: [
       'carson-gallery-2',
       'Carson in the stands at a baseball game at night',
-      'At the ballpark',
+      'At the Padres–Yankees game in San Diego.',
     ],
-    pool: ['carson-gallery-3', 'Carson lining up a shot at a pool table', 'A game of pool'],
-    beach: ['carson-gallery-4', 'Carson and Nicole on a beach at sunset', 'On the beach'],
+    pool: [
+      'carson-gallery-3',
+      'Carson lining up a shot at a pool table in Charleston',
+      'Playing pool in Charleston.',
+    ],
+    beach: [
+      'carson-gallery-4',
+      'Carson and Nicole on a beach at sunset in Naples, Florida',
+      'Our first real trip together, to Naples, Florida.',
+    ],
     frontSteps: [
       'carson-gallery-5',
       'A black-and-white photograph of Carson on front steps with Margot and Quinn',
-      'On the front steps',
+      'One of my favorite pictures with my two best girls.',
     ],
     soccer: [
       'carson-gallery-6',
-      'Carson with two people in the stands at a soccer match',
-      'At the match',
+      'Carson with friends in the stands at a Nashville SC soccer game',
+      'With friends at a Nashville SC game—the first time I saw Messi play in person. It was his first game in Nashville after joining the league.',
     ],
-    withDogs: [
+    gamingWithJackson: [
       'carson-gallery-7',
-      'Carson and another person sitting together with dogs',
-      'With the dogs',
+      'Carson and Jackson playing video games on a couch, with Margot and Quinn beside them',
+      'Playing video games with Jackson, just like old times.',
     ],
     groupOutside: [
       'carson-gallery-8',
-      'Carson with three people and a dog outside a brick building',
-      'Together outside',
+      'Carson with his family and a dog outside a brick building in St. Augustine',
+      'In St. Augustine with my family, on our first family trip in a long time.',
     ],
   }),
 };

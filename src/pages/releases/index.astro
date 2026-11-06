@@ -9,6 +9,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { currentVersion, releases } from '../../data/releases';
 import { withBase } from '../../lib/paths';
+import { formatDateOnly } from '../../lib/text';
 import '../../styles/releases.css';
 ---
 
@@ -33,6 +34,9 @@ import '../../styles/releases.css';
         <li>
           <article class="release-card flow">
             <p class="release-eyebrow">Version {release.version}</p>
+            <time class="release-date" datetime={release.date}>
+              {formatDateOnly(release.date)}
+            </time>
             <h2>
               <a href={withBase(`/releases/${release.version}/`)}>{release.title}</a>
             </h2>

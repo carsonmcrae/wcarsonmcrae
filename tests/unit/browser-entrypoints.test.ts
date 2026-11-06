@@ -154,3 +154,24 @@ it('loads privacy settings from the shared request event before any settings but
   document.dispatchEvent(new CustomEvent('daysforth:privacy-request'));
   expect(dialog.open).toBe(false);
 });
+
+it('passes the configured endpoint to real photo reactions only when the deferred viewer opens', async () => {
+  const photo = document.querySelector<HTMLAnchorElement>('[data-photo]')!;
+  photo.dataset['photo'] = 'photo-portrait';
+  const viewer = document.querySelector<HTMLDialogElement>('[data-photo-viewer]')!;
+  viewer.insertAdjacentHTML(
+    'beforeend',
+    '<div data-photo-reactions><button data-photo-react="heart"><span data-photo-reaction-count>—</span></button></div><p data-photo-reaction-status></p>',
+  );
+  vi.mocked(fetch).mockResolvedValue(Response.json({ 'photo-portrait': 11 }));
+  const { stopSite } = await import('../../src/scripts/site');
+  cleanups.push(stopSite);
+  expect(fetch).not.toHaveBeenCalled();
+  photo.click();
+  const count = viewer.querySelector('[data-photo-reaction-count]')!;
+  await vi.waitFor(() => expect(count.textContent).toBe('11'));
+  expect(viewer.open).toBe(true);
+  expect(fetch).toHaveBeenCalledWith('https://api.example.com/reactions', { cache: 'no-store' });
+  button('[data-photo-close]').click();
+  expect(document.activeElement).toBe(photo);
+});

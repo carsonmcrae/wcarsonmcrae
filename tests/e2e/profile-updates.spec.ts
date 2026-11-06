@@ -5,8 +5,31 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { expect, test } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
+import { test } from './fixtures';
 import { allowStorage, expectNoViolations } from './helpers';
+import { timelinePosts } from '../../src/data/timeline';
+
+const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
+
+async function holdFirstSaveCommand(page: Page) {
+  const requested = Promise.withResolvers<void>();
+  const response = Promise.withResolvers<void>();
+  await page.route(/\/post-action-events\.[^/]+\.js$/, async (route) => {
+    requested.resolve();
+    await response.promise;
+    await route.continue();
+  });
+  await allowStorage(page);
+  await page.goto('');
+  await expect(page.locator('[data-timeline-status]')).toContainText(
+    `${timelinePosts.length} moments.`,
+  );
+  const save = page.getByRole('button', { name: 'Save Built Daysforth', exact: true });
+  await save.click();
+  await requested.promise;
+  return { save, release: () => response.resolve() };
+}
 
 test('Saved is useful after refresh and updates immediately when the last item is removed', async ({
   page,
@@ -16,6 +39,7 @@ test('Saved is useful after refresh and updates immediately when the last item i
   await expect(page.locator('h1')).toHaveText('William Carson McRae');
   const save = page.getByRole('button', { name: 'Save Built Daysforth', exact: true });
   await save.click();
+  await expect(save).toHaveAttribute('aria-pressed', 'true');
   await page.locator('.timeline-menu summary').nth(0).click();
   await page.getByRole('radio', { name: 'Saved', exact: true }).check();
   await expect(page.locator('[data-moment]')).toHaveCount(1);
@@ -33,6 +57,40 @@ test('Saved is useful after refresh and updates immediately when the last item i
   );
 });
 
+for (const filterBeforeCompletion of [false, true]) {
+  test(`pending first Save ${filterBeforeCompletion ? 'survives an empty Saved filter' : 'preserves a newly opened category menu'}`, async ({
+    page,
+  }) => {
+    const pending = await holdFirstSaveCommand(page);
+    try {
+      await page.locator('.timeline-menu summary').first().click();
+      const saved = page.getByRole('radio', { name: 'Saved', exact: true });
+      await expect(saved).toBeVisible();
+      if (filterBeforeCompletion) {
+        await saved.check();
+        await expect(page.locator('[data-timeline-empty]')).toHaveText(
+          'No saved moments in this browser yet.',
+        );
+        await expect(pending.save).toHaveCount(0);
+      } else await expect(pending.save).toHaveAttribute('aria-pressed', 'false');
+      pending.release();
+      if (!filterBeforeCompletion) {
+        await expect(pending.save).toHaveAttribute('aria-pressed', 'true');
+        await expect(saved).toBeVisible();
+        await saved.check();
+      }
+      await expect(page.locator('[data-moment]')).toHaveCount(1);
+      await expect(page.locator('#moment-built-daysforth')).toBeVisible();
+      await expect(pending.save).toHaveAttribute('aria-pressed', 'true');
+      expect(
+        await page.evaluate(() => localStorage.getItem('daysforth.saved.built-daysforth')),
+      ).toBe('true');
+    } finally {
+      pending.release();
+    }
+  });
+}
+
 test('a cover opens its distinct album and the post slider visits other post pages', async ({
   page,
 }) => {
@@ -43,7 +101,7 @@ test('a cover opens its distinct album and the post slider visits other post pag
   await cover.focus();
   await cover.press('Enter');
   await expect(page.locator('h1')).toHaveText('Married Nicole');
-  await expect(page.locator('.post-album img')).toHaveCount(2);
+  await expect(page.locator('.post-album img')).toHaveCount(wedding.gallery!.length);
   await expect(page.locator('.post-meta > i')).toHaveCount(3);
   const neighbors = page.locator('.post-neighbors a');
   await expect(neighbors.nth(0)).toContainText('Earlier moment');
