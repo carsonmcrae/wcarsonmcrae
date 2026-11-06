@@ -157,16 +157,24 @@ test('header navigation and post return preserve the native timeline position', 
 test('returning from a post refreshes a cached bookmark without moving the timeline', async ({
   page,
 }) => {
+  const changeBookmark = async (saved: boolean) => {
+    await expect(page).toHaveURL(/\/posts\/vanderbilt-graduation\/$/);
+    await expect(page.locator('h1')).toHaveText('Vanderbilt graduation');
+    const save = page.getByRole('button', { name: 'Save Vanderbilt graduation', exact: true });
+    await expect(save).toHaveAttribute('aria-pressed', String(!saved));
+    await save.click();
+    await expect(save).toHaveAttribute('aria-pressed', String(saved));
+  };
   await allowStorage(page);
   await page.goto('?date=2022-05');
   await page.locator('#moment-vanderbilt-graduation h3 a').click();
-  await page.getByRole('button', { name: 'Save Vanderbilt graduation', exact: true }).click();
+  await changeBookmark(true);
   await page.getByRole('button', { name: 'Go back', exact: true }).click();
   const moment = page.locator('#moment-vanderbilt-graduation');
   await expect(moment).toBeInViewport();
   await expect(moment.locator('[data-save]')).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: 'Go forward', exact: true }).click();
-  await page.getByRole('button', { name: 'Save Vanderbilt graduation', exact: true }).click();
+  await changeBookmark(false);
   await page.getByRole('button', { name: 'Go back', exact: true }).click();
   await expect(moment).toBeInViewport();
   await expect(moment.locator('[data-save]')).toHaveAttribute('aria-pressed', 'false');
