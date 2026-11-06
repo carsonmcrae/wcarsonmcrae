@@ -8,6 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import { checkReleasePolicy } from '../../scripts/lib/release-policy';
 import { currentVersion, releases } from '../../src/data/releases';
+import sameVersionApprovals from '../../docs/governance/same-version-approvals.json' with { type: 'json' };
 
 const release = (version = '1.0.0') => ({
   version,
@@ -184,5 +185,115 @@ describe('change policy', () => {
         ],
       }),
     ).toEqual([]);
+  });
+});
+
+describe('one-time owner-approved cosmetic update', () => {
+  const base = '5874a27997343690817a005be93f67301df14ca9';
+  const paths = [
+    'src/styles/profile.css',
+    'src/components/ProfileSummary.astro',
+    'src/components/ProjectList.astro',
+    'src/data/projects.ts',
+    'src/data/life.ts',
+    'src/components/OrgChart.astro',
+    'src/lib/icons.ts',
+    'src/components/DateRail.astro',
+    'src/styles/timeline-dock.css',
+  ];
+  const approved = () => ({
+    ...valid(),
+    version: '1.1.0',
+    lockVersion: '1.1.0',
+    lockPackageVersion: '1.1.0',
+    releases: [release('1.1.0')],
+    baseVersion: '1.1.0',
+    baseCommit: base,
+    changes: paths.map((path) => ({ status: 'M', path })),
+  });
+  const bumpError = 'Product changes require a version increase and matching public release notes.';
+
+  it('records exactly the approved base, version and existing paths', () => {
+    expect(Object.keys(sameVersionApprovals)).toEqual([base]);
+    expect(sameVersionApprovals[base].version).toBe('1.1.0');
+    expect(sameVersionApprovals[base].modifiedProductPaths).toEqual(paths);
+    expect(checkReleasePolicy(approved())).toEqual([]);
+  });
+  it.each(paths)(
+    'permits an existing modified %s without granting a general presentation waiver',
+    (path) => {
+      expect(checkReleasePolicy({ ...approved(), changes: [{ status: 'M', path }] })).toEqual([]);
+    },
+  );
+  it('retains the existing treatment of accompanying tests, scripts and documentation', () => {
+    const input = approved();
+    input.changes.push(
+      { status: 'A', path: 'tests/unit/cosmetic.test.ts' },
+      { status: 'M', path: 'scripts/lib/release-policy.ts' },
+      { status: 'A', path: 'docs/governance/approval.json' },
+    );
+    expect(checkReleasePolicy(input)).toEqual([]);
+  });
+  it('requires the exact base context and cannot be reused for another version', () => {
+    const missing = approved();
+    Reflect.deleteProperty(missing, 'baseCommit');
+    expect(checkReleasePolicy(missing)).toContain(bumpError);
+    for (const baseCommit of [base.slice(0, 8), '0000000000000000000000000000000000000000'])
+      expect(checkReleasePolicy({ ...approved(), baseCommit })).toContain(bumpError);
+    expect(
+      checkReleasePolicy({
+        ...approved(),
+        version: '1.0.1',
+        lockVersion: '1.0.1',
+        lockPackageVersion: '1.0.1',
+        baseVersion: '1.0.1',
+        releases: [release('1.0.1')],
+      }),
+    ).toContain(bumpError);
+  });
+  it.each(['A', 'D', 'R100', 'C100', 'T'])(
+    'rejects %s status even for an approved path',
+    (status) => {
+      expect(
+        checkReleasePolicy({ ...approved(), changes: [{ status, path: paths[0]! }] }),
+      ).toContain(bumpError);
+    },
+  );
+  it.each([
+    'src/components/DogEntry.astro',
+    'src/styles/other.css',
+    'src/lib/theme.ts',
+    'src/lib/reaction-service.ts',
+    'src/pages/index.astro',
+    'src/data/release-history.json',
+    'public/favicon.svg',
+    'workers/reactions/src/index.ts',
+    'astro.config.mjs',
+    'package.json',
+    'package-lock.json',
+  ])('rejects an additional unapproved product change to %s', (path) => {
+    expect(
+      checkReleasePolicy({
+        ...approved(),
+        changes: [...approved().changes, { status: 'M', path }],
+      }),
+    ).toContain(bumpError);
+  });
+  it('keeps lock, history, tag and architecture validation active under the approval', () => {
+    expect(checkReleasePolicy({ ...approved(), lockVersion: '1.0.0', tag: 'v0.9.0' })).toEqual(
+      expect.arrayContaining([
+        'Both package-lock.json versions must match package.json.',
+        'Release tag must be v1.1.0.',
+      ]),
+    );
+    expect(
+      checkReleasePolicy({
+        ...approved(),
+        releases: [{ ...release('1.1.0'), date: '2026-02-29' }],
+      }),
+    ).toContain('Release 1.1.0 needs a real YYYY-MM-DD calendar date.');
+    expect(
+      checkReleasePolicy({ ...approved(), changes: [{ status: 'A', path: paths[1]! }] }),
+    ).toContain('Boundary changes require a reviewed update under docs/architecture/.');
   });
 });

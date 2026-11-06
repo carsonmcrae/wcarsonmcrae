@@ -92,6 +92,25 @@ describe('release CLI', () => {
     await expect(import('../../scripts/check-release.ts')).rejects.toThrow('Unknown revision');
     expect(console.info).not.toHaveBeenCalled();
   });
+  it('passes the exact approved base to the real policy for the one-time same-version update', async () => {
+    const base = '5874a27997343690817a005be93f67301df14ca9';
+    vi.stubEnv('RELEASE_BASE_SHA', base);
+    io.read.mockReturnValue(lock());
+    io.git.mockImplementation((_command, args: string[]) => {
+      if (args[0] === 'ls-tree') return 'src/data/releases.ts';
+      if (args[0] === 'show') return JSON.stringify({ version: '1.1.0' });
+      if (args[0] === 'diff') return 'M\tsrc/styles/profile.css\n';
+      return 'tests/unit/compact-ui.test.ts\n';
+    });
+    await import('../../scripts/check-release.ts');
+    expect(io.git).toHaveBeenCalledWith(
+      'git',
+      ['diff', '--name-status', '--no-renames', base, '--'],
+      expect.any(Object),
+    );
+    expect(console.error).not.toHaveBeenCalled();
+    expect(process.exitCode).toBeUndefined();
+  });
 });
 
 describe('repository CLI', () => {

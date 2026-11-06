@@ -1,0 +1,18 @@
+{
+  "5874a27997343690817a005be93f67301df14ca9": {
+    "version": "1.1.0",
+    "reason": "Carson explicitly approved this one-time compact cosmetic update without a version increase or public release-note change.",
+    "scope": "Modified existing presentation/content only. Project data changes shorten labels without changing URLs; the icon registry adds only the trusted existing Phosphor dog glyph; the date rail retains full accessible labels alongside compact mobile dates.",
+    "modifiedProductPaths": [
+      "src/styles/profile.css",
+      "src/components/ProfileSummary.astro",
+      "src/components/ProjectList.astro",
+      "src/data/projects.ts",
+      "src/data/life.ts",
+      "src/components/OrgChart.astro",
+      "src/lib/icons.ts",
+      "src/components/DateRail.astro",
+      "src/styles/timeline-dock.css"
+    ]
+  }
+}

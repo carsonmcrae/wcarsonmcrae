@@ -20,6 +20,11 @@ directory for added/deleted source boundary files, changes to `package.json`, `a
 proof that documentation is correct. It does not detect every behavior/import change. Reviewers
 must apply all triggers above, including changes within an existing file.
 
+The browser CI job selects Ubuntu's official HTTPS archive ahead of the runner's slow Azure mirror.
+Only the runner's mirror URL changes: distribution suites, archive trust anchors, package-signature
+verification, Playwright versions, and application checks remain intact. This applies to the shared
+quality gate used by pull requests and Pages deployment; it adds no browser-facing service.
+
 ## Evidence to record
 
 For each consequential change, identify the affected source paths, the old and new boundary,

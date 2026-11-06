@@ -137,7 +137,7 @@ test('the date rail remains with the browsing controls while scrolling', async (
   await expect(page.locator('#moment-first-pc')).toBeInViewport();
   await expect(page.locator('[data-current-date]')).toHaveText('December 2015');
   await page
-    .getByRole('button', { name: 'Go to Vanderbilt graduation, May 2022', exact: true })
+    .getByRole('button', { name: /^Go to Vanderbilt graduation, May 2022(?:\s+05\/22)?$/ })
     .click();
   const rail = await page.locator('.date-rail').boundingBox();
   const controls = await page.locator('.timeline-toolbar').boundingBox();

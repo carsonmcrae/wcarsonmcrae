@@ -23,6 +23,7 @@ import arrow from '@phosphor-icons/core/assets/regular/arrow-left.svg?raw';
 import arrowRight from '@phosphor-icons/core/assets/regular/arrow-right.svg?raw';
 import work from '@phosphor-icons/core/assets/regular/briefcase.svg?raw';
 import life from '@phosphor-icons/core/assets/regular/sun.svg?raw';
+import dog from '@phosphor-icons/core/assets/regular/dog.svg?raw';
 import about from '@phosphor-icons/core/assets/regular/user-circle.svg?raw';
 import expand from '@phosphor-icons/core/assets/regular/arrows-out-simple.svg?raw';
 import images from '@phosphor-icons/core/assets/regular/images.svg?raw';
@@ -54,6 +55,7 @@ export const icons = {
   arrowRight,
   work,
   life,
+  dog,
   about,
   expand,
   images,
