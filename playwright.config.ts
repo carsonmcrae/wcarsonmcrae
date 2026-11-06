@@ -24,7 +24,7 @@ export default defineConfig({
   reporter: isCI ? [['github'], ['html', { open: 'never' }]] : [['list']],
   use: {
     baseURL,
-    // Only this temporary loopback test certificate is self-signed; production CSP stays intact.
+    // Temporary preview/proxy certificates stay on loopback; production CSP stays intact.
     ignoreHTTPSErrors: true,
     trace: 'retain-on-failure',
   },

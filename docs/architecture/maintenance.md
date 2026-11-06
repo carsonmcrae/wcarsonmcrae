@@ -54,6 +54,11 @@ duplicated data attributes. Initial script budgets follow transitive emitted imp
 edges are resolved too. Astro's build-setup hook applies module-preload policy after framework
 assembly. Browser waterfalls remain necessary evidence for conditional loading behavior.
 
+The browser reaction fixture uses native HTTPS/CORS through a test-only loopback CONNECT proxy.
+Default network interception disabled resource caching globally and caused the reproduced Windows
+WebKit image dispatch delay. Keep normal asset caching intact; reserve explicit routes for intentional
+fault/mutation tests. Transport boundaries and cleanup are included in the 100% coverage gate.
+
 Version 1.1.0 separates photo-viewer lifecycle, native filmstrip navigation, and the photo reaction
 DOM adapter. Both photo and moment adapters use the shared reaction-only controller. Stable
 `photo-`/`screen-` asset identities extend the approved Worker allowlist without changing existing

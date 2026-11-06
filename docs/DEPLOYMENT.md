@@ -95,9 +95,10 @@ keyboard controls, and the real brand ZIP. Compare real shared totals read-only 
 verify duplicate protection with isolated local fixtures. Do not add synthetic production votes:
 erasing identifiers does not remove their permanent totals. Record actual outcomes in design-qa.md.
 
-VoiceOver on macOS/iOS and native Safari download verification remain outstanding. Windows NVDA
-and automated WebKit do not establish conformance. Carson authorized publication with these
-limitations recorded.
+The original publication recorded outstanding VoiceOver/macOS/iOS and native Safari verification.
+The [1.1.2 QA record](qa/1.1.2.md) records the later agent-observed NVDA check and owner-reported
+Apple-device results, including their scope and evidence limits. Neither automated WebKit nor
+these scoped manual checks establishes complete accessibility conformance.
 
 ## Rollback
 

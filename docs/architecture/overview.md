@@ -250,9 +250,12 @@ The Pages deployment workflow builds and verifies the exact publication address 
 gate. A Worker/schema change is released separately and needs its own deployment verification.
 
 Browser test builds use the reserved `reactions.daysforth.test` origin. A shared Playwright fixture
-serves approved read-only counts and rejects unexpected mutations; intentional reaction cases
-provide their own scoped request fixtures. Runtime-health assertions still reject every unexpected
-console error or failed request. Browser tests never need to write to the live reaction service.
+serves approved read-only counts over native HTTPS through an ephemeral loopback CONNECT proxy.
+This preserves native asset caching, which Playwright routing disables globally. Unexpected service
+writes/paths fail; non-reserved tunnels are denied without DNS or upstream forwarding and counted
+separately from service requests. Intentional reaction/failure cases retain scoped request routes.
+Real TLS/CONNECT tests cover this boundary at 100%. Runtime-health assertions still reject every
+unexpected console error or failed page request. Browser tests never write to the live service.
 
 Only Carson performs the owner-controlled release actions described in repository rules, unless
 he explicitly authorizes an action. A Git tag describes a source release; it does not by itself

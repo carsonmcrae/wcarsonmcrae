@@ -140,8 +140,16 @@ focused link's actual hit-test visibility in both themes before activating the m
   separate HTTP/1.1 static fixture. Static module handlers finished in 0.9–3.25 ms. Astro's WebKit
   viewer transfers took 21–23 ms after late request starts; one HTTP/1.1 sample showed a 3.59 s
   browser resource interval despite a roughly 2 ms server handler. This distinguishes server
-  handling from browser delivery/scheduling. It does not identify an upstream root cause, prove
-  production latency or justify changing application deadlines/tests until green.
+  handling from browser delivery/scheduling. The subsequent image-timeout control isolated a
+  concrete test-fixture defect: default Playwright routing disabled native asset caching globally,
+  causing repeated SVG fetches and 3–4-second image dispatch delays despite roughly 2 ms handling.
+  `tests/e2e/reaction-proxy.ts` now supplies native HTTPS/CORS on loopback without default routing;
+  explicit failure cases retain their scoped routes. Real TCP/TLS tests at 100% coverage preserve
+  rejected writes/paths, no upstream DNS and cleanup. All non-reserved CONNECTs remain blocked;
+  browser-process blocked tunnels are counted separately from application service requests.
+  Four fixed WebKit samples pass both original image selections; see QA for the causal control and
+  exact limits. This fixes the reproduced fixture delay without claiming all historical cold-load
+  observations have one upstream cause or changing deadlines/assertions until green.
 - **Architecture:** cohesive timeline/viewer/service coordinators remain appropriate. Page-specific
   composition and real deferred work address measured payload rather than arbitrary file sizes.
   The runtime dependency gate still protects browser/build/Worker/CLI separation. No new framework

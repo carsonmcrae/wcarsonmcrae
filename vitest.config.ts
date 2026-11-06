@@ -30,6 +30,7 @@ export default defineConfig({
         'astro.config.mjs',
         'eslint.config.js',
         'playwright.config.ts',
+        'tests/e2e/reaction-proxy.ts',
       ],
       exclude: ['**/*.d.ts', 'src/data/types.ts'],
       reporter: ['text', 'html', 'json-summary', 'lcov'],
