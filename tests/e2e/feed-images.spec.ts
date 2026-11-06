@@ -7,6 +7,23 @@
  */
 import { expect } from '@playwright/test';
 import { test } from './fixtures';
+import { scrollPageTo } from './helpers';
+
+function imageSelection(element: HTMLImageElement) {
+  const candidates = element.srcset.split(',').map((entry) => {
+    const [url, width] = entry.trim().split(/\s+/);
+    return { url: new URL(url!, document.baseURI).href, width: Number.parseInt(width!) };
+  });
+  return {
+    url: element.currentSrc,
+    width: candidates.find((candidate) => candidate.url === element.currentSrc)?.width ?? null,
+    widths: candidates.map((candidate) => candidate.width),
+    visibleWidth: element.getBoundingClientRect().width,
+    viewer: element.closest('a')!.href,
+    complete: element.complete,
+    naturalWidth: element.naturalWidth,
+  };
+}
 
 for (const viewportWidth of [390, 1440]) {
   for (const deviceScaleFactor of [1, 2]) {
@@ -20,29 +37,35 @@ for (const viewportWidth of [390, 1440]) {
           await page.emulateMedia({ reducedMotion: 'reduce' });
           await page.goto(`?view=${view}`);
           await expect(page.locator('[data-timeline]')).toHaveAttribute('data-view', view);
+          await page.evaluate(() => document.fonts.ready);
           const selections = [];
           for (const id of ['first-pc', 'recalen-beta']) {
             const image = page.locator(`#moment-${id} .post-media [data-photo] img`);
             await expect(image).toHaveAttribute('loading', 'lazy');
             await expect(image).toHaveAttribute('sizes', 'auto, 95vw');
-            await image.scrollIntoViewIfNeeded();
-            const selected = await image.evaluate(async (element: HTMLImageElement) => {
-              await element.decode();
-              const candidates = element.srcset.split(',').map((entry) => {
-                const [url, width] = entry.trim().split(/\s+/);
-                return {
-                  url: new URL(url!, document.baseURI).href,
-                  width: Number.parseInt(width!),
-                };
-              });
-              return {
-                url: element.currentSrc,
-                width: candidates.find((candidate) => candidate.url === element.currentSrc)!.width,
-                widths: candidates.map((candidate) => candidate.width),
-                visibleWidth: element.getBoundingClientRect().width,
-                viewer: element.closest('a')!.href,
-              };
+            const destination = await image.evaluate((element) => {
+              const bounds = element.getBoundingClientRect();
+              return Math.max(
+                0,
+                Math.round(scrollY + bounds.top - (innerHeight - bounds.height) / 2),
+              );
             });
+            if (Math.abs((await page.evaluate(() => scrollY)) - destination) > 1)
+              await scrollPageTo(page, destination);
+            await expect(image).toBeInViewport();
+            await expect
+              .poll(async () => {
+                const candidate = await image.evaluate(imageSelection);
+                const required = candidate.visibleWidth * deviceScaleFactor;
+                const expected =
+                  candidate.widths.find((width) => width >= required) ?? candidate.widths.at(-1)!;
+                return (
+                  candidate.complete && candidate.naturalWidth > 0 && candidate.width === expected
+                );
+              })
+              .toBe(true);
+            await image.evaluate((element: HTMLImageElement) => element.decode());
+            const selected = await image.evaluate(imageSelection);
             const required = selected.visibleWidth * deviceScaleFactor;
             const expected =
               selected.widths.find((width) => width >= required) ?? selected.widths.at(-1)!;

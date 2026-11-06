@@ -47,3 +47,19 @@ it.each(['[data-category-label]', '[data-current-date]'])(
     );
   },
 );
+
+it('keeps markup-like category values literal without replacing the pressed Text node', () => {
+  const f = timelineLoadingFixture();
+  const category = document.querySelector('[data-category-label]')!;
+  const original = category.firstChild;
+  const controller = initTimeline(document, f.win, { preservePosition: true })!;
+  stops.push(controller.destroy);
+  const work = document.querySelector<HTMLInputElement>('[name="category"][value="Work"]')!;
+  const value = '<strong data-probe>literal category</strong>';
+  work.value = value;
+  work.checked = true;
+  controller.activate(work, 'change');
+  expect(category.firstChild).toBe(original);
+  expect(category.textContent).toBe(value);
+  expect(document.querySelector('[data-probe]')).toBeNull();
+});

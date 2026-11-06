@@ -29,7 +29,7 @@ function updateSummaryLabel(doc: Document, selector: string, value: string) {
   const text = doc.querySelector(selector)!.firstChild;
   if (!(text instanceof Text)) throw new Error('Timeline summary requires a Text node.');
   // Replacing a pressed summary's text node cancels WebKit's native click activation.
-  if (text.data !== value) text.data = value;
+  if (text.nodeValue !== value) text.nodeValue = value;
 }
 
 export function initTimeline(

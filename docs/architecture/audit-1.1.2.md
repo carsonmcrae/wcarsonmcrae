@@ -63,6 +63,10 @@ Further confirmed lifecycle cases were corrected during integration:
   identical scroll position and rectangles. Updating the existing `Text.data` preserved activation
   for both summaries, with unchanged and changed labels. The correction preserves text-node identity
   and validates that text-only contract; native held-module and label-identity cases protect it.
+  CodeQL subsequently classified the `.data` assignment as an HTML sink despite the `Text` guard.
+  The implementation now uses the explicit `nodeValue` text channel, retaining identity and a
+  regression proving markup-like values create no elements. No finding was dismissed or suppressed;
+  verification checks the CodeQL result context and alert state, not only the successful analysis job.
 - `consent.ts`, `recordConsent`: a saved grant followed by failed memory-key promotion switched
   reads to missing persistent values. Promotion now fails closed, attempts to persist denial and
   retains the page's existing memory choices. Tests cover both writable and denied revocation.
