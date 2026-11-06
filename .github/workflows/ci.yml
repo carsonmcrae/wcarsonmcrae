@@ -76,7 +76,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/node-deps
       - name: Install Chromium and WebKit
-        run: npx playwright install --with-deps chromium webkit
+        run: |
+          # Avoid the repeatedly throttled Azure mirror; apt still verifies Ubuntu signatures.
+          sudo sed -i 's|http://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/apt-mirrors.txt
+          npx playwright install --with-deps chromium webkit
       - run: npm run build
       - run: npm run test:e2e
       - name: Keep the report when a test fails
