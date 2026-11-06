@@ -21,9 +21,21 @@ describe('Cloudflare entry composition', () => {
       expect(counts).toMatchObject({ 'ttsnative-started': 0, 'recalen-started--support': 0 });
       const missing = await worker.fetch(new Request('https://api.test/reactions'), {});
       expect(missing.status).toBe(503);
+      expect(missing.headers.get('X-Daysforth-Worker-Version')).toBe('unavailable');
     } finally {
       sqlite.close();
     }
+  });
+  it('identifies only a valid public deployment UUID from the platform metadata binding', async () => {
+    const version = '12345678-1234-4234-8234-123456789abc';
+    const identified = await worker.fetch(new Request('https://api.test/health'), {
+      CF_VERSION_METADATA: { id: version },
+    });
+    expect(identified.headers.get('X-Daysforth-Worker-Version')).toBe(version);
+    const invalid = await worker.fetch(new Request('https://api.test/health'), {
+      CF_VERSION_METADATA: { id: 'untrusted configuration\nwith a newline' },
+    });
+    expect(invalid.headers.get('X-Daysforth-Worker-Version')).toBe('unavailable');
   });
   it('runs retention cleanup at the platform clock without reducing aggregate totals', async () => {
     const { db, sqlite } = reactionDatabase();

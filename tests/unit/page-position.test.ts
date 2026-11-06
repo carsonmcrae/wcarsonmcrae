@@ -8,6 +8,13 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initPagePosition, prepareTimelineRestore } from '../../src/lib/page-position';
+import { initPostReturn } from '../../src/lib/post-navigation';
+function mountPosition(doc: Document, win: Parameters<typeof initPagePosition>[1]) {
+  const stops = [initPagePosition(doc, win), initPostReturn(doc, win)];
+  return () => {
+    for (const stop of stops) stop();
+  };
+}
 const stops: (() => void)[] = [];
 beforeEach(() => {
   document.body.innerHTML = '';
@@ -53,7 +60,7 @@ describe('returning to the timeline', () => {
       navigation.dispatchEvent(event);
       expect(event.defaultPrevented).toBe(false);
     };
-    const stop = initPagePosition(document, win);
+    const stop = mountPosition(document, win);
     stops.push(stop);
     expect(history.scrollRestoration).toBe('manual');
     expect(history.replaceState).not.toHaveBeenCalled();
@@ -86,7 +93,7 @@ describe('returning to the timeline', () => {
     document.body.innerHTML = '<main data-timeline><a href="/posts/born/">Born</a></main>';
     const history = { state: null, scrollRestoration: 'auto', replaceState: vi.fn() };
     const { events, win } = positionContext(history);
-    stops.push(initPagePosition(document, win));
+    stops.push(mountPosition(document, win));
     document.querySelector('a')!.click();
     expect(history.replaceState).toHaveBeenCalledExactlyOnceWith({ scrollY: 500 }, '');
     events.dispatchEvent(new Event('pagehide'));
@@ -138,7 +145,7 @@ describe('returning to the timeline', () => {
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
     } as unknown as Parameters<typeof initPagePosition>[1];
-    stops.push(initPagePosition(document, win));
+    stops.push(mountPosition(document, win));
     const link = document.querySelector('a')!;
     link.click();
     expect(win.history.back).toHaveBeenCalledOnce();
@@ -164,7 +171,7 @@ describe('returning to the timeline', () => {
       scrollRestoration: 'auto',
     };
     const { events, win } = positionContext(history);
-    const stop = initPagePosition(document, win);
+    const stop = mountPosition(document, win);
     stops.push(stop);
     document.querySelector('span')!.click();
     expect(history.back).toHaveBeenCalledTimes(1);

@@ -1,8 +1,12 @@
 # Daysforth architecture
 
-This is the maintained description of the running system, not a proposal for a larger platform.
+This is the maintained design of the source tree. Publication and live configuration require
+separate deployment receipts; prepared changes here do not establish production behavior.
 Read it with [the architectural review](review.md), [the 1.1.1 audit](audit-1.1.1.md), [maintenance rules](maintenance.md), and
 [release process](../governance/releases.md). Source and tests remain authoritative for exact behavior.
+
+The [1.1.2 hardening ledger](audit-1.1.2.md) records the latest verified changes and remaining
+visibility/growth limits. Build receipts describe source attribution; they do not prove publication.
 
 ## System boundaries
 
@@ -38,7 +42,8 @@ exists in this architecture.
 | `tests/`                        | Unit behavior/coverage, built-output integrity, real-browser checks                 | Relaxed production constraints to accommodate failures          |
 
 `src/lib/` contains both browser and Worker code, but they have separate import roots. The browser
-starts at `src/scripts/site.ts`; the Worker starts at `workers/reactions/src/index.ts`. Keep
+has a global shell at `src/scripts/site.ts` and component-owned action, media, page-jump and
+timeline entries; the Worker starts at `workers/reactions/src/index.ts`. Keep
 `reaction-service.ts` and its database interface out of the browser graph. Conversely, Worker code
 must not import DOM controllers, Astro image transforms, or browser storage.
 
@@ -76,6 +81,34 @@ belong to a browser entry. They are not a server browsing profile. Dialog and ac
 intent to control the script budget. The loader and enhanced photo links share the primary-click
 resolver in `click-intent.ts`, preserving modified native links both before and after lazy loading.
 
+The default feed renders monthly groups inside annual wrappers at build time, with one set of
+cards. Home-only CSS chooses monthly presentation with JavaScript and the original continuous
+annual reading layout without it or after a timeline load failure. There is no initial client
+regrouping, duplicate content tree or second date model. Group bodies use their sole direct `div`
+contract; canonical photo/action attributes also supply style hooks instead of duplicate classes.
+
+The input controller loads on real timeline intent; explicit query/history restoration loads it
+immediately. One controller owns reading-date synchronization. During the first pending import,
+the date chip can retain its initial value; successful handoff derives the current reading band
+before delivering captured commands and preserves scroll position. Native form values and original
+targets are buffered without redispatching synthetic input. Hidden edge controls receive the first
+real scroll change, and desktop navigation imports in parallel. Failure restores the native annual
+feed while the shell remains usable. The shell's head entry executes before page-specific entries,
+so a stalled later entry cannot hold up navigation initialization.
+
+Default mounting adopts the existing monthly groups without detaching cards or their active
+descendants; runtime period metadata comes from their semantic dates. One period list drives
+observation, reading-date inference and first-group jumps. Actual view/filter/grouping changes can
+then rebuild presentation. Native navigator and nearest-moment URLs preserve current browsing
+options and identify their target month/hash, including when opened in another tab.
+
+Saved/reaction flags and template controls hydrate immediately on action pages. Count and command
+composition loads once when a row becomes visible or a command arrives, through one shared pending
+initializer. This avoids a second cold import after first intent. Visibility may load it during
+initial rendering on tall viewports; static eager-graph budgets and actual waterfalls are distinct
+measurements. Existing session-confirmed reaction choices survive failed optional flag writes and
+BFCache refresh through the actual reaction reader; Forget still invalidates that identity.
+
 Deferred post commands retain the original matched control and call the post adapter's explicit
 `activate` method once its modules load. They do not redispatch a global click: a category menu
 opened meanwhile stays open, and Save still resolves the original row if filtering detached its
@@ -88,6 +121,11 @@ the current position through `updateCurrentEntry`; the restorer prefers `current
 and uses classic history state when that value is absent. Using the entry-state API during navigation
 preserves native entry identity. The early bootstrap marks a valid native-position return for layout
 restoration even without a date query; timeline initialization uses the same position accessor.
+Before main's children parse, a hash-authorized classic script makes a restoring main natively
+`inert` where supported. The hold uses opacity instead of inherited hidden visibility there:
+Chromium otherwise cached hidden title descendants inside closed disclosures after restoration.
+Success, native fallback and initial-module failure release both inert and the restore marker.
+Browsers without inert keep the original visibility hold; no-JavaScript HTML never carries inert.
 Classic `replaceState` remains only in the existing explicit-click
 snapshot path, outside that callback. Ordinary post pages retain native automatic restoration.
 Browsers without the Navigation API retain the last explicit link/history-button snapshot; a newer
@@ -177,7 +215,10 @@ after 90 days. Identifier removal does not undo a published count.
 
 Forgetting reads the current consent-aware identifier, including a memory-only page session,
 without generating a replacement, then immediately clears browser preferences. Remote erasure has
-a five-second deadline, aborts on disposal, and cannot update disposed feedback. Post responses preserve confirmed aggregate counts but do not
+a five-second deadline covering headers and acknowledgement body, aborts on disposal, and cannot update
+disposed feedback. Confirmation requires successful HTTP status and JSON `{"forgotten":true}`;
+malformed replies, missing service configuration for an existing identifier, and deadlines leave
+remote removal unconfirmed. Post responses preserve confirmed aggregate counts but do not
 restore a forgotten choice or announce results through a disposed adapter. Server erasure is a
 best-effort request, not an atomic cancellation of already-issued votes: a concurrent POST can
 commit its identifier after DELETE has completed. The current protocol does not coordinate those
@@ -209,9 +250,12 @@ The Pages deployment workflow builds and verifies the exact publication address 
 gate. A Worker/schema change is released separately and needs its own deployment verification.
 
 Browser test builds use the reserved `reactions.daysforth.test` origin. A shared Playwright fixture
-serves approved read-only counts and rejects unexpected mutations; intentional reaction cases
-provide their own scoped request fixtures. Runtime-health assertions still reject every unexpected
-console error or failed request. Browser tests never need to write to the live reaction service.
+serves approved read-only counts over native HTTPS through an ephemeral loopback CONNECT proxy.
+This preserves native asset caching, which Playwright routing disables globally. Unexpected service
+writes/paths fail; non-reserved tunnels are denied without DNS or upstream forwarding and counted
+separately from service requests. Intentional reaction/failure cases retain scoped request routes.
+Real TLS/CONNECT tests cover this boundary at 100%. Runtime-health assertions still reject every
+unexpected console error or failed page request. Browser tests never write to the live service.
 
 Only Carson performs the owner-controlled release actions described in repository rules, unless
 he explicitly authorizes an action. A Git tag describes a source release; it does not by itself

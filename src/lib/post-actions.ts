@@ -5,13 +5,10 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { createReactionController } from './reaction-controller';
+import { loadReactionCounts } from './reaction-api';
+import { initActionChoices } from './action-choices';
 import { reactionKey } from './reaction-keys';
-import { fillActionRows } from './action-template';
 import type { ReactionKind } from '../data/reactions';
-import { migrateSavedMoments } from './saved-moments';
-import { readItem, safeStorage } from './storage';
-import { preferenceStorage, consentChoice } from './consent';
 export interface ActionWindow {
   addEventListener: Window['addEventListener'];
   removeEventListener: Window['removeEventListener'];
@@ -29,34 +26,14 @@ function buttonKey(row: HTMLElement, button: HTMLButtonElement) {
   );
 }
 
-export function initPostActions(doc: Document, win: ActionWindow, endpoint: string) {
-  fillActionRows(doc);
-  const storage = preferenceStorage(win);
-  const reactions = createReactionController(win, endpoint, storage);
-  const rows = Array.from(doc.querySelectorAll<HTMLElement>('[data-post-actions]'));
+export function initPostActions(
+  doc: Document,
+  win: ActionWindow,
+  endpoint: string,
+  choices = initActionChoices(doc, win),
+) {
+  const { storage, rows } = choices;
   const changed = new Set<string>();
-  const syncChoices = () => {
-    if (consentChoice(safeStorage(win)) === true) migrateSavedMoments(storage);
-    for (const row of rows) {
-      const id = row.dataset['postActions']!;
-      const saved = readItem(storage, `daysforth.saved.${id}`) === 'true';
-      row.querySelector('[data-save]')!.setAttribute('aria-pressed', String(saved));
-      row.querySelector('[data-save-label]')!.textContent = saved ? 'Saved' : 'Save';
-      for (const button of row.querySelectorAll<HTMLButtonElement>('[data-react]')) {
-        button.setAttribute(
-          'aria-pressed',
-          String(reactions.hasReacted(id, (button.dataset['react'] || 'heart') as ReactionKind)),
-        );
-        button.disabled = button.getAttribute('aria-pressed') === 'true';
-      }
-    }
-  };
-  const onStorage = () => {
-    syncChoices();
-    doc.dispatchEvent(new CustomEvent('daysforth:saved'));
-  };
-  syncChoices();
-  doc.addEventListener('daysforth:storage', onStorage);
   const updateCounts = (counts: Record<string, number>, initial = false) => {
     for (const row of rows) {
       for (const button of row.querySelectorAll<HTMLButtonElement>('[data-react]')) {
@@ -77,12 +54,12 @@ export function initPostActions(doc: Document, win: ActionWindow, endpoint: stri
     if (!endpoint || rows.length === 0) return;
     const current = ++request;
     changed.clear();
-    void reactions
-      .load()
+    void loadReactionCounts(endpoint, win.fetch)
       .then((counts) => {
         if (current === request) updateCounts(counts, true);
       })
       .catch(() => {
+        if (current !== request) return;
         for (const row of rows)
           for (const button of row.querySelectorAll('[data-react]'))
             button.setAttribute('title', 'Reactions temporarily unavailable');
@@ -90,17 +67,18 @@ export function initPostActions(doc: Document, win: ActionWindow, endpoint: stri
   };
   const onResume = (event: PageTransitionEvent) => {
     if (!event.persisted) return;
-    onStorage();
     refresh();
   };
   refresh();
   win.addEventListener('pageshow', onResume);
   return {
     storage,
+    useReactionChoices: choices.useReactionChoices,
     changed,
     updateCounts,
     destroy: () => {
-      doc.removeEventListener('daysforth:storage', onStorage);
+      request++;
+      choices.destroy();
       win.removeEventListener('pageshow', onResume);
     },
   };

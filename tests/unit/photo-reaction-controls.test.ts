@@ -137,6 +137,24 @@ it('keeps an in-flight vote with its original photograph and prevents stale GET 
   expect(f.button().getAttribute('aria-pressed')).toBe('true');
 });
 
+it.each([true, false])(
+  "does not announce a forgotten identity's late vote (success %s)",
+  async (success) => {
+    const f = pendingVote();
+    f.load.resolve(Response.json({ [first]: 2 }));
+    await vi.waitFor(() => expect(f.count()).toBe('2'));
+    clearPreferences(f.storage);
+    recordConsent(f.storage, false);
+    document.dispatchEvent(new CustomEvent('daysforth:storage'));
+    f.vote.resolve(success ? Response.json({ count: 8 }) : new Response(null, { status: 503 }));
+    await vi.waitFor(() => expect(f.button().disabled).toBe(false));
+    expect(f.status.textContent).toBe('');
+    expect(f.button().getAttribute('aria-pressed')).toBe('false');
+    expect(f.count()).toBe(success ? '8' : '2');
+    expect(f.storage.getItem('daysforth.visitor')).toBeNull();
+  },
+);
+
 it('announces current load failures without inventing zero or accepting stale failure feedback', async () => {
   const f = fixture();
   const old = Promise.withResolvers<Response>();

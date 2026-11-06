@@ -55,6 +55,11 @@ unavailable supplied base fails rather than silently skipping the comparison. Wh
 tag or release, supply `RELEASE_TAG=v<version>`; a mismatched tag fails. A matching tag alone does not
 prove that required tests or manual evaluation passed.
 
+The same comparison preserves every published image reaction ID from the base registry. The first
+registry adoption was reviewed against all 65 image IDs in 1.1.1. Keep that registry append-only even
+when a photograph or screen retires from presentation. The gate preserves identity support, not
+permission to repurpose an old ID or skip Worker-first compatibility review for newly added keys.
+
 Release dates are calendar values, not timestamps. The public list and detail pages use semantic
 `<time datetime="YYYY-MM-DD">` elements and format the same calendar day in every time zone.
 Changing a displayed historical date never moves or replaces an immutable published Git tag.

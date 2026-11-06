@@ -9,6 +9,8 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { currentVersion, releases } from '../src/data/releases.ts';
 import { checkReleasePolicy } from './lib/release-policy.ts';
+import { checkPublishedImageIds } from './lib/reaction-registry-policy.ts';
+import publishedImages from '../src/data/published-image-reactions.json' with { type: 'json' };
 
 const root = new URL('../', import.meta.url);
 const lock = JSON.parse(readFileSync(new URL('package-lock.json', root), 'utf8'));
@@ -18,6 +20,11 @@ const git = (...args: string[]) =>
   execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
 // The initial public release can retain the pre-release package version.
 const establishedBase = base && git('ls-tree', '--name-only', base, 'src/data/releases.ts');
+const registryPath = 'src/data/published-image-reactions.json';
+const baseImages =
+  base && git('ls-tree', '--name-only', base, registryPath) === registryPath
+    ? JSON.parse(git('show', `${base}:${registryPath}`))
+    : [];
 const changes = base
   ? git('diff', '--name-status', '--no-renames', base, '--')
       .split('\n')
@@ -44,6 +51,7 @@ const errors = checkReleasePolicy({
     : {}),
   ...(tag ? { tag } : {}),
 });
+errors.push(...checkPublishedImageIds(publishedImages, baseImages));
 for (const error of errors) console.error(`fail  ${error}`);
 if (errors.length) process.exitCode = 1;
 else

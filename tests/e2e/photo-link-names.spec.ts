@@ -7,7 +7,7 @@
  */
 import { expect } from '@playwright/test';
 import { test } from './fixtures';
-import { expectNoViolations, openThemedHome } from './helpers';
+import { expectNoViolations, openThemedHome, settleRestoredTimelineTop } from './helpers';
 import { timelinePosts } from '../../src/data/timeline';
 
 const timelinePhotoCount = timelinePosts.filter((post) => post.image).length;
@@ -24,7 +24,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await expect(page.getByRole('dialog', { name: 'Browser storage', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Close', exact: true }).click();
     await page.reload();
-    await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+    await settleRestoredTimelineTop(page);
     const photos = page.locator('[data-timeline-groups] [data-photo]');
     await expect(photos).toHaveCount(timelinePhotoCount);
     const offscreen = await photos.evaluateAll(

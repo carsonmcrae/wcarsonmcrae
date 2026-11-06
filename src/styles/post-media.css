@@ -41,20 +41,20 @@
   max-width: 100%;
   min-width: 0;
 }
-.post-media__frame:has(> .photo-open) {
+.post-media__frame:has(> [data-photo]) {
   width: min(
     100%,
     calc((var(--media-height, 23rem) - var(--media-inset, 0rem)) * var(--media-ratio))
   );
   aspect-ratio: var(--media-ratio);
 }
-.post-media__frame > .photo-open {
+.post-media__frame > [data-photo] {
   display: block;
   width: 100%;
   height: 100%;
   min-width: 0;
 }
-.post-media__frame > .photo-open img {
+.post-media__frame > [data-photo] img {
   width: 100%;
   height: 100%;
   max-width: 100%;
@@ -67,7 +67,7 @@
   padding: 0;
   border-radius: 20px;
 }
-.post-media--screen .photo-open img {
+.post-media--screen [data-photo] img {
   border: 1px solid var(--rule);
   border-radius: 7px;
   object-fit: contain;
@@ -169,10 +169,10 @@
   padding-bottom: 0.6rem;
   gap: 0.75rem 1.25rem;
 }
-.post-card > .post-actions {
+.post-card > [data-post-actions] {
   align-self: end;
 }
-.post-actions {
+[data-post-actions] {
   gap: 0.25rem 0.85rem;
 }
 .reaction-options {
@@ -220,7 +220,7 @@
   flex-direction: column;
   align-items: flex-start;
 }
-[data-view='posts'] .post-card--milestone .post-actions {
+[data-view='posts'] .post-card--milestone [data-post-actions] {
   align-self: end;
 }
 @media (min-width: 48rem) {
@@ -234,7 +234,7 @@
     min-height: 16rem;
     max-height: 23rem;
   }
-  [data-view='timeline'] .post-card--illustrated > .post-actions {
+  [data-view='timeline'] .post-card--illustrated > [data-post-actions] {
     grid-column: 1;
     grid-row: 2;
     align-self: end;

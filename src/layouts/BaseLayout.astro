@@ -15,6 +15,7 @@ import Header from '../components/Header.astro';
 import SiteHead from '../components/SiteHead.astro';
 import PageJumps from '../components/PageJumps.astro';
 import { site, type PageMeta } from '../data/site';
+import { TIMELINE_HOLD_SCRIPT } from '../lib/page-position';
 
 interface Props {
   page: Pick<PageMeta, 'title' | 'description' | 'path'> & {
@@ -36,6 +37,9 @@ const { page, noindex = false } = Astro.props;
       includeTimelineStyles={page.id === 'home'}
       includeMediaFrames={['home', 'work', 'life'].includes(page.id)}
     />
+    <script>
+      import '../scripts/site.ts';
+    </script>
     <slot name="head" />
   </head>
   <body data-page-id={page.id}>
@@ -44,15 +48,13 @@ const { page, noindex = false } = Astro.props;
     </a>
     <Header />
     <main id="main" class="page" tabindex="-1">
+      <script is:inline set:html={TIMELINE_HOLD_SCRIPT} />
       <slot />
     </main>
     <Footer />
     {['work', 'life', 'about', 'contact'].includes(page.id) && <PageJumps />}
     <PhotoViewer />
     <PrivacyControls />
-    <script>
-      import '../scripts/site.ts';
-    </script>
   </body>
 </html>
 

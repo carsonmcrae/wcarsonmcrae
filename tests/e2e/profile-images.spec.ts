@@ -7,6 +7,7 @@
  */
 import { expect } from '@playwright/test';
 import { test } from './fixtures';
+import { imageSelection } from './helpers';
 
 for (const viewportWidth of [390, 1440]) {
   for (const deviceScaleFactor of [1, 2]) {
@@ -20,19 +21,7 @@ for (const viewportWidth of [390, 1440]) {
         const image = page.locator('.profile-summary__portrait img');
         await expect(image).toHaveJSProperty('complete', true);
         await expect(image).toHaveAttribute('sizes', '(max-width: 40rem) 4.5rem, 9rem');
-        const selected = await image.evaluate((element: HTMLImageElement) => {
-          const candidates = element.srcset.split(',').map((entry) => {
-            const [url, width] = entry.trim().split(/\s+/);
-            return { url: new URL(url!, document.baseURI).href, width: Number.parseInt(width!) };
-          });
-          return {
-            url: element.currentSrc,
-            width: candidates.find((candidate) => candidate.url === element.currentSrc)?.width,
-            widths: candidates.map((candidate) => candidate.width),
-            visibleWidth: element.getBoundingClientRect().width,
-            viewer: element.closest('a')!.href,
-          };
-        });
+        const selected = await image.evaluate(imageSelection);
         expect(selected.widths).toEqual([160, 320, 600]);
         expect(selected.visibleWidth).toBe(viewportWidth <= 640 ? 72 : 144);
         expect(selected.width).toBe(viewportWidth > 640 && deviceScaleFactor === 2 ? 320 : 160);

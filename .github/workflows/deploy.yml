@@ -44,6 +44,7 @@ jobs:
           SITE_URL: https://${{ steps.pages.outputs.host }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
           PUBLIC_REACTIONS_URL: ${{ vars.PUBLIC_REACTIONS_URL }}
+          SOURCE_COMMIT: ${{ github.sha }}
         run: |
           echo "Building for $SITE_URL$BASE_PATH/"
           npm run build

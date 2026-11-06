@@ -54,6 +54,19 @@ lockfiles, and images are exempt. `npm run check:repo` enforces the shape; revie
   traversing history. A readiness marker or completed click dispatch does not acknowledge a deferred
   mutation. Reuse the native-event helpers; retain real input and state/focus assertions rather than
   adding sleeps, synthetic intent events, or weaker expectations.
+- Deferred initialization must preserve an already focused or touched server-rendered control.
+  Adopt equivalent markup in place; test delayed delivery while that control is active. Loaded
+  link handlers must preserve modified clicks, and native destination URLs must carry the target
+  date rather than a conflicting previous query. Check the opened destination, not only its URL.
+- Security closeout checks CodeQL's result context and findings as well as analysis-job completion.
+  A completed upload does not establish zero findings. Resolve reported sinks through explicit safe
+  boundaries and behavioral regressions; never dismiss or suppress a finding to obtain a green gate.
+- Built script budgets follow the complete emitted eager module graph, not only script-tag entry
+  stubs; deferred edges must also resolve. Verify actual initial and conditional request waterfalls
+  when changing loading boundaries. Framework configuration must be checked in emitted output.
+- Published image reaction IDs remain supported after presentation retires. Append to
+  `src/data/published-image-reactions.json`; `check:release` rejects removing reviewed base entries.
+  New targets still require a compatible Worker before site publication.
 
 ### Prevent recurring scan findings
 

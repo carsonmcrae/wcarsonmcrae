@@ -1,27 +1,11 @@
 /**
  * Purpose: A small, validated client for shared reaction counts.
- * Scope: Public endpoint validation, count payload validation, and idempotent anonymous votes.
+ * Scope: Bounded requests, count validation, and idempotent anonymous votes.
  * Does NOT belong: DOM state, browser storage, or the Worker implementation.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-export function reactionEndpoint(raw: string | undefined): string {
-  if (!raw?.trim()) return '';
-  const url = new URL(raw);
-  if (
-    url.protocol !== 'https:' &&
-    !(url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname))
-  )
-    throw new Error('Reactions endpoint must use HTTPS.');
-  if (url.username || url.password || url.search || url.hash)
-    throw new Error('Reactions endpoint must not contain credentials, a query, or a fragment.');
-  return url.href.replace(/\/$/, '');
-}
-
-export function reactionOrigin(raw: string | undefined): string {
-  const endpoint = reactionEndpoint(raw);
-  return endpoint ? new URL(endpoint).origin : '';
-}
+export { reactionEndpoint, reactionOrigin } from './reaction-endpoint';
 function isCounts(value: unknown): value is Record<string, number> {
   return (
     value !== null &&
@@ -32,13 +16,43 @@ function isCounts(value: unknown): value is Record<string, number> {
     )
   );
 }
+async function requestJson(
+  url: string,
+  fetcher: typeof fetch,
+  options: RequestInit,
+  failure: string,
+): Promise<unknown> {
+  const controller = new AbortController();
+  let timer!: ReturnType<typeof globalThis.setTimeout>;
+  const deadline = new Promise<never>((_resolve, reject) => {
+    timer = globalThis.setTimeout(() => {
+      controller.abort();
+      const error = new Error('The reaction request timed out.');
+      error.name = 'REACTIONS_DEADLINE';
+      reject(error);
+    }, 5000);
+  });
+  const request = async () => {
+    const response = await fetcher(url, { ...options, signal: controller.signal });
+    if (!response.ok) throw new Error(failure);
+    return response.json() as Promise<unknown>;
+  };
+  try {
+    return await Promise.race([request(), deadline]);
+  } finally {
+    globalThis.clearTimeout(timer);
+  }
+}
 export async function loadReactionCounts(
   endpoint: string,
   fetcher: typeof fetch,
 ): Promise<Record<string, number>> {
-  const response = await fetcher(`${endpoint}/reactions`, { cache: 'no-store' });
-  if (!response.ok) throw new Error('Reactions are unavailable.');
-  const result: unknown = await response.json();
+  const result = await requestJson(
+    `${endpoint}/reactions`,
+    fetcher,
+    { cache: 'no-store' },
+    'Reactions are unavailable.',
+  );
   if (!isCounts(result)) throw new Error('Invalid reaction counts.');
   return result;
 }
@@ -48,13 +62,16 @@ export async function submitReaction(
   visitorId: string,
   fetcher: typeof fetch,
 ): Promise<number> {
-  const response = await fetcher(`${endpoint}/reactions/${encodeURIComponent(id)}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ visitorId }),
-  });
-  if (!response.ok) throw new Error('The reaction could not be saved.');
-  const result: unknown = await response.json();
+  const result = await requestJson(
+    `${endpoint}/reactions/${encodeURIComponent(id)}`,
+    fetcher,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ visitorId }),
+    },
+    'The reaction could not be saved.',
+  );
   if (!isCounts(result) || !Number.isSafeInteger(result['count']))
     throw new Error('Invalid reaction result.');
   return result['count']!;

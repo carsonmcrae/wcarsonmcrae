@@ -16,20 +16,62 @@ function setup(search = '', observe = false) {
   cleanups.push(fixture.controller.destroy);
   return fixture;
 }
+function appendJumpLink(id: string) {
+  const target = document.getElementById(`moment-${id}`)!;
+  const link = document.createElement('a');
+  link.href = `#moment-${id}`;
+  Object.assign(link.dataset, {
+    jumpDate: target.querySelector('time')!.dateTime,
+    jumpMoment: id,
+  });
+  const label = document.createElement('span');
+  label.textContent = 'Open moment';
+  link.append(label);
+  document.body.append(link);
+  return { link, label, target };
+}
 afterEach(() => {
   for (const cleanup of cleanups.splice(0)) cleanup();
   document.body.innerHTML = '';
   vi.restoreAllMocks();
 });
 describe('timeline interaction', () => {
+  it.each(['ttsnative-1', 'picpledge-wedding'])(
+    'honors a visible same-month native destination after date initialization: %s',
+    (id) => {
+      const { controller, scrolling, win } = setup(`?date=2026-10#moment-${id}`);
+      expect(controller.getState().date).toBe('2026-10');
+      expect(scrolling.mock.instances.at(-1)).toBe(document.getElementById(`moment-${id}`));
+      expect(win.location.hash).toBe(`#moment-${id}`);
+      expect(document.activeElement).toBe(document.body);
+    },
+  );
+  it.each(['?date=2022-05#moment-ttsnative-1', '?date=2022-05#moment-unknown'])(
+    'keeps the selected date authoritative for an unavailable native destination: %s',
+    (url) => {
+      const { controller, scrolling } = setup(url);
+      expect(controller.getState().date).toBe('2022-05');
+      expect(scrolling.mock.instances.at(-1)).toBe(
+        document.querySelector('[data-period="2022-05"] h2'),
+      );
+    },
+  );
+  it('does not use a matching-month native hash to reveal a filtered-out moment', () => {
+    const { controller, scrolling } = setup('?category=Work&date=2026-10#moment-ttsnative-1');
+    expect(document.getElementById('moment-ttsnative-1')).toBeNull();
+    expect(controller.getState()).toMatchObject({ category: 'Work', date: '2026-10' });
+    expect(scrolling.mock.instances.at(-1)).toBe(document.querySelector('[data-timeline]'));
+  });
+  it('leaves a hash-only entry at its native anchor without introducing a date jump', () => {
+    const { scrolling, win, history } = setup('#moment-ttsnative-1');
+    expect(scrolling).not.toHaveBeenCalled();
+    expect(history.replaceState).not.toHaveBeenCalled();
+    expect(win.location.href).toBe('https://daysforth.com/#moment-ttsnative-1');
+  });
   it('delegates exact same-month card jumps without adding another history owner', () => {
     const { controller, history, change, scrolling } = setup();
     change('detail', 'years');
-    const target = document.querySelector<HTMLElement>('[data-moment="married-nicole"]')!;
-    const link = document.createElement('a');
-    link.dataset['jumpDate'] = target.dataset['date'];
-    link.dataset['jumpMoment'] = 'married-nicole';
-    document.body.append(link);
+    const { target, link } = appendJumpLink('married-nicole');
     const before = history.pushState.mock.calls.length;
     link.click();
     expect(document.activeElement).toBe(target.querySelector('h3 a'));
@@ -37,6 +79,35 @@ describe('timeline interaction', () => {
     expect(target.closest('details')!.open).toBe(true);
     expect(history.pushState).toHaveBeenCalledTimes(before + 1);
     expect(controller.getState().date).toBe('2026-10');
+  });
+  it.each([
+    { ctrlKey: true },
+    { metaKey: true },
+    { shiftKey: true },
+    { altKey: true },
+    { button: 1 },
+    { button: 2 },
+  ])('preserves a native navigator link for modified/non-primary input: %j', (options) => {
+    const { controller, history, scrolling } = setup();
+    const before = controller.getState();
+    const { label } = appendJumpLink('born');
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true, ...options });
+    label.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(false);
+    expect(controller.getState()).toEqual(before);
+    expect(history.pushState).not.toHaveBeenCalled();
+    expect(scrolling).not.toHaveBeenCalled();
+  });
+  it('enhances an ordinary navigator link once through its original nested target', () => {
+    const { controller, history, scrolling } = setup();
+    const { label, target } = appendJumpLink('born');
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+    label.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
+    expect(controller.getState().date).toBe('1999-11');
+    expect(history.pushState).toHaveBeenCalledOnce();
+    expect(scrolling.mock.instances.at(-1)).toBe(target);
+    expect(document.activeElement).toBe(target.querySelector('h3 a'));
   });
   it('uses the selected date heading when an optional card id belongs to another month', () => {
     const { controller, history, scrolling } = setup();
@@ -66,7 +137,7 @@ describe('timeline interaction', () => {
   });
   it('restores captured history positions instead of replacing them with a date jump', () => {
     const { controller, events, win, history, scrolling } = timelineFixture(
-      '?date=2022-05',
+      '?date=2022-05#moment-vanderbilt-graduation',
       false,
       0,
     );
@@ -81,7 +152,9 @@ describe('timeline interaction', () => {
     expect(history.pushState).toHaveBeenLastCalledWith({}, '', expect.any(URL));
   });
   it('preserves a native entry snapshot during initialization and gives it priority on traversal', () => {
-    const { controller, win, history, scrolling, events } = timelineFixture('?date=2022-05');
+    const { controller, win, history, scrolling, events } = timelineFixture(
+      '?date=2022-05#moment-vanderbilt-graduation',
+    );
     controller.destroy();
     scrolling.mockClear();
     Object.defineProperty(win, 'navigation', {
@@ -118,15 +191,15 @@ describe('timeline interaction', () => {
     save.setAttribute('aria-pressed', 'true');
     born.append(save);
     document.dispatchEvent(new CustomEvent('daysforth:saved'));
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(24);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(24);
     change('category', 'Saved');
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(1);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(1);
     expect(document.querySelector('[data-timeline-status]')!.textContent).toBe(
       '1 moment. Timeline view. Saved.',
     );
     save.setAttribute('aria-pressed', 'false');
     document.dispatchEvent(new CustomEvent('daysforth:saved'));
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(0);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(0);
     expect(document.querySelector('[data-timeline-empty]')!.textContent).toBe(
       'No saved moments in this browser yet.',
     );
@@ -139,11 +212,11 @@ describe('timeline interaction', () => {
     expect(history.replaceState).toHaveBeenCalled();
     save.setAttribute('aria-pressed', 'true');
     document.dispatchEvent(new CustomEvent('daysforth:saved'));
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(1);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(1);
     controller.destroy();
     save.setAttribute('aria-pressed', 'false');
     document.dispatchEvent(new CustomEvent('daysforth:saved'));
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(1);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(1);
   });
   it('leaves unrelated pages alone and progressively groups the full feed by month', () => {
     expect(initTimeline(document, window)).toBeNull();
@@ -154,7 +227,7 @@ describe('timeline interaction', () => {
       detail: 'months',
       date: '2026-11',
     });
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(24);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(24);
     expect(document.querySelector('[data-timeline-status]')!.textContent).toContain('24 moments');
     expect(
       document.querySelector('[data-period="2026-10"]')!.querySelectorAll('article'),
@@ -188,7 +261,7 @@ describe('timeline interaction', () => {
   it('filters categories, retains milestones, and exposes the requested month’s empty state', () => {
     const { controller, change } = setup();
     change('category', 'Work');
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(9);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(9);
     expect(document.querySelector('#moment-born')).not.toBeNull();
     expect(document.querySelector('[data-category-label]')!.textContent).toBe('Work');
     expect(document.querySelector('[data-timeline-empty]')!.textContent).toContain(
@@ -199,7 +272,27 @@ describe('timeline interaction', () => {
     expect(controller.getState().date).toBe('2026-10');
     expect(document.querySelector<HTMLElement>('[data-timeline-empty]')!.hidden).toBe(true);
     change('category', 'All');
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(24);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(24);
+  });
+  it('gives a nearest-moment link the same native date destination as its enhanced command', () => {
+    const { win } = setup('?view=posts&category=Work&detail=years&date=2020-01');
+    const link = document.querySelector<HTMLAnchorElement>('[data-timeline-empty] a')!;
+    const destination = new URL(link.getAttribute('href')!, win.location.href);
+    expect(Object.fromEntries(destination.searchParams)).toEqual({
+      view: 'posts',
+      category: 'Work',
+      detail: 'years',
+      date: link.dataset['jumpDate']!.slice(0, 7),
+    });
+    expect(destination.hash).toMatch(/^#moment-/);
+  });
+  it('uses newly selected filters in nearest links before their history update completes', () => {
+    const { change } = setup();
+    const link = () => document.querySelector<HTMLAnchorElement>('[data-timeline-empty] a')!;
+    change('category', 'Work');
+    expect(new URL(link().href).searchParams.get('category')).toBe('Work');
+    change('detail', 'years');
+    expect(new URL(link().href).searchParams.get('detail')).toBe('years');
   });
   it('opens a date’s period cluster and keeps native disclosure summaries usable', () => {
     const { controller, change } = setup();

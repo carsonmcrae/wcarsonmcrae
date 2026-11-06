@@ -13,6 +13,7 @@ import { dogs } from './life';
 import { aboutPortrait, profile } from './profile';
 import { photoReactionId } from '../lib/photo-reaction-id';
 import { reactionKeys } from '../lib/reaction-keys';
+import publishedImageIds from './published-image-reactions.json' with { type: 'json' };
 
 const galleryPhotos = [
   ...timelinePosts.flatMap((post) => post.gallery ?? []),
@@ -30,6 +31,11 @@ const imageIds = [
   photoReactionId(aboutPortrait),
 ];
 export const supportedReactionIds = [
-  ...new Set([...timelinePosts.map((post) => post.id), ...Object.keys(postAliases), ...imageIds]),
+  ...new Set([
+    ...timelinePosts.map((post) => post.id),
+    ...Object.keys(postAliases),
+    ...publishedImageIds,
+    ...imageIds,
+  ]),
 ];
 export const supportedReactionKeys = reactionKeys(supportedReactionIds);

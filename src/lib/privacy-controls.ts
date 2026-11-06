@@ -1,6 +1,6 @@
 /**
  * Purpose: Let visitors grant, withdraw, and erase optional browser persistence.
- * Scope: Accessible consent UI, preference clearing, and removal of the anonymous server identifier.
+ * Scope: Accessible consent UI, preference clearing, and removal of the pseudonymous reaction identifier.
  * Does NOT belong: Permanent aggregate reaction removal or provider policies.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -13,11 +13,13 @@ export function initPrivacyControls(
   endpoint: string,
 ) {
   const dialog = doc.querySelector<HTMLDialogElement>('[data-storage-dialog]')!;
+  if (typeof dialog.showModal !== 'function') throw new Error('Storage dialog unavailable');
   const notice = doc.querySelector<HTMLElement>('[data-storage-notice]')!;
   const storage = safeStorage(win);
   const preferences = preferenceStorage(win);
   const pending = new Set<AbortController>();
   let alive = true;
+  let forgetting = false;
   const feedback = dialog.querySelector<HTMLElement>('[data-storage-feedback]')!;
   const sync = () => {
     const choice = consentChoice(storage);
@@ -30,18 +32,22 @@ export function initPrivacyControls(
     dialog.showModal();
   };
   const chooseStorage = (allowed: boolean) => {
-    if (!allowed) clearPreferences(storage as Storage | null);
-    if (!recordConsent(storage, allowed)) {
+    const cleared = allowed || clearPreferences(storage as Storage | null);
+    const recorded = recordConsent(storage, allowed);
+    sync();
+    doc.dispatchEvent(new CustomEvent('daysforth:storage'));
+    if (!recorded || !cleared) {
       if (!dialog.open) dialog.showModal();
-      feedback.textContent = 'This browser could not remember your choice.';
+      feedback.textContent = cleared
+        ? 'This browser could not remember your choice.'
+        : 'Optional storage is off for this page. Some saved browser data could not be removed.';
       return;
     }
-    sync();
     dialog.close();
-    doc.dispatchEvent(new CustomEvent('daysforth:storage'));
   };
   const removeIdentity = async (visitorId: string | null) => {
-    if (!visitorId || !endpoint) return true;
+    if (!visitorId) return true;
+    if (!endpoint) return false;
     const controller = new AbortController();
     pending.add(controller);
     let timer!: ReturnType<typeof globalThis.setTimeout>;
@@ -58,7 +64,17 @@ export function initPrivacyControls(
         body: JSON.stringify({ visitorId }),
         signal: controller.signal,
       });
-      return await Promise.race([request.then((response) => response.ok), deadline]);
+      const acknowledged = request.then(async (response) => {
+        if (!response.ok) return false;
+        const value: unknown = await response.json();
+        return (
+          value !== null &&
+          typeof value === 'object' &&
+          'forgotten' in value &&
+          value.forgotten === true
+        );
+      });
+      return await Promise.race([acknowledged, deadline]);
     } catch {
       return false;
     } finally {
@@ -67,17 +83,28 @@ export function initPrivacyControls(
     }
   };
   const forgetBrowser = async () => {
+    if (forgetting) return;
+    forgetting = true;
     const visitorId = readItem(preferences, 'daysforth.visitor');
-    clearPreferences(storage as Storage | null);
-    recordConsent(storage, false);
+    const cleared = clearPreferences(storage as Storage | null);
+    const recorded = recordConsent(storage, false);
     sync();
     doc.dispatchEvent(new CustomEvent('daysforth:storage'));
-    feedback.textContent = 'Browser data cleared. Checking server identifier removal…';
+    feedback.textContent =
+      cleared && recorded
+        ? 'Browser data cleared. Checking server identifier removal…'
+        : 'Some saved browser data could not be removed or the choice could not be remembered. Checking server identifier removal…';
     const removed = await removeIdentity(visitorId);
+    forgetting = false;
     if (!alive) return;
+    if (!cleared || !recorded) {
+      feedback.textContent =
+        'Optional storage is off for this page. Some saved browser data could not be removed or the choice could not be remembered.';
+      return;
+    }
     feedback.textContent = removed
       ? 'Saved browser data cleared. Reaction counts stay.'
-      : 'Browser data cleared. The server identifier could not be removed now; it becomes eligible for automatic cleanup after 90 days.';
+      : 'Browser data cleared. Server identifier removal could not be confirmed; any remaining identifier becomes eligible for cleanup after 90 days.';
   };
   const onClick = async (event: MouseEvent) => {
     if (!(event.target instanceof Element)) return;
@@ -94,6 +121,7 @@ export function initPrivacyControls(
   sync();
   return () => {
     alive = false;
+    if (dialog.open) dialog.close();
     for (const controller of pending) controller.abort();
     doc.removeEventListener('click', onClick);
     doc.removeEventListener('daysforth:privacy-request', request);

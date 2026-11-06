@@ -10,6 +10,20 @@ import { describe, expect, it, vi } from 'vitest';
 import { setup } from './post-actions-fixture';
 
 describe('Copy', () => {
+  it.each([true, false])(
+    'does not announce a clipboard result after disposal (success %s)',
+    async (success) => {
+      const pending = Promise.withResolvers<void>();
+      const f = setup();
+      f.win.navigator.clipboard.writeText.mockReturnValue(pending.promise);
+      const copied = f.activate(f.button('copy'));
+      f.destroy();
+      if (success) pending.resolve();
+      else pending.reject(new Error('clipboard denied'));
+      await copied;
+      expect(f.announce).not.toHaveBeenCalled();
+    },
+  );
   it.each([
     ['/', 'https://canonical.test/posts/current/', 'https://canonical.test/posts/born/'],
     ['/project/', 'https://pages.test/project/', 'https://pages.test/project/posts/born/'],

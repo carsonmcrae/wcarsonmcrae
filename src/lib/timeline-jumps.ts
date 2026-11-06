@@ -12,7 +12,11 @@ type JumpWindow = Pick<
   'innerHeight' | 'scrollY' | 'addEventListener' | 'removeEventListener'
 >;
 
-export function initTimelineJumps(doc: Document, win: JumpWindow): () => void {
+export function initTimelineJumps(
+  doc: Document,
+  win: JumpWindow,
+  initial?: ScrollChange,
+): () => void {
   const root = doc.querySelector<HTMLElement>('[data-timeline]');
   const up = doc.querySelector<HTMLButtonElement>('[data-timeline-edge="newest"]');
   const down = doc.querySelector<HTMLButtonElement>('[data-timeline-edge="oldest"]');
@@ -40,7 +44,8 @@ export function initTimelineJumps(doc: Document, win: JumpWindow): () => void {
   };
   const intent = observeUserScroll(doc, win, update);
   doc.addEventListener('daysforth:history', intent.refresh);
-  intent.refresh();
+  if (initial) update(initial);
+  else intent.refresh();
   return () => {
     intent.destroy();
     doc.removeEventListener('daysforth:history', intent.refresh);

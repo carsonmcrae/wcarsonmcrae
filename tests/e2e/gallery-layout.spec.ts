@@ -37,7 +37,7 @@ test('Life hobby photos form desktop pairs and a single mobile column', async ({
     expect(rectangles[1]!.x).toBeGreaterThan(rectangles[0]!.x);
   }
   for (const photo of lifePhotos) {
-    const tile = tiles.filter({ has: page.locator(`[data-moment-image="${photo.name}"]`) });
+    const tile = tiles.filter({ has: page.locator(`[data-photo="photo-${photo.name}"]`) });
     await expect(tile.locator('[data-photo]')).toHaveAttribute(
       'href',
       /(?:\.webp(?:\?|$)|[?&]f=webp(?:&|$))/,
@@ -48,7 +48,7 @@ test('Life hobby photos form desktop pairs and a single mobile column', async ({
     );
     await expect(tile.locator('figcaption,.destination-link')).toHaveCount(0);
   }
-  await expect(gallery.locator('[data-moment-image="first-watch-new-photo"]')).toBeVisible();
+  await expect(gallery.locator('[data-photo="photo-first-watch-new-photo"]')).toBeVisible();
 });
 
 test('Life closes with both family groups and their wedding album destinations', async ({

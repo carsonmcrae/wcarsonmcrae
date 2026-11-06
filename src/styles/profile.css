@@ -153,16 +153,16 @@
   font-weight: 700;
   letter-spacing: -0.025em;
 }
-[data-moment-image='1999-born'] {
+[data-photo='photo-1999-born'] img {
   object-position: 50% 52%;
 }
-[data-moment-image='2022-vanderbilt-graduation'] {
+[data-photo='photo-2022-vanderbilt-graduation'] img {
   object-position: 50% 49%;
 }
-[data-moment-image='2022-carson-vandy-graduation'] {
+[data-photo='photo-2022-carson-vandy-graduation'] img {
   object-position: 50% 42%;
 }
-[data-moment-image='nicole-carson-2'] {
+[data-photo='photo-nicole-carson-2'] img {
   object-position: 66% 31%;
 }
 .date-rail {

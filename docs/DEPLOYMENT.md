@@ -91,14 +91,37 @@ the published commit. See [the 1.0.0 record](V1-RELEASE.md) for the current impl
 
 Verify all four domain/host variants over HTTP/HTTPS, deep paths and queries, direct post/secondary
 pages, custom 404, canonical tags, robots, sitemap, share images, security headers, both themes,
-keyboard controls, and the real brand ZIP. Verify shared totals and duplicate protection across
-browsers; remove exact test votes. Record actual outcomes in design-qa.md.
+keyboard controls, and the real brand ZIP. Compare real shared totals read-only across browsers;
+verify duplicate protection with isolated local fixtures. Do not add synthetic production votes:
+erasing identifiers does not remove their permanent totals. Record actual outcomes in design-qa.md.
 
-VoiceOver on macOS/iOS and native Safari download verification remain outstanding. Windows NVDA
-and automated WebKit do not establish conformance. Carson authorized publication with these
-limitations recorded.
+The original publication recorded outstanding VoiceOver/macOS/iOS and native Safari verification.
+The [1.1.2 QA record](qa/1.1.2.md) records the later agent-observed NVDA check and owner-reported
+Apple-device results, including their scope and evidence limits. Neither automated WebKit nor
+these scoped manual checks establishes complete accessibility conformance.
 
 ## Rollback
+
+For prepared 1.1.2 output, each document's `daysforth-build` meta value and `/build.json` carry the
+package version and full `SOURCE_COMMIT`. The deployment workflow supplies its reviewed Git SHA;
+unattributed local builds explicitly say `local`. Fetch the receipt with cache revalidation and
+compare both the receipt and affected HTML when investigating stale documents. GitHub Pages owns
+HTTP caching and compression; an endpoint's generated Response headers cannot configure Pages.
+A successful build, source tag or receipt alone does not prove which release is currently live.
+
+The Worker adds an independent read-only schema health check and validated serving-artifact UUID.
+Keep its provider version/source receipt separate from the site's SHA. Follow the
+[reaction operations guide](../workers/reactions/OPERATIONS.md) for health limits, cron evidence,
+backups, synthetic restore rehearsal and compatible rollback. Request logging remains disabled.
+
+To diagnose a stale optional chunk, record the HTML build identity, component, stable local code
+and coarse status/timing. Follow the native fallback or reload the current page. Do not capture
+history URLs/query strings, preference values, visitor IDs or request bodies. Reproduce from the
+exact source with locked dependencies and deployment base/configuration. Source maps are not
+published by this change; minified/native stack symbolication remains limited. If reproduction
+proves insufficient, prepare hidden maps as an access-controlled build artifact keyed by exact SHA,
+with a short approved retention and no sourceMappingURL in delivered assets. Review that workflow
+before enabling it. Local console diagnostics are not remote error reporting or availability alerts.
 
 Revert the release commit on main or unpublish Pages. Restore prior records from the saved inventories
 if needed. Before moving authoritative DNS away from Cloudflare, remove the DS record at GoDaddy and

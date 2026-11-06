@@ -35,6 +35,30 @@ these public records. Routine copy edits and tests do not need a new decision do
 
 ## Current release changes
 
+Version 1.1.2 scopes optional-import failures to their own fallback and guards independent browser
+mount/cleanup operations. Local diagnostic codes identify operation/category/release without raw
+errors, visitor information or remote collection. Preference clearing returns an honest partial
+result when storage refuses access; persistence remains off for that page if revocation cannot be
+written. Reaction reads/writes have a bounded five-second fetch/body deadline; accepted server work
+is not canceled atomically. See the [audit ledger](audit-1.1.2.md) for regressions and limitations.
+
+Published image reaction support now outlives presentation through a static append-only registry.
+There is no schema migration, new reaction key, salt change or reset. Worker `/health` checks the
+schema/read contract without data disclosure, and provider version metadata identifies the serving
+artifact. Static HTML and `/build.json` identify the site source supplied by the deployment job.
+The [operations guide](../../workers/reactions/OPERATIONS.md) explains independent rollout,
+scheduled-cleanup verification, permanent-total recovery and the remaining monitoring gap.
+
+HTML metadata uses canonical photo parents, permanent card anchors and semantic dates instead of
+duplicated data attributes. Initial script budgets follow transitive emitted imports; deferred
+edges are resolved too. Astro's build-setup hook applies module-preload policy after framework
+assembly. Browser waterfalls remain necessary evidence for conditional loading behavior.
+
+The browser reaction fixture uses native HTTPS/CORS through a test-only loopback CONNECT proxy.
+Default network interception disabled resource caching globally and caused the reproduced Windows
+WebKit image dispatch delay. Keep normal asset caching intact; reserve explicit routes for intentional
+fault/mutation tests. Transport boundaries and cleanup are included in the 100% coverage gate.
+
 Version 1.1.0 separates photo-viewer lifecycle, native filmstrip navigation, and the photo reaction
 DOM adapter. Both photo and moment adapters use the shared reaction-only controller. Stable
 `photo-`/`screen-` asset identities extend the approved Worker allowlist without changing existing

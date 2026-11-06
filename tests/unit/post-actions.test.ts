@@ -314,6 +314,53 @@ describe('shared reactions', () => {
   });
 });
 describe('lifecycle', () => {
+  it('keeps a session-confirmed reaction selected through refresh when its optional flag cannot be written', async () => {
+    const raw = consentingStorage({ 'daysforth.visitor': identity });
+    const write = raw.setItem.bind(raw);
+    vi.spyOn(raw, 'setItem').mockImplementation((key, value) => {
+      if (key.startsWith('daysforth.reacted.')) throw new Error('storage full');
+      write(key, value);
+    });
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockImplementation(async (_url, options) =>
+        Response.json(options?.method === 'POST' ? { count: 3 } : { born: 3 }),
+      );
+    const f = setup({ storage: raw, endpoint: 'https://api.example.com', fetcher });
+    f.click('react');
+    await vi.waitFor(() => expect(f.button('react').getAttribute('aria-pressed')).toBe('true'));
+    expect(raw.getItem('daysforth.reacted.born')).toBeNull();
+    const resume = new Event('pageshow');
+    Object.defineProperty(resume, 'persisted', { value: true });
+    f.events.dispatchEvent(resume);
+    document.dispatchEvent(new CustomEvent('daysforth:storage'));
+    expect(f.button('react').getAttribute('aria-pressed')).toBe('true');
+    expect(f.button('react').disabled).toBe(true);
+    expect(fetcher.mock.calls.filter(([, options]) => options?.method === 'POST')).toHaveLength(1);
+    clearPreferences(raw);
+    recordConsent(raw, false);
+    document.dispatchEvent(new CustomEvent('daysforth:storage'));
+    expect(f.button('react').getAttribute('aria-pressed')).toBe('false');
+    expect(f.button('react').disabled).toBe(false);
+    expect(f.button('react').textContent).toBe('3');
+  });
+  it.each([true, false])(
+    'does not paint a count response after disposal (success %s)',
+    async (success) => {
+      const pending = Promise.withResolvers<Response>();
+      const f = setup({
+        endpoint: 'https://api.example.com',
+        fetcher: vi.fn<typeof fetch>().mockReturnValue(pending.promise),
+      });
+      const original = f.button('react').outerHTML;
+      f.destroy();
+      if (success) pending.resolve(Response.json({ born: 99 }));
+      else pending.reject(new Error('late offline'));
+      await pending.promise.catch(() => {});
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(f.button('react').outerHTML).toBe(original);
+    },
+  );
   it('refreshes cached-page choices and totals without replacing the timeline cards', async () => {
     let finishInitial!: (response: Response) => void;
     const initial = new Promise<Response>((resolve) => {

@@ -11,6 +11,7 @@ import { initPhotoReactionControls } from './photo-reaction-controls';
 import { clickedControl } from './click-intent';
 export function initPhotoViewer(doc: Document, endpoint = '') {
   const dialog = doc.querySelector<HTMLDialogElement>('[data-photo-viewer]')!;
+  if (typeof dialog.showModal !== 'function') throw new Error('Photo dialog unavailable');
   const image = dialog.querySelector<HTMLImageElement>('[data-photo-large]')!;
   const related = dialog.querySelector<HTMLAnchorElement>('[data-photo-related]')!;
   const previous = dialog.querySelector<HTMLButtonElement>('[data-photo-previous]');
@@ -107,6 +108,7 @@ export function initPhotoViewer(doc: Document, endpoint = '') {
   stage.addEventListener('touchstart', touchstart, { passive: true });
   stage.addEventListener('touchend', touchend, { passive: true });
   return () => {
+    if (dialog.open) close();
     filmstrip?.destroy();
     reactionControls?.destroy();
     doc.removeEventListener('click', click);

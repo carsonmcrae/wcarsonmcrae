@@ -33,16 +33,28 @@ test.describe('axe audits', () => {
 });
 
 test.describe('keyboard', () => {
-  test('the skip link comes first and moves focus to the main content', async ({ page }) => {
-    await page.goto('');
-    await page.locator('html[data-site-ready="true"]').waitFor();
-    await page.keyboard.press('Tab');
-    const skip = page.getByRole('link', { name: 'Skip to content' });
-    await expect(skip).toBeFocused();
-    await expect(skip).toBeVisible();
-    await page.keyboard.press('Enter');
-    await expect(page.locator('main')).toBeFocused();
-  });
+  for (const colorScheme of ['light', 'dark'] as const) {
+    test(`the skip link stays above the header and moves focus in ${colorScheme}`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme });
+      await page.goto('');
+      await page.locator('html[data-site-ready="true"]').waitFor();
+      await page.keyboard.press('Tab');
+      const skip = page.getByRole('link', { name: 'Skip to content' });
+      await expect(skip).toBeFocused();
+      await expect(skip).toBeVisible();
+      expect(
+        await skip.evaluate((link) => {
+          const box = link.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          return hit !== null && link.contains(hit);
+        }),
+      ).toBe(true);
+      await page.keyboard.press('Enter');
+      await expect(page.locator('main')).toBeFocused();
+    });
+  }
 
   test('every focused control shows a visible focus indicator', async ({ page }) => {
     await page.goto('');

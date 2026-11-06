@@ -5,6 +5,11 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
+html[data-timeline-fallback] .timeline-dock,
+html[data-timeline-fallback] .timeline-jumps,
+html[data-timeline-fallback] .moment-navigator {
+  display: none;
+}
 .timeline-dock {
   position: sticky;
   top: var(--header-height);
@@ -34,7 +39,7 @@ section.timeline-feed {
 .timeline-feed .moment-group > h2,
 .timeline-feed .post-card,
 .timeline-feed .timeline-empty,
-.timeline-feed .photo-open,
+.timeline-feed [data-photo],
 .timeline-feed .post-media__open {
   scroll-margin-top: var(--timeline-scroll-clearance);
 }

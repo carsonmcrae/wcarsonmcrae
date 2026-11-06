@@ -26,10 +26,10 @@ export const accessibility = {
     'No tracking, analytics, or third-party scripts',
   ],
   testing:
-    'Automated accessibility checks run on every page, in both themes, in Chromium and WebKit, every time the site changes, along with keyboard, zoom, and text-spacing checks. Core timeline controls and action feedback in the initial release were also checked with NVDA on Windows.',
+    'Automated accessibility checks run on every page, in both themes, in Chromium and WebKit, every time the site changes, along with keyboard, zoom, and text-spacing checks. The latest NVDA review on Windows covered Timeline and Posts browsing, reaction and Save feedback, browser storage, the photo viewer, and the responsive menu. Safari and VoiceOver checks on macOS and iOS were also reported successful.',
   limitations: [
-    'The updated post browser, permanent reactions, storage controls, photo viewer, and mobile drawer still need a fresh NVDA review.',
-    'VoiceOver testing on macOS and iOS hasn’t been completed for this version yet.',
+    'Manual checks cover selected journeys and don’t establish full accessibility conformance.',
+    'The reported Apple-device checks didn’t include software versions or results for individual tasks.',
   ],
   feedback:
     'If something doesn’t work for you, please tell me. A message on [LinkedIn](https://www.linkedin.com/in/carsonmcrae/) or an issue on [GitHub](https://github.com/carsonmcrae/wcarsonmcrae/issues) both reach me.',

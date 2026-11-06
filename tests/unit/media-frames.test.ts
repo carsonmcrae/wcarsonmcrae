@@ -10,6 +10,7 @@ import { mediaFrameStyles } from '../../src/lib/media-frames';
 import { getPhoto, getProjectImage } from '../../src/lib/images';
 import { timelinePosts } from '../../src/data/timeline';
 import { GET } from '../../src/pages/media-frames.css';
+import { photoReactionId } from '../../src/lib/photo-reaction-id';
 
 vi.mock('../../src/lib/images', () => ({ getPhoto: vi.fn(), getProjectImage: vi.fn() }));
 const post = {
@@ -35,9 +36,9 @@ describe('known media dimensions', () => {
       { ...post, image: 'portrait' },
       { ...post, image: 'screen', imageKind: 'screen' },
     ]);
-    expect(css).toContain('[data-moment-image="portrait"]');
+    expect(css).toContain('[data-photo="photo-portrait"]');
     expect(css).toContain('--media-ratio: 600 / 900;');
-    expect(css).toContain('[data-moment-image="screen"]');
+    expect(css).toContain('[data-photo="screen-screen"]');
     expect(css).toContain('--media-ratio: 1280 / 721;');
     expect(getPhoto).toHaveBeenCalledWith('portrait');
     expect(getProjectImage).toHaveBeenCalledWith('screen');
@@ -56,7 +57,9 @@ describe('known media dimensions', () => {
     expect(response.headers.get('Content-Type')).toBe('text/css; charset=utf-8');
     const css = await response.text();
     for (const item of timelinePosts.filter((item) => item.image)) {
-      expect(css).toContain(`[data-moment-image=${JSON.stringify(item.image)}]`);
+      expect(css).toContain(
+        `[data-photo=${JSON.stringify(photoReactionId(item.image!, item.imageKind ?? 'photo'))}]`,
+      );
     }
   });
 });

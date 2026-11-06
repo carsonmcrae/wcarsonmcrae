@@ -1,26 +1,41 @@
 /**
  * Purpose: Reuses server-rendered cards when a visitor changes timeline presentation.
- * Scope: Reads trusted card metadata, groups visible cards, and exposes expandable period clusters.
+ * Scope: Reads permanent card IDs and semantic dates, groups visible cards, and exposes period clusters.
  * Does NOT belong: URL state, events, content, or social actions.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { groupMoments, visibleMoments, type Moment, type TimelineState } from './timeline-model';
+import { periodKey } from './timeline-dates';
 export interface MomentCard extends Moment {
   element: HTMLElement;
 }
 
 export function readMomentCards(root: ParentNode): MomentCard[] {
-  return Array.from(root.querySelectorAll<HTMLElement>('[data-moment]'), (element) => ({
+  return Array.from(root.querySelectorAll<HTMLElement>('.post-card[id^="moment-"]'), (element) => ({
     element,
-    id: element.dataset['moment']!,
-    date: element.dataset['date']!,
+    id: element.id.slice('moment-'.length),
+    date: element.querySelector('time')!.dateTime,
     category: element.dataset['category'] as Moment['category'],
     milestone: element.dataset['milestone'] === 'true',
     get saved() {
       return element.querySelector('[data-save]')?.getAttribute('aria-pressed') === 'true';
     },
   }));
+}
+
+/** Adopts the default monthly SSR presentation without detaching an active card descendant. */
+export function adoptMomentGroups(container: HTMLElement): HTMLElement[] {
+  const groups = Array.from(
+    container.querySelectorAll<HTMLElement>('.moment-group--year .moment-group'),
+  );
+  if (groups.length === 0) throw new Error('Missing server-rendered monthly timeline groups');
+  for (const group of groups) {
+    const date = periodKey(group.querySelector('time')!.dateTime, 'months');
+    group.dataset['period'] = date;
+    group.dataset['periodDate'] = date;
+  }
+  return groups;
 }
 
 export function renderMomentGroups(
@@ -40,7 +55,6 @@ export function renderMomentGroups(
     heading.textContent = group.label;
     section.append(heading);
     const body = doc.createElement('div');
-    body.className = 'moment-group__cards';
     body.append(...group.items.map((post) => post.element));
     if (state.detail !== 'months' && group.items.length > 1) {
       const cluster = doc.createElement('details');

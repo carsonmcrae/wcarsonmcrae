@@ -16,6 +16,8 @@ import { education } from '../data/career';
 import { absoluteUrl, withBase } from '../lib/paths';
 import { buildPersonJsonLd, buildSeo, serializeJsonLd } from '../lib/seo';
 import { THEME_BOOTSTRAP_SCRIPT } from '../lib/theme';
+import { TIMELINE_HOLD_SCRIPT } from '../lib/page-position';
+import { buildIdentity } from '../lib/build-identity';
 
 interface Props {
   page: Pick<PageMeta, 'title' | 'description' | 'path'>;
@@ -34,6 +36,7 @@ const {
 } = Astro.props;
 const siteUrl = Astro.site?.origin ?? 'https://wcarsonmcrae.com';
 const base = import.meta.env.BASE_URL;
+const build = buildIdentity(process.env['SOURCE_COMMIT']);
 
 const seo = buildSeo({
   title: page.title,
@@ -48,11 +51,12 @@ const seo = buildSeo({
   locale: site.locale,
 });
 
-// The theme bootstrap runs inline (before paint), so its hash is added to
-// the page's Content-Security-Policy alongside Astro's bundled assets.
-const bootstrapHash: `sha256-${string}` = `sha256-${createHash('sha256').update(THEME_BOOTSTRAP_SCRIPT).digest('base64')}`;
-// Defined whenever security.csp is enabled (astro.config.mjs); tests/build verifies the hash lands.
-Astro.csp?.insertScriptHash(bootstrapHash);
+// The pre-paint scripts need explicit hashes alongside Astro's bundled assets.
+for (const script of [THEME_BOOTSTRAP_SCRIPT, TIMELINE_HOLD_SCRIPT]) {
+  const hash: `sha256-${string}` = `sha256-${createHash('sha256').update(script).digest('base64')}`;
+  // Defined whenever security.csp is enabled; tests/build verifies every inline hash lands.
+  Astro.csp?.insertScriptHash(hash);
+}
 
 const person = includePerson
   ? serializeJsonLd(
@@ -76,6 +80,7 @@ const person = includePerson
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{seo.title}</title>
 <meta name="description" content={seo.description} />
+<meta name="daysforth-build" content={`${build.version}@${build.source}`} />
 <link rel="canonical" href={seo.canonical} />
 {noindex && <meta name="robots" content="noindex" />}
 <meta name="author" content={profile.name} />

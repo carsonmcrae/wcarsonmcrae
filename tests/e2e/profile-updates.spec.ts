@@ -15,7 +15,7 @@ const wedding = timelinePosts.find((post) => post.id === 'married-nicole')!;
 async function holdFirstSaveCommand(page: Page) {
   const requested = Promise.withResolvers<void>();
   const response = Promise.withResolvers<void>();
-  await page.route(/\/post-action-events\.[^/]+\.js$/, async (route) => {
+  await page.route(/\/post-enhancements\.[^/]+\.js$/, async (route) => {
     requested.resolve();
     await response.promise;
     await route.continue();
@@ -26,9 +26,18 @@ async function holdFirstSaveCommand(page: Page) {
     `${timelinePosts.length} moments.`,
   );
   const save = page.getByRole('button', { name: 'Save Built Daysforth', exact: true });
-  await save.click();
-  await requested.promise;
-  return { save, release: () => response.resolve() };
+  try {
+    await save.click();
+    await requested.promise;
+    await expect(save).toHaveAttribute('aria-pressed', 'false');
+    expect(
+      await page.evaluate(() => localStorage.getItem('daysforth.saved.built-daysforth')),
+    ).toBeNull();
+    return { save, release: () => response.resolve() };
+  } catch (error) {
+    response.resolve();
+    throw error;
+  }
 }
 
 test('Saved is useful after refresh and updates immediately when the last item is removed', async ({
@@ -42,16 +51,16 @@ test('Saved is useful after refresh and updates immediately when the last item i
   await expect(save).toHaveAttribute('aria-pressed', 'true');
   await page.locator('.timeline-menu summary').nth(0).click();
   await page.getByRole('radio', { name: 'Saved', exact: true }).check();
-  await expect(page.locator('[data-moment]')).toHaveCount(1);
+  await expect(page.locator('.post-card')).toHaveCount(1);
   await page.reload();
-  await expect(page.locator('[data-moment]')).toHaveCount(1);
+  await expect(page.locator('.post-card')).toHaveCount(1);
   await save.click();
   await expect(page.locator('[data-timeline-empty]')).toHaveText(
     'No saved moments in this browser yet.',
   );
   await page.locator('.timeline-menu summary').nth(0).click();
   await page.getByRole('radio', { name: 'Milestones', exact: true }).check();
-  await expect(page.locator('[data-moment]')).toHaveCount(6);
+  await expect(page.locator('.post-card')).toHaveCount(6);
   await expect(page.locator('#moment-high-school-graduation')).toContainText(
     'High school salutatorian',
   );
@@ -79,7 +88,7 @@ for (const filterBeforeCompletion of [false, true]) {
         await expect(saved).toBeVisible();
         await saved.check();
       }
-      await expect(page.locator('[data-moment]')).toHaveCount(1);
+      await expect(page.locator('.post-card')).toHaveCount(1);
       await expect(page.locator('#moment-built-daysforth')).toBeVisible();
       await expect(pending.save).toHaveAttribute('aria-pressed', 'true');
       expect(
@@ -119,7 +128,7 @@ test('all covers open posts and app events show real interfaces with app icons',
   page,
 }) => {
   await page.goto('');
-  await expect(page.locator('[data-moment] .post-media')).toHaveCount(24);
+  await expect(page.locator('.post-card .post-media')).toHaveCount(24);
   for (const id of ['ttsnative-1', 'recalen-beta', 'picpledge-wedding', 'built-daysforth']) {
     const cover = page.locator(`#moment-${id} .post-media--screen`);
     await expect(cover.locator('.post-media__open')).toHaveAttribute(

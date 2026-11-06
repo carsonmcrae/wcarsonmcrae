@@ -5,14 +5,14 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-.photo-open {
+[data-photo] {
   cursor: zoom-in;
   display: block;
   min-width: 0;
   color: inherit;
   text-decoration: none;
 }
-.photo-open img {
+[data-photo] img {
   display: block;
   max-width: 100%;
 }
@@ -167,6 +167,10 @@ html:has(dialog[open]) :is(.timeline-jumps, .page-jumps) {
 }
 html[data-timeline-restore] main {
   visibility: hidden;
+}
+html[data-timeline-restore] main[inert] {
+  visibility: visible;
+  opacity: 0;
 }
 @media (max-width: 40rem) {
   .storage-notice {

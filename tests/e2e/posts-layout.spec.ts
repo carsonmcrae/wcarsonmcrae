@@ -15,7 +15,7 @@ test('adjacent Posts cards share heading and action baselines', async ({ page, i
   await page.goto('?view=posts&date=2026-10');
   await expect(page.locator('[data-timeline]')).toHaveAttribute('data-view', 'posts');
   await page.evaluate(() => document.fonts.ready);
-  for (const selector of ['h3', '.post-actions']) {
+  for (const selector of ['h3', '[data-post-actions]']) {
     const difference = await page.evaluate((part) => {
       const first = document.querySelector(`#moment-ttsnative-1 ${part}`)!.getBoundingClientRect();
       const second = document

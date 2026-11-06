@@ -37,3 +37,10 @@ changes. Use environment variables for local SonarQube authentication; never com
 Supported production is the latest published release. Report a reproducible issue with the version,
 affected route, expected/observed behavior, and a redacted reproduction. Avoid destructive tests,
 quota exhaustion, real visitor data, or modifying production reaction totals.
+
+Prepared 1.1.2 diagnostics use bounded local component/category/release codes and public deployment
+identity. Worker failures return fixed categories without exception text, SQL, secrets or stored
+identifiers; `/health` is a read-only schema/configuration probe, not a data or configuration dump.
+Neither browser reporting nor provider request logging is enabled. See the
+[operations and recovery limits](workers/reactions/OPERATIONS.md), including why restoring old
+data can resurrect erased identifiers and why accepted concurrent votes are not atomically erased.

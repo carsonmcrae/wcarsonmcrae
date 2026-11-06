@@ -60,6 +60,7 @@ const index = ordered.findIndex((post) => post.id === id);
   </a>
 </nav>
 <script>
-  import { initPostNavigation } from '../lib/post-navigation';
+  import { initPostNavigation, initPostReturn } from '../lib/post-navigation';
   initPostNavigation(document, (href) => window.location.assign(href));
+  initPostReturn(document, window);
 </script>

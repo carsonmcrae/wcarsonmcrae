@@ -1,6 +1,7 @@
 /**
  * Purpose: The same moments presented as an axis or a photographic post grid.
  * Scope: Card hierarchy, real-date connectors, clusters, action rows, empty states, and mobile reflow.
+ * Constraints: A group's card body is its sole direct div, or its native cluster's sole direct div.
  * Does NOT belong: Toolbar menus or profile layout.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -28,13 +29,13 @@
   letter-spacing: -0.04em;
   line-height: 1.25;
 }
-.moment-group__cards {
+:is(.moment-group, .moment-cluster) > :where(div) {
   position: relative;
   display: grid;
   gap: 0.75rem;
   padding-left: 3.75rem;
 }
-.moment-group__cards::before {
+:is(.moment-group, .moment-cluster) > :where(div)::before {
   content: '';
   position: absolute;
   top: 1.3rem;
@@ -151,13 +152,13 @@
 .project-art--picpledge {
   background: #fff1e6;
 }
-.post-actions {
+[data-post-actions] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0 1.125rem;
 }
-.post-actions button {
+[data-post-actions] button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -171,10 +172,10 @@
   font-weight: 550;
   line-height: 1.35;
 }
-.post-actions button[aria-pressed='true'] {
+[data-post-actions] button[aria-pressed='true'] {
   color: var(--link);
 }
-.post-actions button:disabled {
+[data-post-actions] button:disabled {
   color: var(--muted);
   cursor: wait;
 }
@@ -239,12 +240,12 @@
   color: var(--link);
   font-weight: 650;
 }
-[data-timeline][data-view='posts'] .moment-group__cards {
+[data-timeline][data-view='posts'] :is(.moment-group, .moment-cluster) > :where(div) {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   padding-left: 0;
 }
-[data-view='posts'] .moment-group__cards::before,
+[data-view='posts'] :is(.moment-group, .moment-cluster) > :where(div)::before,
 [data-view='posts'] .post-card::before,
 [data-view='posts'] .post-card::after {
   display: none;
@@ -271,7 +272,7 @@
 [data-view='posts'] .post-card h3 {
   order: -1;
 }
-[data-view='posts'] .post-actions {
+[data-view='posts'] [data-post-actions] {
   padding-inline: 1rem;
 }
 [data-view='posts'] .post-card--milestone {
@@ -307,7 +308,7 @@
   [data-view='posts'] .post-card--milestone .post-card__caption {
     flex-basis: 100%;
   }
-  [data-view='posts'] .post-card--milestone .post-actions {
+  [data-view='posts'] .post-card--milestone [data-post-actions] {
     align-self: center;
   }
   [data-view='timeline'] .post-card--illustrated:not(.post-card--milestone) .post-card__media {
@@ -329,10 +330,10 @@
   .moment-group > h2 {
     font-size: 1.5rem;
   }
-  .moment-group__cards {
+  :is(.moment-group, .moment-cluster) > :where(div) {
     padding-left: 1.15rem;
   }
-  .moment-group__cards::before {
+  :is(.moment-group, .moment-cluster) > :where(div)::before {
     left: 0.3rem;
   }
   .post-card {
@@ -360,13 +361,13 @@
     height: 7.5rem;
     margin-top: 0.5rem;
   }
-  .post-actions {
+  [data-post-actions] {
     gap: 0 0.75rem;
   }
-  .post-actions button {
+  [data-post-actions] button {
     font-size: 0.75rem;
   }
-  [data-timeline][data-view='posts'] .moment-group__cards {
+  [data-timeline][data-view='posts'] :is(.moment-group, .moment-cluster) > :where(div) {
     grid-template-columns: minmax(0, 1fr);
   }
 }
@@ -376,7 +377,7 @@
     text-decoration: underline;
     text-underline-offset: 3px;
   }
-  .post-actions button:hover {
+  [data-post-actions] button:hover {
     color: var(--link);
   }
 }
@@ -388,7 +389,7 @@
   .post-card::before {
     background: Highlight;
   }
-  .post-actions button[aria-pressed='true'] {
+  [data-post-actions] button[aria-pressed='true'] {
     outline: 1px solid Highlight;
   }
 }

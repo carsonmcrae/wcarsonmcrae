@@ -77,7 +77,7 @@ it('disposes pending loads and falls back to native controls after a load failur
   second.reject();
   await Promise.resolve();
   await Promise.resolve();
-  expect(document.documentElement.classList.contains('js')).toBe(false);
+  expect(document.documentElement.classList.contains('js')).toBe(true);
 });
 
 it('activates the original detached control directly without replaying a global click into newer navigation', async () => {
@@ -119,6 +119,23 @@ it('delivers separately buffered commands in intent order through one initialize
   task.resolve(vi.fn());
   await Promise.resolve();
   expect(activate.mock.calls.map(([control]) => control)).toEqual(controls);
+});
+
+it('shares visibility preloading with pending intent and never preloads a disposed document', async () => {
+  document.body.innerHTML = '<button data-command>Save</button>';
+  const task = pending();
+  const activate = vi.fn();
+  const stop = deferControl(document, '[data-command]', task.load, { activate });
+  stops.push(stop);
+  const loaded = stop.preload();
+  document.querySelector<HTMLButtonElement>('button')!.click();
+  expect(task.load).toHaveBeenCalledOnce();
+  task.resolve(vi.fn());
+  await loaded;
+  expect(activate).toHaveBeenCalledOnce();
+  stop();
+  await stop.preload();
+  expect(task.load).toHaveBeenCalledOnce();
 });
 it('buffers an edge gesture but leaves reserved browser edges and form controls alone', async () => {
   document.body.innerHTML = '<span>Edge</span><button>Button</button>';

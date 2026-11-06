@@ -18,6 +18,7 @@ beforeEach(() => {
   delete document.documentElement.dataset['siteReady'];
   delete document.documentElement.dataset['theme'];
   vi.stubGlobal('localStorage', memoryStorage());
+  vi.stubGlobal('IntersectionObserver', undefined);
   vi.stubGlobal(
     'matchMedia',
     vi.fn(() => fakeMediaQuery(false)),
@@ -52,7 +53,23 @@ function button(selector: string) {
   return document.querySelector<HTMLButtonElement>(selector)!;
 }
 
+async function mountPage() {
+  const { stopSite } = await import('../../src/scripts/site');
+  const [{ startPostActions }, { startPageJumps }, { startMediaAffordances }] = await Promise.all([
+    import('../../src/scripts/actions'),
+    import('../../src/scripts/page-jumps'),
+    import('../../src/scripts/media'),
+  ]);
+  const stops = [startPostActions(), startPageJumps(), startMediaAffordances(), stopSite];
+  return {
+    stopSite: () => {
+      for (const stop of stops) stop();
+    },
+  };
+}
+
 it('hydrates a page, loads each real enhancement on intent, and detaches them on disposal', async () => {
+  document.body.insertAdjacentHTML('afterbegin', '<main inert></main>');
   localStorage.setItem(
     CONSENT_KEY,
     JSON.stringify({ allowed: true, expires: Number.MAX_SAFE_INTEGER }),
@@ -67,15 +84,23 @@ it('hydrates a page, loads each real enhancement on intent, and detaches them on
     <aside data-action-notice hidden><span data-notice-text></span><button data-dismiss-notice>Dismiss</button></aside>
     <span data-action-live></span>`,
   );
-  const { stopSite } = await import('../../src/scripts/site');
+  const { stopSite } = await mountPage();
   cleanups.push(stopSite);
+  const { startPostActions } = await import('../../src/scripts/actions');
+  const save = button('[data-save]');
+  expect(startPostActions()).toBe(startPostActions());
+  expect(button('[data-save]')).toBe(save);
   expect(document.documentElement.dataset['siteReady']).toBe('true');
   expect(document.documentElement.dataset['timelineRestore']).toBeUndefined();
+  expect(document.querySelector('main')!.inert).toBe(false);
   expect(document.querySelector<HTMLElement>('[data-storage-notice]')!.hidden).toBe(true);
   await vi.waitFor(() =>
     expect(document.querySelector('[data-reaction-count]')!.textContent).toBe('3'),
   );
-  expect(fetch).toHaveBeenCalledWith('https://api.example.com/reactions', { cache: 'no-store' });
+  expect(fetch).toHaveBeenCalledWith('https://api.example.com/reactions', {
+    cache: 'no-store',
+    signal: expect.any(AbortSignal),
+  });
   button('[data-theme-toggle]').click();
   expect(document.documentElement.dataset['theme']).toBe('dark');
   document.querySelector('img[data-fallback]')!.dispatchEvent(new Event('error'));
@@ -123,9 +148,19 @@ it('hydrates a page, loads each real enhancement on intent, and detaches them on
   expect(viewer.open).toBe(false);
 });
 
+it('can remount actions after cleanup without an old cleanup removing the new mount', async () => {
+  const { startPostActions } = await import('../../src/scripts/actions');
+  const first = startPostActions();
+  first();
+  const second = startPostActions();
+  cleanups.push(second);
+  first();
+  expect(startPostActions()).toBe(second);
+});
+
 it('keeps timeline restoration ownership and undecided storage visible before any deferred load', async () => {
   document.body.insertAdjacentHTML('beforeend', '<section data-timeline></section>');
-  const { stopSite } = await import('../../src/scripts/site');
+  const { stopSite } = await mountPage();
   cleanups.push(stopSite);
   expect(document.documentElement.dataset['timelineRestore']).toBe('');
   expect(document.querySelector<HTMLElement>('[data-storage-notice]')!.hidden).toBe(false);
@@ -141,7 +176,7 @@ it('keeps timeline restoration ownership and undecided storage visible before an
 });
 
 it('loads privacy settings from the shared request event before any settings button is used', async () => {
-  const { stopSite } = await import('../../src/scripts/site');
+  const { stopSite } = await mountPage();
   cleanups.push(stopSite);
   const dialog = document.querySelector<HTMLDialogElement>('[data-storage-dialog]')!;
   document.dispatchEvent(new CustomEvent('daysforth:privacy-request'));
@@ -162,7 +197,7 @@ it('composes secondary-page shortcuts and removes their behavior with the site e
   );
   vi.spyOn(document.documentElement, 'scrollHeight', 'get').mockReturnValue(2000);
   vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(800);
-  const { stopSite } = await import('../../src/scripts/site');
+  const { stopSite } = await mountPage();
   cleanups.push(stopSite);
   const down = button('[data-page-edge="bottom"]');
   expect(down.hidden).toBe(true);
@@ -190,14 +225,63 @@ it('passes the configured endpoint to real photo reactions only when the deferre
     '<div data-photo-reactions><button data-photo-react="heart"><span data-photo-reaction-count>—</span></button></div><p data-photo-reaction-status></p>',
   );
   vi.mocked(fetch).mockResolvedValue(Response.json({ 'photo-portrait': 11 }));
-  const { stopSite } = await import('../../src/scripts/site');
+  const { stopSite } = await mountPage();
   cleanups.push(stopSite);
   expect(fetch).not.toHaveBeenCalled();
   photo.click();
   const count = viewer.querySelector('[data-photo-reaction-count]')!;
   await vi.waitFor(() => expect(count.textContent).toBe('11'));
   expect(viewer.open).toBe(true);
-  expect(fetch).toHaveBeenCalledWith('https://api.example.com/reactions', { cache: 'no-store' });
+  expect(fetch).toHaveBeenCalledWith('https://api.example.com/reactions', {
+    cache: 'no-store',
+    signal: expect.any(AbortSignal),
+  });
   button('[data-photo-close]').click();
   expect(document.activeElement).toBe(photo);
+});
+
+it('isolates unsupported photos and broken drawer contracts without disabling other controls', async () => {
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+  const viewer = document.querySelector<HTMLDialogElement>('[data-photo-viewer]')!;
+  Object.defineProperty(viewer, 'showModal', { value: undefined, configurable: true });
+  button('[data-menu-toggle]').removeAttribute('aria-controls');
+  const { stopSite } = await mountPage();
+  cleanups.push(stopSite);
+  document.querySelector<HTMLAnchorElement>('[data-photo]')!.click();
+  await vi.waitFor(() => expect(document.documentElement.dataset['photoFallback']).toBe(''));
+  button('[data-menu-toggle]').click();
+  await vi.waitFor(() => expect(document.documentElement.dataset['menuFallback']).toBe(''));
+  expect(document.documentElement.classList.contains('js')).toBe(true);
+  button('[data-menu-toggle]').setAttribute('aria-controls', 'test-menu');
+  button('[data-menu-toggle]').click();
+  await vi.waitFor(() =>
+    expect(button('[data-menu-toggle]').getAttribute('aria-expanded')).toBe('true'),
+  );
+  expect(document.documentElement.dataset['menuFallback']).toBeUndefined();
+  button('[data-menu-close]').click();
+  Object.defineProperty(viewer, 'showModal', { value: HTMLDialogElement.prototype.showModal });
+  document.querySelector<HTMLAnchorElement>('[data-photo]')!.click();
+  await vi.waitFor(() => expect(viewer.open).toBe(true));
+  expect(document.documentElement.dataset['photoFallback']).toBeUndefined();
+  button('[data-photo-close]').click();
+  button('[data-theme-toggle]').click();
+  expect(document.documentElement.dataset['theme']).toBe('dark');
+  button('[data-storage-open]').click();
+  await vi.waitFor(() =>
+    expect(document.querySelector<HTMLDialogElement>('[data-storage-dialog]')!.open).toBe(true),
+  );
+});
+
+it('keeps unrelated controls available when a browser capability throws during another feature mount', async () => {
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+  vi.stubGlobal('matchMedia', () => {
+    throw new Error('Capability failed');
+  });
+  const { stopSite } = await mountPage();
+  cleanups.push(stopSite);
+  expect(document.documentElement.dataset['siteReady']).toBe('true');
+  button('[data-storage-open]').click();
+  await vi.waitFor(() =>
+    expect(document.querySelector<HTMLDialogElement>('[data-storage-dialog]')!.open).toBe(true),
+  );
 });

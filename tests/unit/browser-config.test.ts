@@ -21,6 +21,17 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllEnvs());
 
 describe('browser verification configuration', () => {
+  it('uses full Chromium for native desktop tabs while retaining the mobile engine fixtures', async () => {
+    vi.stubEnv('CI', '1');
+    const { default: config } = await import('../../playwright.config');
+    expect(config.projects?.[0]?.use).toMatchObject({
+      channel: 'chromium',
+      userAgent: 'desktop-fixture',
+      viewport: { width: 1440, height: 900 },
+    });
+    for (const project of config.projects!.slice(1))
+      expect(project.use).not.toHaveProperty('channel');
+  });
   it('uses the root HTTPS preview locally and keeps failures visible without retries', async () => {
     const { default: config } = await import('../../playwright.config');
     expect(config).toMatchObject({

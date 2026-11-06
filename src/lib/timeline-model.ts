@@ -108,3 +108,15 @@ export function stateSearch(state: TimelineState): string {
     date: state.date,
   }).toString();
 }
+
+export function momentHref(
+  currentHref: string,
+  moment: Pick<Moment, 'id' | 'date'>,
+  state?: TimelineState,
+): string {
+  const url = new URL(currentHref);
+  if (state) url.search = stateSearch(state);
+  url.searchParams.set('date', moment.date.slice(0, 7));
+  url.hash = `moment-${moment.id}`;
+  return url.href;
+}

@@ -10,18 +10,33 @@ import { dateLabel, monthAt, monthIndex, periodKey } from './timeline-dates';
 import {
   chronological,
   nearestMoment,
+  momentHref,
   readTimelineState,
   stateSearch,
   type TimelineState,
 } from './timeline-model';
-import { readMomentCards, renderMomentGroups } from './timeline-render';
+import { adoptMomentGroups, readMomentCards, renderMomentGroups } from './timeline-render';
 import { prepareTimelineRestore } from './page-position';
+import { clickedControl } from './click-intent';
 
 type TimelineWindow = Pick<
   Window,
-  'location' | 'history' | 'scrollTo' | 'addEventListener' | 'removeEventListener'
+  'location' | 'history' | 'scrollTo' | 'innerHeight' | 'addEventListener' | 'removeEventListener'
 > & { IntersectionObserver?: typeof IntersectionObserver };
-export function initTimeline(doc: Document, win: TimelineWindow) {
+export type TimelineCommandKind = 'click' | 'change' | 'input' | 'submit';
+
+function updateSummaryLabel(doc: Document, selector: string, value: string) {
+  const text = doc.querySelector(selector)!.firstChild;
+  if (!(text instanceof Text)) throw new Error('Timeline summary requires a Text node.');
+  // Replacing a pressed summary's text node cancels WebKit's native click activation.
+  if (text.nodeValue !== value) text.nodeValue = value;
+}
+
+export function initTimeline(
+  doc: Document,
+  win: TimelineWindow,
+  { preservePosition = false }: { preservePosition?: boolean } = {},
+) {
   const root = doc.querySelector<HTMLElement>('[data-timeline]');
   if (!root) return null;
   const container = root.querySelector<HTMLElement>('[data-timeline-groups]')!;
@@ -31,6 +46,7 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
   const latest = chronological(cards)[0]!.date;
   let state = readTimelineState(win.location.search, latest);
   let visible = cards;
+  let periods: HTMLElement[] = [];
   let observer: IntersectionObserver | undefined;
   let exploring = false;
   let followingScroll = true;
@@ -55,18 +71,26 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
     doc.dispatchEvent(new CustomEvent('daysforth:history'));
   };
   const syncDate = () => {
-    doc.querySelector<HTMLElement>('[data-current-date]')!.textContent = dateLabel(state.date);
+    updateSummaryLabel(doc, '[data-current-date]', dateLabel(state.date));
     slider.value = String(monthIndex(state.date));
     slider.setAttribute('aria-valuetext', dateLabel(monthAt(Number(slider.value))));
     month.value = state.date.slice(5, 7);
     year.value = state.date.slice(0, 4);
   };
-  const render = () => {
+  const render = (adoptDefault = false) => {
     root.dataset['view'] = state.view;
     root.dataset['detail'] = state.detail;
-    visible = renderMomentGroups(doc, container, cards, state);
-    doc.querySelector<HTMLElement>('[data-category-label]')!.textContent =
-      state.category === 'All' ? 'All categories' : state.category;
+    // Only query-free initial loading adopts the existing default monthly SSR presentation.
+    if (adoptDefault) periods = adoptMomentGroups(container);
+    else {
+      visible = renderMomentGroups(doc, container, cards, state);
+      periods = Array.from(container.children) as HTMLElement[];
+    }
+    updateSummaryLabel(
+      doc,
+      '[data-category-label]',
+      state.category === 'All' ? 'All categories' : state.category,
+    );
     for (const button of root.querySelectorAll<HTMLButtonElement>('[data-view]'))
       button.setAttribute('aria-pressed', String(button.dataset['view'] === state.view));
     for (const input of root.querySelectorAll<HTMLInputElement>(
@@ -103,7 +127,7 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
         },
         { rootMargin: '-35% 0px -60% 0px' },
       );
-      for (const group of container.children) observer.observe(group);
+      for (const group of periods) observer.observe(group);
     }
     status.textContent = `${visible.length} ${visible.length === 1 ? 'moment' : 'moments'}. ${state.view === 'timeline' ? 'Timeline' : 'Posts'} view. ${state.category === 'All' ? 'All categories' : state.category}.`;
   };
@@ -132,7 +156,7 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
       empty.replaceChildren(message);
       const nearby = nearestMoment(visible, state.date)!;
       const link = doc.createElement('a');
-      link.href = `#moment-${nearby.id}`;
+      link.href = momentHref(win.location.href, nearby, state);
       link.dataset['jumpDate'] = nearby.date;
       link.textContent = `Go to the nearest moment · ${dateLabel(nearby.date)}`;
       empty.append(link);
@@ -161,15 +185,13 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
     closeMenus();
     const atStart =
       destination === empty ||
-      (!focusTarget && destination.closest('.moment-group') === container.firstElementChild);
+      (!focusTarget && destination.closest('.moment-group') === periods[0]);
     (atStart ? root : destination).scrollIntoView({ block: 'start', behavior: 'instant' });
     if (focus) (focusTarget ?? destination).focus({ preventScroll: true });
   };
-  const onClick = (event: MouseEvent) => {
-    if (!(event.target instanceof Element)) return;
-    const jump = event.target.closest<HTMLElement>('[data-jump-date]');
+  const click = (target: Element) => {
+    const jump = target.closest<HTMLElement>('[data-jump-date]');
     if (jump) {
-      event.preventDefault();
       const edges: Record<string, (typeof visible)[number] | undefined> = {
         newest: visible[0],
         oldest: visible.at(-1),
@@ -182,17 +204,21 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
       );
       return;
     }
-    const button = event.target.closest<HTMLButtonElement>('button[data-view]');
-    if (button) {
-      const browsing = root.getBoundingClientRect().top < 0;
-      state.view = button.dataset['view'] as TimelineState['view'];
-      render();
-      if (browsing) goToDate(state.date, false, 'none');
-      saveUrl(true);
-    }
+    // Native and deferred callers resolve a jump or view control before activation.
+    const button = target.closest<HTMLButtonElement>('button[data-view]')!;
+    const browsing = root.getBoundingClientRect().top < 0;
+    state.view = button.dataset['view'] as TimelineState['view'];
+    render();
+    if (browsing) goToDate(state.date, false, 'none');
+    saveUrl(true);
   };
-  const onChange = (event: Event) => {
-    const input = event.target;
+  const onClick = (event: MouseEvent) => {
+    const control = clickedControl(event, '[data-jump-date],button[data-view]');
+    if (!control) return;
+    click(control);
+    event.preventDefault();
+  };
+  const change = (input: Element) => {
     if (!(input instanceof HTMLInputElement)) return;
     if (input.name === 'category' || input.name === 'detail') {
       if (input.name === 'category') state.category = input.value as TimelineState['category'];
@@ -209,6 +235,9 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
       goToDate(monthAt(Number(slider.value)), false);
       exploring = false;
     }
+  };
+  const onChange = (event: Event) => {
+    if (event.target instanceof Element) change(event.target);
   };
   const onInput = () => {
     exploring = true;
@@ -232,7 +261,18 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
       doc.querySelector<HTMLElement>('[data-category-label]')!.closest('summary')!.focus();
     }
   };
-  render();
+  render(preservePosition);
+  if (preservePosition) {
+    const reading = periods.find((group) => {
+      const bounds = group.getBoundingClientRect();
+      return bounds.bottom > win.innerHeight * 0.35 && bounds.top < win.innerHeight * 0.4;
+    }) as HTMLElement | undefined;
+    if (reading) {
+      state.date = reading.dataset['periodDate']!;
+      syncDate();
+      saveUrl();
+    }
+  }
   doc.addEventListener('click', onClick);
   doc.addEventListener('change', onChange, true);
   slider.addEventListener('input', onInput);
@@ -240,11 +280,37 @@ export function initTimeline(doc: Document, win: TimelineWindow) {
   win.addEventListener('popstate', onPopState);
   doc.addEventListener('daysforth:saved', onSaved);
   for (const intent of scrollIntents) doc.addEventListener(intent, follow, { passive: true });
-  if (new URLSearchParams(win.location.search).has('date') && prepareTimelineRestore(win) === null)
-    goToDate(state.date, false, 'replace');
+  if (
+    !preservePosition &&
+    new URLSearchParams(win.location.search).has('date') &&
+    prepareTimelineRestore(win) === null
+  )
+    // The date owns the month; dateDestination only refines it to a visible matching hash.
+    goToDate(
+      state.date,
+      false,
+      'replace',
+      visible.find((card) => win.location.hash === `#moment-${card.id}`)?.id,
+    );
   return {
     getState: () => ({ ...state }),
     goToDate,
+    activate: (target: Element, kind: TimelineCommandKind) => {
+      switch (kind) {
+        case 'click':
+          click(target);
+          break;
+        case 'change':
+          change(target);
+          break;
+        case 'input':
+          if (target === slider) onInput();
+          break;
+        case 'submit':
+          goToDate(`${year.value}-${month.value}`);
+          break;
+      }
+    },
     destroy: () => {
       observer?.disconnect();
       doc.removeEventListener('click', onClick);

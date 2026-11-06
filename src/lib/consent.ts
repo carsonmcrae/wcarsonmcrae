@@ -8,7 +8,9 @@
 import { readItem, safeStorage, writeItem, type StorageLike } from './storage';
 export const CONSENT_KEY = 'daysforth.consent.v1';
 const memory = new Map<string, string>();
+const withdrawn = new WeakSet<StorageLike>();
 export function consentChoice(storage: StorageLike | null, now = Date.now()): boolean | null {
+  if (storage && withdrawn.has(storage)) return false;
   try {
     const value: unknown = JSON.parse(readItem(storage, CONSENT_KEY) ?? 'null');
     if (
@@ -39,23 +41,42 @@ export function preferenceStorage(win: Pick<Window, 'localStorage'>): StorageLik
   };
 }
 export function recordConsent(storage: StorageLike | null, allowed: boolean, now = Date.now()) {
+  if (storage && !allowed) withdrawn.add(storage);
   const recorded = writeItem(
     storage,
     CONSENT_KEY,
     JSON.stringify({ allowed, expires: now + 180 * 86400000 }),
   );
-  if (recorded && allowed) for (const [key, value] of memory) writeItem(storage, key, value);
+  if (recorded && storage && allowed) withdrawn.delete(storage);
+  if (recorded && allowed)
+    for (const [key, value] of memory)
+      if (!writeItem(storage, key, value)) {
+        recordConsent(storage, false, now);
+        return false;
+      }
   return recorded;
 }
 export function clearPreferences(storage: Storage | null) {
   memory.clear();
-  if (!storage) return;
-  const keys = Array.from({ length: storage.length }, (_, index) => storage.key(index)!);
+  if (!storage) return true;
+  let keys: (string | null)[];
+  try {
+    keys = Array.from({ length: storage.length }, (_, index) => storage.key(index));
+  } catch {
+    return false;
+  }
+  let cleared = true;
   for (const key of keys)
     if (
-      key === 'theme' ||
-      (key.startsWith('daysforth.') && key !== CONSENT_KEY) ||
-      key.startsWith('cm:')
+      key &&
+      (key === 'theme' ||
+        (key.startsWith('daysforth.') && key !== CONSENT_KEY) ||
+        key.startsWith('cm:'))
     )
-      storage.removeItem(key);
+      try {
+        storage.removeItem(key);
+      } catch {
+        cleared = false;
+      }
+  return cleared;
 }
