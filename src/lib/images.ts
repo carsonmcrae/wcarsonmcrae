@@ -1,6 +1,6 @@
 /**
  * Purpose: Finds optional source images by filename at build time.
- * Scope: Photographs, project icons, and interface captures in local asset folders; never import in browser code.
+ * Scope: Raster photos, project icons, and captures with image metadata; never import in browser code.
  * Does NOT belong: Image optimization (Astro's Picture and Image components) or stripping photo
  *   metadata (scripts/strip-image-metadata.ts).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
@@ -31,7 +31,7 @@ const photoModules: ImageModules = import.meta.glob<{ default: ImageMetadata }>(
 );
 
 const projectModules: ImageModules = import.meta.glob<{ default: ImageMetadata }>(
-  '../assets/projects/*.{png,jpg,jpeg,webp,avif,svg}',
+  '../assets/projects/*.{png,jpg,jpeg,webp,avif}',
   { eager: true },
 );
 

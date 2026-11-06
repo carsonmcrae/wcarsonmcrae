@@ -26,6 +26,7 @@ beforeEach(() => {
 afterEach(() => {
   for (const stop of stops.splice(0)) stop();
   document.body.innerHTML = '';
+  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 describe('optional storage', () => {
@@ -162,6 +163,29 @@ describe('privacy choices', () => {
     expect(f.raw.getItem('daysforth.visitor')).toBeNull();
     expect(consentChoice(f.raw)).toBe(false);
   });
+  it.each([null, false])(
+    'erases the existing memory-only identity with consent %s',
+    async (choice) => {
+      const f = privacyFixture();
+      if (choice !== null) recordConsent(f.raw, choice);
+      const preferences = preferenceStorage({ localStorage: f.raw });
+      const visitorId = '12345678-1234-4234-8234-123456789abc';
+      preferences.setItem('daysforth.visitor', visitorId);
+      preferences.setItem('daysforth.reacted.born', 'true');
+      expect(f.raw.getItem('daysforth.visitor')).toBeNull();
+      f.click('[data-forget-browser]');
+      await vi.waitFor(() => expect(preferences.getItem('daysforth.visitor')).toBeNull());
+      expect(f.fetcher).toHaveBeenCalledExactlyOnceWith('https://api.example.com/identity', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visitorId }),
+        signal: expect.any(AbortSignal),
+      });
+      expect(preferences.getItem('daysforth.reacted.born')).toBeNull();
+      expect(f.raw.getItem('daysforth.visitor')).toBeNull();
+      expect(consentChoice(f.raw)).toBe(false);
+    },
+  );
   it.each(['rejected', 'offline'])(
     'clears local data honestly when identifier erasure is %s',
     async (mode) => {
@@ -178,6 +202,43 @@ describe('privacy choices', () => {
       expect(f.raw.getItem('daysforth.visitor')).toBeNull();
     },
   );
+  it('clears browser choices immediately and bounds an unresponsive erasure request', async () => {
+    vi.useFakeTimers();
+    const fetcher = vi.fn<typeof fetch>().mockReturnValue(new Promise(() => {}));
+    const f = privacyFixture(
+      consentingStorage({ 'daysforth.visitor': 'id', 'daysforth.saved.born': 'true' }),
+      fetcher,
+    );
+    f.click('[data-forget-browser]');
+    expect(f.raw.getItem('daysforth.visitor')).toBeNull();
+    expect(f.raw.getItem('daysforth.saved.born')).toBeNull();
+    expect(consentChoice(f.raw)).toBe(false);
+    const signal = fetcher.mock.calls[0]![1]!.signal!;
+    const feedback = document.querySelector('[data-storage-feedback]')!;
+    expect(feedback.textContent).toContain('Checking');
+    await vi.advanceTimersByTimeAsync(4999);
+    expect(signal.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(signal.aborted).toBe(true);
+    expect(feedback.textContent).toContain('could not be removed');
+  });
+  it('aborts erasure on disposal without allowing its late response to change feedback', async () => {
+    vi.useFakeTimers();
+    let finish!: (response: Response) => void;
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockReturnValue(new Promise((resolve) => (finish = resolve)));
+    const f = privacyFixture(consentingStorage({ 'daysforth.visitor': 'id' }), fetcher);
+    f.click('[data-forget-browser]');
+    const feedback = document.querySelector('[data-storage-feedback]')!;
+    const original = feedback.textContent;
+    f.stop();
+    expect(fetcher.mock.calls[0]![1]!.signal!.aborted).toBe(true);
+    finish(Response.json({ forgotten: true }));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(feedback.textContent).toBe(original);
+    expect(vi.getTimerCount()).toBe(0);
+  });
   it('can clear a browser without an identifier or without a configured service', async () => {
     const empty = privacyFixture();
     empty.click('[data-forget-browser]');

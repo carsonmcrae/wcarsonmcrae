@@ -10,7 +10,7 @@ import { clearPreferences, recordConsent } from '../../src/lib/consent';
 import { describe, expect, it, vi } from 'vitest';
 import { fillActionRows } from '../../src/lib/action-template';
 import { consentingStorage, memoryStorage } from './helpers';
-import { identity, initPostActions, setup } from './post-actions-fixture';
+import { identity, initPostActions, pendingReaction, setup } from './post-actions-fixture';
 
 describe('Save', () => {
   it('updates choices on consent changes without replacing cards or reducing shared counts', async () => {
@@ -239,16 +239,7 @@ describe('shared reactions', () => {
     await vi.waitFor(() => expect(button('react').textContent).toBe('3'));
   });
   it('does not submit twice if another click arrives while its first vote is pending', async () => {
-    let finish!: (response: Response) => void;
-    const fetcher = vi
-      .fn<typeof fetch>()
-      .mockResolvedValueOnce(Response.json({ born: 2 }))
-      .mockReturnValueOnce(
-        new Promise((resolve) => {
-          finish = resolve;
-        }),
-      );
-    const { button, click, announce } = setup({ endpoint: 'https://api.example.com', fetcher });
+    const { button, click, announce, fetcher, finish } = pendingReaction();
     await vi.waitFor(() => expect(button('react').textContent).toBe('2'));
     click('react');
     button('react').dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -260,6 +251,36 @@ describe('shared reactions', () => {
     expect(button('react').disabled).toBe(true);
     expect(button('react').textContent).toBe('3');
   });
+  it.each([
+    ['forget', true],
+    ['forget', false],
+    ['destroy', true],
+    ['destroy', false],
+  ] as const)(
+    'does not restore or announce a pending reaction after %s (success %s)',
+    async (action, success) => {
+      const f = pendingReaction();
+      const button = f.button('react');
+      await vi.waitFor(() => expect(button.textContent).toBe('2'));
+      const pending = f.activate(button);
+      expect(button.disabled).toBe(true);
+      if (action === 'forget') {
+        clearPreferences(f.storage);
+        recordConsent(f.storage, false);
+        document.dispatchEvent(new CustomEvent('daysforth:storage'));
+      } else f.destroy();
+      f.finish(success ? Response.json({ count: 3 }) : new Response(null, { status: 503 }));
+      await pending;
+      expect(button.getAttribute('aria-pressed')).toBe('false');
+      expect(button.disabled).toBe(action === 'destroy');
+      expect(button.textContent).toBe(action === 'forget' && success ? '3' : '2');
+      expect(f.announce).not.toHaveBeenCalled();
+      if (action === 'forget') {
+        expect(f.storage.getItem('daysforth.visitor')).toBeNull();
+        expect(f.storage.getItem('daysforth.reacted.born')).toBeNull();
+      } else expect(f.storage.getItem('daysforth.reacted.born')).toBe(success ? 'true' : null);
+    },
+  );
   it('honors a choice recorded by another adapter before its visible button refreshes', async () => {
     const { storage, click, button, win, announce } = setup({
       endpoint: 'https://api.example.com',

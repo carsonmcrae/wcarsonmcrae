@@ -8,6 +8,7 @@
 import { albumPhotos, photoDetails } from './photo-albums';
 import { initPhotoFilmstrip } from './photo-filmstrip';
 import { initPhotoReactionControls } from './photo-reaction-controls';
+import { clickedControl } from './click-intent';
 export function initPhotoViewer(doc: Document, endpoint = '') {
   const dialog = doc.querySelector<HTMLDialogElement>('[data-photo-viewer]')!;
   const image = dialog.querySelector<HTMLImageElement>('[data-photo-large]')!;
@@ -30,7 +31,7 @@ export function initPhotoViewer(doc: Document, endpoint = '') {
   let photos: HTMLAnchorElement[] = [];
   let index = 0;
   let touch: Touch | undefined;
-  const show = () => {
+  const show = (resetFilmstrip = false) => {
     const photo = photoDetails(photos[index]!);
     image.src = photo.src;
     image.alt = photo.alt;
@@ -44,7 +45,8 @@ export function initPhotoViewer(doc: Document, endpoint = '') {
       count.hidden = single;
       count.textContent = `Photo ${index + 1} of ${photos.length}`;
     }
-    filmstrip?.paint(index);
+    if (resetFilmstrip) filmstrip?.set(photos, index);
+    else filmstrip?.paint(index);
     reactionControls?.select(photo.reactionId);
     const announcement = dialog.querySelector('[data-photo-announcement]');
     if (announcement)
@@ -62,17 +64,16 @@ export function initPhotoViewer(doc: Document, endpoint = '') {
   };
   const click = (event: MouseEvent) => {
     if (!(event.target instanceof Element)) return;
-    const photo = event.target.closest<HTMLAnchorElement>('[data-photo]');
+    const photo = clickedControl(event, '[data-photo]') as HTMLAnchorElement | null;
     if (photo) {
       event.preventDefault();
       trigger = photo;
       photos = albumPhotos(doc, photo);
       index = photos.findIndex((item) => item.href === photo.href);
-      filmstrip?.set(photos, index);
-      show();
       const win = doc.defaultView!;
       win.scrollTo({ top: win.scrollY, left: win.scrollX, behavior: 'instant' });
       dialog.showModal();
+      show(true);
     }
     if (event.target.closest('[data-photo-previous]')) move(-1);
     if (event.target.closest('[data-photo-next]')) move(1);

@@ -64,7 +64,13 @@ const page = {
       {media.kind === 'project' ? (
         <MomentImage name={media.name} alt={media.alt} kind="project" eager />
       ) : (
-        <PhotoLink name={media.name} alt={media.alt} kind={media.kind} eager />
+        <PhotoLink
+          name={media.name}
+          alt={media.alt}
+          kind={media.kind}
+          album={`post-${post.id}`}
+          eager
+        />
       )}
     </div>
     <div class="post-detail__body flow">
@@ -72,7 +78,7 @@ const page = {
         <Markdown text={paragraph} />
       ))}
     </div>
-    {post.gallery && <PostAlbum photos={post.gallery} />}
+    {post.gallery && <PostAlbum photos={post.gallery} album={`post-${post.id}`} />}
     {post.links && (
       <ul class="post-detail__links" role="list">
         {post.links.map((link) => (
@@ -82,7 +88,7 @@ const page = {
         ))}
       </ul>
     )}
-    <PostActions id={post.id} title={post.title} />
+    <PostActions id={post.id} />
     <PostLocation id={post.id} date={post.date} />
     <nav class="post-neighbors" aria-label="Adjacent moments">
       {older && (

@@ -39,5 +39,5 @@ const { post } = Astro.props;
     {post.caption && <p class="post-card__caption">{post.caption}</p>}
   </div>
   <PostMedia post={post} />
-  <PostActions id={post.id} title={post.title} />
+  <PostActions id={post.id} />
 </article>

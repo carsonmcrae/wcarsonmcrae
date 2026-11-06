@@ -23,6 +23,7 @@ const first = photos[0]!;
   <div class="album-preview__heading">
     <PhotoLink
       name={first.name}
+      kind={first.imageKind ?? 'photo'}
       alt={first.alt}
       caption={first.caption}
       album={id}

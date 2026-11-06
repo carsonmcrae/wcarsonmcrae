@@ -1,6 +1,6 @@
 /**
  * Purpose: Quiet photograph, consent, and navigation enhancements with generous hit areas.
- * Scope: Native dialogs, storage choice, enlarged imagery, and unobtrusive timeline jumps.
+ * Scope: Native dialogs, storage choice, enlarged imagery, and unobtrusive page/feed jumps.
  * Does NOT belong: Brand tokens or event logic.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -110,10 +110,10 @@ html:has(dialog[open]) body {
 .storage-dialog p {
   margin-block: 1rem;
 }
-.timeline-jumps {
+:is(.timeline-jumps, .page-jumps) {
   display: contents;
 }
-.timeline-jumps button {
+:is(.timeline-jumps, .page-jumps) button {
   --jump-side-space: max(var(--gutter), calc((100vw - var(--page)) / 2));
   position: fixed;
   right: max(8px, calc(var(--jump-side-space) - 48px));
@@ -130,7 +130,7 @@ html:has(dialog[open]) body {
   color: var(--link);
   isolation: isolate;
 }
-.timeline-jumps button::before {
+:is(.timeline-jumps, .page-jumps) button::before {
   content: '';
   position: absolute;
   inset: 8px;
@@ -140,7 +140,7 @@ html:has(dialog[open]) body {
   box-shadow: 0 2px 8px #09101d15;
   z-index: -1;
 }
-.timeline-jumps .icon {
+:is(.timeline-jumps, .page-jumps) .icon {
   font-size: 0.625rem;
 }
 .timeline-jumps .timeline-jumps__up {
@@ -154,8 +154,16 @@ html:has(dialog[open]) body {
   top: calc(var(--header-height) + 4px);
   right: max(8px, calc(var(--jump-side-space) - 48px));
 }
-.timeline-jumps__up .icon {
+.page-jumps .page-jumps__up {
+  top: calc(var(--header-height) + 4px);
+  bottom: auto;
+}
+:is(.timeline-jumps__up, .page-jumps__up) .icon {
   transform: rotate(180deg);
+}
+html[data-menu-open='true'] :is(.timeline-jumps, .page-jumps),
+html:has(dialog[open]) :is(.timeline-jumps, .page-jumps) {
+  display: none;
 }
 html[data-timeline-restore] main {
   visibility: hidden;
@@ -183,7 +191,7 @@ html[data-timeline-restore] main {
   .storage-settings:hover {
     color: var(--link);
   }
-  .timeline-jumps button:hover::before {
+  :is(.timeline-jumps, .page-jumps) button:hover::before {
     background: var(--selected);
   }
 }

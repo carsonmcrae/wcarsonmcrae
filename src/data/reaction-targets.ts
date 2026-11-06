@@ -24,7 +24,7 @@ const imageIds = [
   ...timelinePosts
     .filter((post) => post.image)
     .map((post) => photoReactionId(post.image!, post.imageKind)),
-  ...galleryPhotos.map((photo) => photoReactionId(photo.name)),
+  ...galleryPhotos.map((photo) => photoReactionId(photo.name, photo.imageKind)),
   ...dogs.map((dog) => photoReactionId(dog.photo)),
   photoReactionId(profile.portrait),
   photoReactionId(aboutPortrait),

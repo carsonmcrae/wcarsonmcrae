@@ -1,5 +1,33 @@
 [
   {
+    "version": "1.1.1",
+    "date": "2026-11-05",
+    "title": "A clearer profile and easier page navigation",
+    "summary": "Browse with a tidier mobile introduction, useful page shortcuts, and clearer explanations of the apps I build.",
+    "sections": [
+      {
+        "id": "browsing",
+        "title": "Find your way",
+        "items": [
+          "See the mobile name and profile chips together beside the portrait.",
+          "Use small top and bottom shortcuts on Work, Life, About, and Contact after you start scrolling.",
+          "Read short introductions to Daysforth, TTSNative, PicPledge, and Recalen directly in the timeline.",
+          "See a clearer Recalen cover, with the original interface capture still available inside the post.",
+          "See the FBLA balcony group photograph as the cover, with all three pictures kept in the post."
+        ]
+      },
+      {
+        "id": "refinements",
+        "title": "Small details that behave better",
+        "items": [
+          "Keep forgotten reaction choices cleared when a pending request finishes later.",
+          "Browse a post’s cover and gallery together, with the selected thumbnail in view and ordinary modified-click photo links preserved.",
+          "Download a smaller profile portrait and fewer unused page styles while keeping the same design."
+        ]
+      }
+    ]
+  },
+  {
     "version": "1.1.0",
     "date": "2026-11-05",
     "title": "A closer look, and a reaction for every photograph",

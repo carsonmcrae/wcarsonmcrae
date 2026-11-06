@@ -75,6 +75,18 @@ export function setup(
   const button = (action: string) => document.querySelector<HTMLButtonElement>(`[data-${action}]`)!;
   return { win, events, storage, announce, click, button, ...commands };
 }
+export function pendingReaction() {
+  let finish!: (response: Response) => void;
+  const fetcher = vi
+    .fn<typeof fetch>()
+    .mockResolvedValueOnce(Response.json({ born: 2 }))
+    .mockReturnValueOnce(new Promise((resolve) => (finish = resolve)));
+  return {
+    ...setup({ endpoint: 'https://api.example.com', fetcher }),
+    fetcher,
+    finish: (response: Response) => finish(response),
+  };
+}
 beforeEach(() => clearPreferences(null));
 afterEach(() => {
   for (const cleanup of cleanups.splice(0)) cleanup();

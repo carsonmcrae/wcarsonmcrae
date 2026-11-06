@@ -1,7 +1,7 @@
 # Daysforth architecture
 
 This is the maintained description of the running system, not a proposal for a larger platform.
-Read it with [the architectural review](review.md), [maintenance rules](maintenance.md), and
+Read it with [the architectural review](review.md), [the 1.1.1 audit](audit-1.1.1.md), [maintenance rules](maintenance.md), and
 [release process](../governance/releases.md). Source and tests remain authoritative for exact behavior.
 
 ## System boundaries
@@ -73,7 +73,8 @@ The chronological model and date calculations are shared by server rendering and
 Client controllers enhance already rendered cards, synchronize filters and dates with URL/history
 state, and restore the visitor’s place. Query state is shareable; `history.state` scroll coordinates
 belong to a browser entry. They are not a server browsing profile. Dialog and action code loads on
-intent to control the script budget.
+intent to control the script budget. The loader and enhanced photo links share the primary-click
+resolver in `click-intent.ts`, preserving modified native links both before and after lazy loading.
 
 Deferred post commands retain the original matched control and call the post adapter's explicit
 `activate` method once its modules load. They do not redispatch a global click: a category menu
@@ -127,6 +128,27 @@ Shortcuts qualify only after scrolling into the feed and suppress directions tha
 content; profile/pinned content does not activate them. Hover, keyboard focus, or a deliberate touch
 reveals media-corner controls without changing a post’s permanent URL or its reaction state. Shared
 category presentation supplies the same icon/label contract to post metadata and filtering.
+
+Work, Life, About and Contact have their own page-edge adapter, `page-jumps.ts`. It shares
+wheel/touch/keyboard/scrollbar intent and listener cleanup with the timeline through
+`scroll-intent.ts`, while the timeline retains its separate dock geometry and feed qualification.
+Secondary shortcuts qualify after meaningful available scroll travel, suppress reached directions
+and trivial overflow, hide behind dialogs, and move focus to the destination landmark. This is
+document-local state, with no history entries, preferences or service requests.
+
+The shell links date-position CSS only on Home, and media-frame CSS only on Home, Work and Life,
+where their corresponding elements render. Action hydration reads the existing story heading
+instead of shipping a second title in each row. Profile photography declares its real responsive
+slot and smaller candidates without changing its CSS size or the native large-image link. Search
+and social descriptions use a bounded excerpt; the complete visible captions remain untouched.
+
+Post albums carry each image's photo/screen kind through rendering and the reaction registry.
+The cover and additional images share a `post-<id>` album identity, so opening any of them reaches
+the complete set through the existing viewer rather than an isolated single-image session.
+The new Recalen cover is a raster export of the editable vector under `docs/design/`; the original
+screen remains a distinct gallery image with its published `screen-recalen-interface` identity.
+The additional `screen-recalen-cover` target requires the compatible Worker allowlist before the
+site is published. There is no database migration or reaction-protocol change.
 The desktop moment navigator reads the currently rendered cards and refreshes after regrouping or
 filtering. Its compact rail reveals a full preview list, highlights the reading position, and jumps
 to the exact card, including multiple events in the same month. It shares the feed viewport geometry
@@ -152,6 +174,14 @@ binding. The service validates methods, routes, origin, body size, and visitor I
 parameterized SQL and database uniqueness make votes idempotent while aggregate totals stay
 permanent. An hourly trigger removes expired network limit records and reaction identifiers eligible
 after 90 days. Identifier removal does not undo a published count.
+
+Forgetting reads the current consent-aware identifier, including a memory-only page session,
+without generating a replacement, then immediately clears browser preferences. Remote erasure has
+a five-second deadline, aborts on disposal, and cannot update disposed feedback. Post responses preserve confirmed aggregate counts but do not
+restore a forgotten choice or announce results through a disposed adapter. Server erasure is a
+best-effort request, not an atomic cancellation of already-issued votes: a concurrent POST can
+commit its identifier after DELETE has completed. The current protocol does not coordinate those
+requests; such identifiers remain subject to the existing retention cleanup.
 
 Moment and image reactions use the same four kinds and service protections. Image keys extend the
 existing allowlist without a schema migration, salt change, or reset of published moment totals.

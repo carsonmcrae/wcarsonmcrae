@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { absoluteUrl } from './paths';
+import { excerpt } from './text';
 
 export interface SeoInput {
   title: string | undefined;
@@ -38,11 +39,12 @@ export function formatTitle(title: string | undefined, siteName: string, default
 
 export function buildSeo(input: SeoInput): SeoTags {
   const title = formatTitle(input.title, input.siteName, input.defaultTitle);
+  const description = excerpt(input.description, 170);
   const canonical = absoluteUrl(input.path, input.site, input.base);
   const image = absoluteUrl(input.image, input.site, input.base);
   return {
     title,
-    description: input.description,
+    description,
     canonical,
     image,
     imageAlt: input.imageAlt,
@@ -51,7 +53,7 @@ export function buildSeo(input: SeoInput): SeoTags {
       'og:site_name': input.siteName,
       'og:locale': input.locale,
       'og:title': title,
-      'og:description': input.description,
+      'og:description': description,
       'og:url': canonical,
       'og:image': image,
       'og:image:width': '1200',
@@ -61,7 +63,7 @@ export function buildSeo(input: SeoInput): SeoTags {
     twitter: {
       'twitter:card': 'summary_large_image',
       'twitter:title': title,
-      'twitter:description': input.description,
+      'twitter:description': description,
       'twitter:image': image,
       'twitter:image:alt': input.imageAlt,
     },

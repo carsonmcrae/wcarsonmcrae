@@ -58,8 +58,8 @@ export const experiencePosts: TimelinePost[] = [
       'In July 2017, I won first place in Tennessee and sixth place nationally in the FBLA Digital Video Production competition.',
       'I wrote the entire script and directed the video. A very good excuse to spend far too much time thinking about a shot. The competition video is linked below on YouTube.',
     ],
-    image: 'fbla-first-place-state',
-    imageAlt: 'Carson’s first-place Tennessee FBLA award',
+    image: 'fbla-6th-nationals-trophy-2017',
+    imageAlt: 'Carson and teammates holding glass FBLA trophies on a balcony',
     gallery: [
       {
         name: 'fbla-6th-nationals',
@@ -67,9 +67,9 @@ export const experiencePosts: TimelinePost[] = [
         caption: 'Sixth place nationally · July 2017',
       },
       {
-        name: 'fbla-6th-nationals-trophy-2017',
-        alt: 'The sixth-place national FBLA Digital Video Production trophy',
-        caption: 'FBLA Digital Video Production · Sixth-place national trophy, 2017',
+        name: 'fbla-first-place-state',
+        alt: 'Carson and teammates holding first-place Tennessee FBLA awards indoors',
+        caption: 'First place in Tennessee · FBLA Digital Video Production',
       },
     ],
     links: [

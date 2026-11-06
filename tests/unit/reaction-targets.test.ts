@@ -47,7 +47,9 @@ describe('approved reaction targets', () => {
       ...lifePhotos,
     ];
     for (const photo of photographs)
-      expect(supportedReactionIds, photo.name).toContain(photoReactionId(photo.name));
+      expect(supportedReactionIds, photo.name).toContain(
+        photoReactionId(photo.name, photo.imageKind),
+      );
     for (const post of timelinePosts)
       expect(supportedReactionIds, post.id).toContain(photoReactionId(post.image!, post.imageKind));
     expect(supportedReactionIds).toEqual(
@@ -56,6 +58,8 @@ describe('approved reaction targets', () => {
         photoReactionId(aboutPortrait),
         'photo-me-my-family',
         'photo-me-nicoles-family',
+        'screen-recalen-interface',
+        'screen-recalen-cover',
       ]),
     );
     expect(aboutPortrait).toBe('carson-solo');

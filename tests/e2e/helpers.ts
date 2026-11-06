@@ -101,12 +101,8 @@ export function timelineShortcuts(page: Page) {
   };
 }
 
-/** Qualifies shortcuts with a completed native PageDown before the next independent gesture. */
-export async function qualifyTimelineShortcuts(page: Page) {
-  await page.evaluate(() => document.fonts.ready);
-  const controls = timelineShortcuts(page);
-  await expect(controls.up).toBeHidden();
-  await expect(controls.down).toBeHidden();
+/** Completes a native document scroll gesture before a separate action begins. */
+export async function scrollPageByKey(page: Page, key: 'PageDown' | 'PageUp' | 'Home' | 'End') {
   await Promise.all([
     page.evaluate(
       () =>
@@ -114,8 +110,17 @@ export async function qualifyTimelineShortcuts(page: Page) {
           document.addEventListener('scrollend', () => resolve(), { once: true }),
         ),
     ),
-    page.keyboard.press('PageDown'),
+    page.keyboard.press(key),
   ]);
+}
+
+/** Qualifies shortcuts with a completed native PageDown before the next independent gesture. */
+export async function qualifyTimelineShortcuts(page: Page) {
+  await page.evaluate(() => document.fonts.ready);
+  const controls = timelineShortcuts(page);
+  await expect(controls.up).toBeHidden();
+  await expect(controls.down).toBeHidden();
+  await scrollPageByKey(page, 'PageDown');
   await expect(controls.up).toBeVisible();
   await expect(controls.down).toBeVisible();
   return controls;

@@ -31,6 +31,18 @@ describe('formatTitle', () => {
 });
 
 describe('buildSeo', () => {
+  it('uses one bounded word-aware description for search and both social previews', () => {
+    const seo = buildSeo({
+      ...baseInput,
+      title: 'App moment',
+      path: '/posts/app/',
+      description: 'A detailed app introduction. '.repeat(10),
+    });
+    expect(seo.description.length).toBeLessThanOrEqual(170);
+    expect(seo.description.endsWith('…')).toBe(true);
+    expect(seo.openGraph['og:description']).toBe(seo.description);
+    expect(seo.twitter['twitter:description']).toBe(seo.description);
+  });
   it('describes the homepage as a profile with absolute URLs', () => {
     const seo = buildSeo({ ...baseInput, title: undefined, path: '/' });
     expect(seo.title).toBe(baseInput.defaultTitle);

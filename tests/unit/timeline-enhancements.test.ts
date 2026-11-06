@@ -203,6 +203,22 @@ it('keeps the upper shortcut at the viewport after an unstuck dock scrolls away,
   expect(f.up.hidden).toBe(true);
 });
 
+it('keeps timeline gestures and directions inert while a modal owns scrolling', () => {
+  const f = timeline();
+  Object.assign(f.geometry, { top: 50, contentTop: 100 });
+  stops.push(initTimelineJumps(document, window));
+  window.dispatchEvent(new Event('wheel'));
+  f.scroll(300);
+  expect([f.up.hidden, f.down.hidden]).toEqual([false, false]);
+  document.body.insertAdjacentHTML('beforeend', '<dialog open></dialog>');
+  f.scroll(310);
+  expect(f.isHidden()).toBe(true);
+  document.querySelector('dialog')!.remove();
+  window.dispatchEvent(new Event('scrollend'));
+  f.scroll(320);
+  expect([f.up.hidden, f.down.hidden]).toEqual([false, false]);
+});
+
 function media() {
   document.body.innerHTML =
     '<article class="post-card"><a id="title">Title</a><div class="post-media"><a data-photo><img alt="Portrait"></a><a class="post-media__open">Post</a></div><button>Save</button></article><li class="project"><span>Project copy</span><div class="post-media"></div></li><div class="post-media" id="standalone"><span>Cover</span></div><aside>Outside</aside>';

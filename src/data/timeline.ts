@@ -11,6 +11,7 @@ import { margotPhotos, quinnPhotos, weddingPhotos } from './photo-gallery';
 export type Category = 'Work' | 'Projects' | 'Life';
 export interface PostPhoto {
   name: string;
+  imageKind?: 'photo' | 'screen';
   alt: string;
   caption: string;
   postId?: string;
@@ -184,23 +185,33 @@ const corePosts: TimelinePost[] = [
     id: 'recalen-beta',
     date: '2026-07',
     title: 'Recalen private beta begins',
-    caption: 'Putting capture and recall into practice.',
+    caption:
+      'Putting capture and recall into practice. Capture thoughts, links, files, and voice notes in one place, then find them with search, reminders, and calendar views.',
     body: [
       'Recalen is my capture-and-recall app for the things that are easy to lose track of: thoughts, links, files, and voice notes. Dump now. Recall later.',
       'Capture something quickly, then come back to it with organization, search, reminders, and calendar views across the web and native mobile apps. It entered an ongoing private beta in July 2026.',
     ],
     category: 'Projects',
     project: 'recalen',
-    image: 'recalen-interface',
+    image: 'recalen-cover',
     imageKind: 'screen',
-    imageAlt: 'The Recalen capture feed interface',
+    imageAlt: 'Recalen branding and its capture feed with saved thoughts, folders, and reminders',
+    gallery: [
+      {
+        name: 'recalen-interface',
+        imageKind: 'screen',
+        alt: 'The Recalen capture feed interface',
+        caption: 'Recalen’s capture feed, with saved thoughts and reminders.',
+      },
+    ],
     links: [{ label: 'Recalen', href: 'https://recalen.com' }],
   },
   {
     id: 'ttsnative-1',
     date: '2026-10-19',
     title: 'TTSNative 1.0 released',
-    caption: 'Released as open source (MIT).',
+    caption:
+      'Released as open source (MIT). A local text-to-speech reader for documents, with read-along highlighting and an optional, consent-based voice studio.',
     body: [
       'TTSNative is a free, open-source text-to-speech app that runs on your own computer. It reads PDFs, EPUBs, Word documents, and plain text aloud, with read-along highlighting to keep your place.',
       'The voice studio also supports optional voice cloning with consent. Your documents, voices, and generated audio stay on your machine.',
@@ -235,7 +246,8 @@ const corePosts: TimelinePost[] = [
     id: 'picpledge-wedding',
     date: '2026-10',
     title: 'PicPledge launched at the wedding',
-    caption: 'Shipped software at my own wedding. In my defense, it worked.',
+    caption:
+      'Shipped software at my own wedding. In my defense, it worked. A private event album where guests share photos as the day happens and download the pictures they want to keep.',
     body: [
       'PicPledge is a private photo-sharing app for events. Guests contribute to one shared album as the day happens, instead of the photos disappearing into everyone’s camera rolls.',
       'Guests can download the moments they want to keep, and optional facial matching helps people find photos of themselves. I built it for our wedding and launched it there in October 2026. Shipping software at my own wedding was apparently part of the plan.',
@@ -251,7 +263,8 @@ const corePosts: TimelinePost[] = [
     id: 'built-daysforth',
     date: '2026-11',
     title: 'Built Daysforth',
-    caption: 'My own take on social media. You’re looking at the prototype.',
+    caption:
+      'My own take on social media. You’re looking at the prototype. A timeline-first profile for work, projects, and life: switch to a photographic Posts view, filter by category, or save and react to moments.',
     body: [
       'A profile that is a timeline. Work, projects, and life, placed at the moments they happened. Built with Astro and hosted on GitHub Pages.',
     ],

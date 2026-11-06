@@ -1,7 +1,7 @@
 ---
 /**
  * Purpose: The page shell every route renders inside.
- * Scope: Document metadata, landmarks, shared photo/privacy dialogs, and the progressive client entry.
+ * Scope: Metadata, landmarks, secondary-page shortcuts, shared dialogs, and the progressive client entry.
  * Does NOT belong: Page content (src/pages) or metadata details (SiteHead.astro).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -13,6 +13,7 @@ import '../styles/interaction.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import SiteHead from '../components/SiteHead.astro';
+import PageJumps from '../components/PageJumps.astro';
 import { site, type PageMeta } from '../data/site';
 
 interface Props {
@@ -28,7 +29,13 @@ const { page, noindex = false } = Astro.props;
 <!doctype html>
 <html lang={site.language} id="top">
   <head>
-    <SiteHead page={page} noindex={noindex} includePerson={page.id === 'home'} />
+    <SiteHead
+      page={page}
+      noindex={noindex}
+      includePerson={page.id === 'home'}
+      includeTimelineStyles={page.id === 'home'}
+      includeMediaFrames={['home', 'work', 'life'].includes(page.id)}
+    />
     <slot name="head" />
   </head>
   <body data-page-id={page.id}>
@@ -40,6 +47,7 @@ const { page, noindex = false } = Astro.props;
       <slot />
     </main>
     <Footer />
+    {['work', 'life', 'about', 'contact'].includes(page.id) && <PageJumps />}
     <PhotoViewer />
     <PrivacyControls />
     <script>
