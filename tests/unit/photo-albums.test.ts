@@ -150,6 +150,51 @@ it('opens at the chosen photo, wraps with buttons and arrows, and returns focus 
   expect(f.previous.hidden).toBe(true);
   expect((f.count as HTMLElement).hidden).toBe(true);
 });
+it('builds and centers a later thumbnail once the opened dialog has measurable geometry', () => {
+  vi.stubGlobal('fetch', vi.fn<typeof fetch>().mockResolvedValue(Response.json({})));
+  const f = fixture(true);
+  const strip = f.dialog.querySelector<HTMLElement>('[data-photo-strip]')!;
+  Object.defineProperties(strip, {
+    clientWidth: { get: () => (f.dialog.open ? 200 : 0) },
+    scrollWidth: { get: () => (f.dialog.open ? 600 : 0) },
+  });
+  vi.spyOn(HTMLElement.prototype, 'offsetLeft', 'get').mockImplementation(function (
+    this: HTMLElement,
+  ) {
+    return f.dialog.open ? Array.from(strip.children).indexOf(this) * 200 : 0;
+  });
+  vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(() =>
+    f.dialog.open ? 100 : 0,
+  );
+  const scroll = vi.spyOn(strip, 'scrollTo');
+  const third = document.querySelector<HTMLAnchorElement>('a[href="/3.webp"]')!;
+  window.scrollTo({ top: 420, left: 0 });
+  third.click();
+  expect(f.dialog.open).toBe(true);
+  expect(f.count.textContent).toBe('Photo 3 of 3');
+  expect(strip.querySelector('[aria-current]')).toBe(strip.children[2]);
+  expect(scroll).toHaveBeenCalledExactlyOnceWith({ left: 350, behavior: 'instant' });
+  expect(window.scrollY).toBe(420);
+  f.dialog.querySelector<HTMLButtonElement>('[data-photo-close]')!.click();
+  expect(document.activeElement).toBe(third);
+});
+it('preserves modified native photo links after viewer enhancement is loaded', () => {
+  const f = fixture();
+  for (const options of [
+    { button: 1 },
+    { ctrlKey: true },
+    { metaKey: true },
+    { shiftKey: true },
+    { altKey: true },
+  ]) {
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true, ...options });
+    f.entry.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(false);
+    expect(f.dialog.open).toBe(false);
+  }
+  f.entry.click();
+  expect(f.dialog.open).toBe(true);
+});
 it('accepts deliberate horizontal swipes while ignoring taps, vertical motion, missing touches and pinches', () => {
   const f = fixture();
   f.entry.click();

@@ -1,7 +1,7 @@
 /**
  * Purpose: Shared page list and helpers for the browser tests.
  * Scope: The site's pages (paths relative to the base URL, so tests run at the root or under the
- *   GitHub Pages project path), themed home readiness, native keyboard gesture completion,
+ *   GitHub Pages project path), themed home readiness, completed native scrolling and viewport changes,
  *   menu/shortcut fixtures, and overflow.
  * Does NOT belong: Test cases (the *.spec.ts files beside it).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
@@ -101,21 +101,75 @@ export function timelineShortcuts(page: Page) {
   };
 }
 
+/** Registers completion before the action; a scrollend must follow actual displacement. */
+async function completePageChange(
+  page: Page,
+  event: 'scrollend' | 'resize',
+  action: () => Promise<unknown>,
+) {
+  const pending = await page.evaluateHandle((event) => {
+    const controller = new AbortController();
+    const options = { signal: controller.signal };
+    const start = scrollY;
+    let ready = event === 'resize';
+    if (!ready)
+      document.addEventListener(
+        'scroll',
+        () => {
+          ready ||= scrollY !== start;
+        },
+        options,
+      );
+    const target = event === 'resize' ? window : document;
+    return {
+      finished: new Promise<void>((resolve) =>
+        target.addEventListener(
+          event,
+          () => {
+            if (ready) resolve();
+          },
+          options,
+        ),
+      ),
+      cancel: () => controller.abort(),
+    };
+  }, event);
+  try {
+    await action();
+    await pending.evaluate(({ finished }) => finished);
+  } finally {
+    await pending.evaluate(({ cancel }) => cancel());
+    await pending.dispose();
+  }
+}
+
+/** Completes a native document scroll gesture before a separate action begins. */
+export async function scrollPageByKey(page: Page, key: 'PageDown' | 'PageUp' | 'Home' | 'End') {
+  await completePageChange(page, 'scrollend', () => page.keyboard.press(key));
+}
+
+/** Settles explicit setup movement before user-scroll qualification is exercised. */
+export async function scrollPageTo(page: Page, top: number) {
+  await completePageChange(page, 'scrollend', () =>
+    page.evaluate((top) => scrollTo({ top, behavior: 'instant' }), top),
+  );
+}
+
+/** Waits for the browser's resize handler and final viewport, not just its protocol acknowledgement. */
+export async function resizePage(page: Page, viewport: { width: number; height: number }) {
+  await completePageChange(page, 'resize', () => page.setViewportSize(viewport));
+  await expect
+    .poll(() => page.evaluate(() => ({ width: innerWidth, height: innerHeight })))
+    .toEqual(viewport);
+}
+
 /** Qualifies shortcuts with a completed native PageDown before the next independent gesture. */
 export async function qualifyTimelineShortcuts(page: Page) {
   await page.evaluate(() => document.fonts.ready);
   const controls = timelineShortcuts(page);
   await expect(controls.up).toBeHidden();
   await expect(controls.down).toBeHidden();
-  await Promise.all([
-    page.evaluate(
-      () =>
-        new Promise<void>((resolve) =>
-          document.addEventListener('scrollend', () => resolve(), { once: true }),
-        ),
-    ),
-    page.keyboard.press('PageDown'),
-  ]);
+  await scrollPageByKey(page, 'PageDown');
   await expect(controls.up).toBeVisible();
   await expect(controls.down).toBeVisible();
   return controls;

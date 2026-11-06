@@ -32,6 +32,7 @@ const { photos, id, preview = false, skipCover = false, layout = 'album' } = Ast
       <figure class="photo" data-image-frame>
         <PhotoLink
           name={photo.name}
+          kind={photo.imageKind ?? 'photo'}
           alt={photo.alt}
           caption={photo.caption}
           album={id}

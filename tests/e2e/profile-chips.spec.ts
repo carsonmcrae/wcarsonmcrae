@@ -1,6 +1,6 @@
 /**
  * Purpose: Verify readable profile chips and consistent category metadata on real pages.
- * Scope: Mobile visibility/reflow, both themes, native filter choices, and permanent post metadata.
+ * Scope: Mobile alignment/reflow, both themes, native filter choices, and permanent post metadata.
  * Does NOT belong: Timeline date navigation or gallery interactions.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -21,6 +21,12 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await expect(profile.locator('.profile-summary__location')).toBeVisible();
     await expect(profile.locator('.profile-summary__headline')).toBeVisible();
     await expect(profile.locator('.profile-summary__bio')).toBeVisible();
+    const portrait = (await profile.locator('.profile-summary__portrait').boundingBox())!;
+    const name = (await profile.locator('h1').boundingBox())!;
+    const details = (await profile.locator('.profile-summary__details').boundingBox())!;
+    expect(name.y).toBeCloseTo(portrait.y, 0);
+    expect(details.y).toBeGreaterThanOrEqual(name.y + name.height);
+    expect(details.x).toBeGreaterThanOrEqual(portrait.x + portrait.width);
     expect((await profile.locator('.profile-chip').first().boundingBox())!.height).toBeLessThan(28);
     for (const name of ['LinkedIn', 'GitHub', 'Product portfolio', 'Contact']) {
       const link = profile.getByRole('link', { name: new RegExp(name) });

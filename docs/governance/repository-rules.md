@@ -50,6 +50,10 @@ lockfiles, and images are exempt. `npm run check:repo` enforces the shape; revie
 - Test behavior and failure paths, not implementation details.
 - Give route-wide browser sweeps one named test per route. A growing page list must not share one
   test’s time budget or stop later pages from being checked when an earlier page fails.
+- Browser flows must finish native scroll/resize setup and observe a command's result before
+  traversing history. A readiness marker or completed click dispatch does not acknowledge a deferred
+  mutation. Reuse the native-event helpers; retain real input and state/focus assertions rather than
+  adding sleeps, synthetic intent events, or weaker expectations.
 
 ### Prevent recurring scan findings
 

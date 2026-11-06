@@ -73,6 +73,9 @@ describe('approved personal albums', () => {
     expect(carsonGallery.photos[5]!.caption).toContain('Messi');
     expect(carsonGallery.photos[6]!.alt).toContain('Jackson playing video games');
     expect(carsonGallery.photos[0]!.postId).toBe('married-nicole');
+    expect(carsonGallery.photos[0]!.caption).toBe(
+      'The end of our wedding was a hit… I was clearly having a great time, at least.',
+    );
   });
 
   it('adds two distinct approved family frames to Life and the existing wedding album', () => {

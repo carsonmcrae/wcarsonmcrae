@@ -7,7 +7,7 @@
  */
 import { createReactionController } from './reaction-controller';
 import type { ReactionKind } from '../data/reactions';
-import { writeItem, safeStorage } from './storage';
+import { readItem, writeItem, safeStorage } from './storage';
 import { consentChoice } from './consent';
 import { withBase } from './paths';
 import type { ActionWindow, initPostActions } from './post-actions';
@@ -56,18 +56,21 @@ export function attachPostActionEvents(
   const react = async (button: HTMLButtonElement, id: string) => {
     if (button.getAttribute('aria-pressed') === 'true') return;
     button.disabled = true;
-    const result = await reactions.react(id, (button.dataset['react'] || 'heart') as ReactionKind);
+    const kind = (button.dataset['react'] || 'heart') as ReactionKind;
+    const pending = reactions.react(id, kind);
+    const visitor = readItem(storage, 'daysforth.visitor');
+    const result = await pending;
+    if (!alive) return;
     if (result.status === 'added') {
       changed.add(result.key);
       updateCounts({ [result.key]: result.count });
-      button.setAttribute('aria-pressed', 'true');
-      announce('Reaction added. It stays with this moment.');
-    } else if (result.status === 'duplicate') {
-      button.setAttribute(
-        'aria-pressed',
-        String(reactions.hasReacted(id, (button.dataset['react'] || 'heart') as ReactionKind)),
-      );
-    } else {
+    }
+    const remembered = reactions.hasReacted(id, kind);
+    button.setAttribute('aria-pressed', String(remembered));
+    button.disabled = remembered;
+    if (visitor !== readItem(storage, 'daysforth.visitor')) return;
+    if (result.status === 'added') announce('Reaction added. It stays with this moment.');
+    else if (result.status !== 'duplicate') {
       const messages = {
         unavailable: 'Reactions are unavailable right now. Please try again later.',
         storage: 'Reactions need browser storage to prevent duplicate votes.',
@@ -75,7 +78,6 @@ export function attachPostActionEvents(
       };
       announce(messages[result.status]);
     }
-    button.disabled = button.getAttribute('aria-pressed') === 'true';
   };
   const activate = async (target: Element) => {
     if (!alive) return;

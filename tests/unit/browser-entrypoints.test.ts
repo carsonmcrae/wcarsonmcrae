@@ -155,6 +155,32 @@ it('loads privacy settings from the shared request event before any settings but
   expect(dialog.open).toBe(false);
 });
 
+it('composes secondary-page shortcuts and removes their behavior with the site entry', async () => {
+  document.body.insertAdjacentHTML(
+    'beforeend',
+    '<main tabindex="-1"></main><footer></footer><button data-page-edge="top" hidden></button><button data-page-edge="bottom" hidden></button>',
+  );
+  vi.spyOn(document.documentElement, 'scrollHeight', 'get').mockReturnValue(2000);
+  vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(800);
+  const { stopSite } = await import('../../src/scripts/site');
+  cleanups.push(stopSite);
+  const down = button('[data-page-edge="bottom"]');
+  expect(down.hidden).toBe(true);
+  window.dispatchEvent(new Event('wheel'));
+  window.scrollTo(0, 300);
+  window.dispatchEvent(new Event('scroll'));
+  expect(down.hidden).toBe(false);
+  down.click();
+  expect(document.activeElement).toBe(document.querySelector('footer'));
+  expect(window.scrollY).toBe(1200);
+  stopSite();
+  expect(document.querySelector('footer')!.hasAttribute('tabindex')).toBe(false);
+  window.scrollTo(0, 300);
+  down.click();
+  expect(window.scrollY).toBe(300);
+  expect(down.hidden).toBe(true);
+});
+
 it('passes the configured endpoint to real photo reactions only when the deferred viewer opens', async () => {
   const photo = document.querySelector<HTMLAnchorElement>('[data-photo]')!;
   photo.dataset['photo'] = 'photo-portrait';

@@ -13,6 +13,29 @@ const albums = [
   ...dogGalleries.map((album) => ({ ...album, path: 'life/' })),
   { id: 'carson-photos', photos: carsonGallery.photos, path: 'about/' },
 ];
+
+test('a post opens its last photograph in the complete, initially visible filmstrip', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('posts/married-nicole/');
+  const last = page.locator('.post-album [data-photo]').last();
+  await last.scrollIntoViewIfNeeded();
+  const position = await page.evaluate(() => scrollY);
+  await last.click();
+  const viewer = page.locator('[data-photo-viewer]');
+  await expect(viewer).toBeVisible();
+  await expect(viewer.locator('[data-photo-count]')).toHaveText('Photo 5 of 5');
+  const strip = viewer.locator('[data-photo-strip]');
+  const bounds = (await strip.boundingBox())!;
+  const selected = (await strip.locator('[aria-current="true"]').boundingBox())!;
+  expect(selected.x).toBeGreaterThanOrEqual(bounds.x);
+  expect(selected.x + selected.width).toBeLessThanOrEqual(bounds.x + bounds.width + 1);
+  await viewer.getByRole('button', { name: 'Close photo viewer', exact: true }).click();
+  await expect(viewer).toBeHidden();
+  await expect(last).toBeFocused();
+  expect(await page.evaluate(() => scrollY)).toBe(position);
+});
 for (const album of albums) {
   test(`${album.id} exposes every photo through its compact native carousel`, async ({
     page,

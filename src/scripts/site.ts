@@ -1,6 +1,6 @@
 /**
  * Purpose: The browser entry point for the site's progressive enhancements.
- * Scope: Composes theme, history, feed, privacy, image controls, and cleanup with dialogs loaded on intent.
+ * Scope: Composes theme, history, page/feed navigation, privacy, image controls, and intent-loaded dialogs.
  * Constraints: Everything here is optional: every page is readable and navigable without
  *   JavaScript.
  * Does NOT belong: The behaviors themselves, which live (and are tested) in src/lib.
@@ -16,9 +16,14 @@ import { initPagePosition } from '../lib/page-position';
 import { deferControl } from '../lib/deferred-controls';
 import { consentChoice } from '../lib/consent';
 import { safeStorage } from '../lib/storage';
+import { initPageJumps } from '../lib/page-jumps';
 
 const start = () => {
-  const stops = [initThemeToggle(document, globalThis), initHistoryControls(document, globalThis)];
+  const stops = [
+    initThemeToggle(document, globalThis),
+    initHistoryControls(document, globalThis),
+    initPageJumps(document, globalThis),
+  ];
   stops.push(
     deferControl(document, '[data-photo]', async () => {
       const { initPhotoViewer } = await import('../lib/photo-viewer');

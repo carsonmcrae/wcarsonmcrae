@@ -49,13 +49,25 @@ describe('confirmed additions', () => {
       const names = [post.image, ...(post.gallery ?? []).map((photo) => photo.name)];
       expect(new Set(names).size, post.id).toBe(names.length);
       for (const photo of post.gallery ?? [])
-        expect(getPhoto(photo.name), photo.name).toBeDefined();
+        expect(
+          photo.imageKind === 'screen' ? getProjectImage(photo.name) : getPhoto(photo.name),
+          photo.name,
+        ).toBeDefined();
     }
     expect(
       timelinePosts
         .find((post) => post.id === 'married-nicole')!
         .gallery!.map((photo) => photo.name),
     ).toEqual(['nicole-carson-1', 'carson-friends', 'me-my-family', 'me-nicoles-family']);
+  });
+  it('features the balcony FBLA trophies and preserves all three canonical photographs', () => {
+    const post = timelinePosts.find((entry) => entry.id === 'fbla-video-awards')!;
+    expect([post.image, ...post.gallery!.map((photo) => photo.name)]).toEqual([
+      'fbla-6th-nationals-trophy-2017',
+      'fbla-6th-nationals',
+      'fbla-first-place-state',
+    ]);
+    expect(post.imageAlt).toContain('glass FBLA trophies on a balcony');
   });
 });
 describe('focused filters', () => {

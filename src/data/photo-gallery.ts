@@ -157,7 +157,7 @@ export const carsonGallery = {
     danceFloor: [
       'carson-gallery-1',
       'Wedding guests gathered on a dance floor with their arms raised',
-      'The end of our wedding was a hit. And yes, that is actually a cup of water. Literally. I’m not joking.',
+      'The end of our wedding was a hit… I was clearly having a great time, at least.',
       'married-nicole',
     ],
     baseball: [

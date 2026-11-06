@@ -6,6 +6,7 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
+import sharp from 'sharp';
 import {
   findCollisions,
   isPhotoFile,
@@ -49,6 +50,33 @@ describe('resizeFor', () => {
 });
 
 describe('planImport', () => {
+  it.each([
+    [1, 2000, 1333],
+    [6, 1333, 2000],
+    [8, 1333, 2000],
+  ])(
+    'keeps the upright proportions of a real EXIF-%s image without cropping',
+    async (orientation, width, height) => {
+      const source = await sharp({
+        create: { width: 3000, height: 2000, channels: 3, background: '#426782' },
+      })
+        .jpeg()
+        .withMetadata({ orientation })
+        .toBuffer();
+      const metadata = await sharp(source).metadata();
+      const step = planImport({ name: 'oriented.jpg', ...metadata.autoOrient, hasAlpha: false });
+      expect(step.resize).toEqual({ width, height });
+      const encoded = await sharp(source).rotate().resize(step.resize!).jpeg().toBuffer();
+      const output = await sharp(encoded).metadata();
+      expect([output.width, output.height]).toEqual([width, height]);
+      expect(output.orientation).toBeUndefined();
+      expect(output.exif).toBeUndefined();
+      expect(output.width / output.height).toBeCloseTo(
+        metadata.autoOrient.width / metadata.autoOrient.height,
+        3,
+      );
+    },
+  );
   it('writes opaque photos as JPEG', () => {
     expect(
       planImport({ name: '1999_Born.jpg', width: 2160, height: 2880, hasAlpha: false }),

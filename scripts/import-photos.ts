@@ -29,10 +29,8 @@ if (names.length === 0) {
 
 const steps: ImportStep[] = [];
 for (const name of names) {
-  const meta = await sharp(join(sourceDir, name)).rotate().metadata();
-  steps.push(
-    planImport({ name, width: meta.width, height: meta.height, hasAlpha: Boolean(meta.hasAlpha) }),
-  );
+  const meta = await sharp(join(sourceDir, name)).metadata();
+  steps.push(planImport({ name, ...meta.autoOrient, hasAlpha: Boolean(meta.hasAlpha) }));
 }
 const collisions = findCollisions(steps);
 if (collisions.length > 0) {

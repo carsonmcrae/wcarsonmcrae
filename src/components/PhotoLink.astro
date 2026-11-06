@@ -17,6 +17,8 @@ interface Props {
   alt: string;
   kind?: 'photo' | 'screen';
   eager?: boolean;
+  sizes?: string;
+  widths?: number[];
   postId?: string;
   caption?: string;
   class?: string;
@@ -28,6 +30,8 @@ const {
   alt,
   kind = 'photo',
   eager = false,
+  sizes,
+  widths,
   postId,
   caption = alt,
   class: className,
@@ -63,7 +67,14 @@ const large = source
       </>
     ) : (
       <>
-        <MomentImage name={name} alt={alt} kind={kind} eager={eager} />
+        <MomentImage
+          name={name}
+          alt={alt}
+          kind={kind}
+          eager={eager}
+          {...(sizes === undefined ? {} : { sizes })}
+          {...(widths === undefined ? {} : { widths })}
+        />
       </>
     )}
   </a>

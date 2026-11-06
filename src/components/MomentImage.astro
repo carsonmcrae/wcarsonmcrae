@@ -13,8 +13,10 @@ interface Props {
   alt: string;
   kind?: 'photo' | 'project' | 'screen';
   eager?: boolean;
+  sizes?: string;
+  widths?: number[];
 }
-const { name, alt, kind = 'photo', eager = false } = Astro.props;
+const { name, alt, kind = 'photo', eager = false, sizes, widths } = Astro.props;
 const source = kind === 'photo' ? getPhoto(name) : getProjectImage(name);
 ---
 
@@ -23,8 +25,8 @@ const source = kind === 'photo' ? getPhoto(name) : getProjectImage(name);
     src={source}
     alt={alt}
     width={kind === 'project' ? 192 : 800}
-    widths={kind === 'project' ? [96, 192, 288] : [320, 640, 800]}
-    sizes={kind === 'project' ? '96px' : '(min-width: 64rem) 800px, 95vw'}
+    widths={widths ?? (kind === 'project' ? [96, 192, 288] : [320, 640, 800])}
+    sizes={sizes ?? (kind === 'project' ? '96px' : '(min-width: 64rem) 800px, 95vw')}
     format="webp"
     quality={78}
     loading={eager ? 'eager' : 'lazy'}

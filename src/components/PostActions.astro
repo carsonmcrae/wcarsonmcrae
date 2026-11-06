@@ -8,9 +8,8 @@
  */
 interface Props {
   id: string;
-  title: string;
 }
-const { id, title } = Astro.props;
+const { id } = Astro.props;
 ---
 
-<div class="post-actions enhancement" data-post-actions={id} data-post-title={title}></div>
+<div class="post-actions enhancement" data-post-actions={id}></div>

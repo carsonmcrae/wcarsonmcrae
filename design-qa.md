@@ -367,3 +367,11 @@ The complete [follow-up implementation](docs/V1.0.1-RELEASE.md) and
 [visual/interaction review](docs/qa/1.0.1.md) are maintained separately so this historical record
 stays an index rather than absorbing every release’s detailed evidence. Final publication and
 scanner identifiers belong in the release pull request.
+
+## Daysforth 1.1.1 — November 5, 2026
+
+The [focused visual and interaction record](docs/qa/1.1.1.md) covers mobile identity alignment,
+secondary-page shortcuts, app explanations and the Recalen cover. The separate
+[architecture audit](docs/architecture/audit-1.1.1.md) records corrected state/lifecycle defects,
+measured performance improvements and justified follow-up triggers. Protected CI and publication
+receipts belong in the release pull request; neither document predeclares those outcomes.

@@ -87,9 +87,10 @@ beforeEach(() => {
       resize: vi.fn().mockReturnThis(),
       png: vi.fn().mockReturnThis(),
       toFormat: vi.fn().mockReturnThis(),
-      metadata: vi
-        .fn()
-        .mockImplementation(async () => io.metadata.get(key) ?? { width: 800, height: 600 }),
+      metadata: vi.fn().mockImplementation(async () => {
+        const metadata = io.metadata.get(key) ?? { width: 800, height: 600 };
+        return { autoOrient: metadata, ...metadata };
+      }),
       toFile: vi.fn().mockImplementation(async (path: string) => {
         io.files.set(path, Buffer.from(`encoded:${key}`));
       }),
@@ -153,6 +154,20 @@ describe('photo import CLI', () => {
     await import('../../scripts/import-photos.ts');
     expect(io.readdir).toHaveBeenLastCalledWith(join(root, 'approved-input'));
     expect(io.files.get(join(photos, 'a.jpg'))).toEqual(Buffer.from('encoded:a.jpg'));
+  });
+  it('plans resize dimensions from the codec’s oriented metadata, not the stored pixel axes', async () => {
+    io.names = ['rotated.jpg'];
+    io.metadata.set('rotated.jpg', {
+      width: 3000,
+      height: 2000,
+      orientation: 6,
+      autoOrient: { width: 2000, height: 3000 },
+    });
+    await import('../../scripts/import-photos.ts');
+    expect(io.pipelines[1]!.resize).toHaveBeenCalledExactlyOnceWith(1333, 2000);
+    expect(io.pipelines[1]!.rotate).toHaveBeenCalledOnce();
+    expect(console.info).toHaveBeenCalledWith(expect.stringContaining('1333×2000'));
+    expect([...io.files.keys()]).toEqual([join(photos, 'rotated.jpg')]);
   });
   it('stops collisions before creating output or overwriting a photograph', async () => {
     io.names = ['A!.jpg', 'A_.png'];

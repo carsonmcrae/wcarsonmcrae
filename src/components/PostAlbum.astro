@@ -1,6 +1,6 @@
 ---
 /**
- * Purpose: Distinct photographs belonging to one moment.
+ * Purpose: Distinct photographs and interface captures belonging to one moment.
  * Scope: Lazy-loaded, uncropped album images with useful alternatives and individual captions.
  * Does NOT belong: Choosing images or repeating the cover photograph.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
@@ -10,8 +10,9 @@ import type { PostPhoto } from '../data/timeline';
 import PhotoLink from './PhotoLink.astro';
 interface Props {
   photos: PostPhoto[];
+  album: string;
 }
-const { photos } = Astro.props;
+const { photos, album } = Astro.props;
 ---
 
 <section class="post-album" aria-label="More photos from this moment">
@@ -19,6 +20,8 @@ const { photos } = Astro.props;
     <figure>
       <PhotoLink
         name={photo.name}
+        album={album}
+        kind={photo.imageKind ?? 'photo'}
         alt={photo.alt}
         caption={photo.caption}
         {...(photo.postId ? { postId: photo.postId } : {})}

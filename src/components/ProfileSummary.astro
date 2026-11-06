@@ -18,6 +18,8 @@ import Icon from './Icon.astro';
     class="profile-summary__portrait"
     name={profile.portrait}
     alt={profile.portraitAlt}
+    sizes="(max-width: 40rem) 4.5rem, 9rem"
+    widths={[160, 320, 600]}
     eager
   />
   <div class="profile-summary__identity">

@@ -3,7 +3,8 @@
 Update this directory in the same change that modifies a system boundary. Explain the resulting
 design, ownership, data flow, and tradeoff; a date-only edit is not a useful architecture update.
 Keep [overview.md](overview.md) current and resolve or update [review.md](review.md) findings when
-the evidence changes. Add a short decision document here when a consequential alternative is chosen.
+the evidence changes. The [1.1.1 audit](audit-1.1.1.md) records corrected lifecycle defects and
+evidence-based follow-up triggers. Add a short decision document here when a consequential alternative is chosen.
 
 ## Update triggers
 

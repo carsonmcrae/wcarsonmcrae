@@ -1,0 +1,19 @@
+---
+/**
+ * Purpose: Hidden-until-scrolled page-edge controls for the four secondary profile pages.
+ * Scope: Native named buttons with shared quiet shortcut visuals and generous targets.
+ * Does NOT belong: Scroll qualification or destinations (src/lib/page-jumps.ts).
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+import Icon from './Icon.astro';
+---
+
+<div class="page-jumps enhancement">
+  <button type="button" class="page-jumps__up" data-page-edge="top" aria-label="Top of page" hidden>
+    <Icon name="chevron" />
+  </button>
+  <button type="button" data-page-edge="bottom" aria-label="Bottom of page" hidden>
+    <Icon name="chevron" />
+  </button>
+</div>

@@ -7,7 +7,15 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { describe, expect, it } from 'vitest';
-import { formatDate, formatDateOnly, joinList, listSeparator } from '../../src/lib/text';
+import { excerpt, formatDate, formatDateOnly, joinList, listSeparator } from '../../src/lib/text';
+
+describe('metadata excerpts', () => {
+  it('retains short text and makes long sentences fit without clipping words', () => {
+    expect(excerpt('Short summary.', 20)).toBe('Short summary.');
+    expect(excerpt('One two three four.', 12)).toBe('One two…');
+    expect(excerpt('abcdefghijk', 6)).toBe('abcde…');
+  });
+});
 
 describe('lists', () => {
   it('joins items the way a person would write them', () => {

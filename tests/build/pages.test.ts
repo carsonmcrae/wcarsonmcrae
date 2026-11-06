@@ -56,6 +56,13 @@ describe.each(pages)('$file', ({ file, document }) => {
   const isErrorPage = file === '404.html';
   const alias = postAliases[file.split('/')[1] ?? ''];
 
+  it('loads generated geometry styles only where matching components render', () => {
+    const linked = (name: string) =>
+      document.querySelector(`link[rel="stylesheet"][href="${BASE}${name}.css"]`) !== null;
+    expect(linked('timeline-positions')).toBe(document.querySelector('.date-rail') !== null);
+    expect(linked('media-frames')).toBe(document.querySelector('.post-media__frame') !== null);
+  });
+
   it('has a unique title, a useful description, and English as its language', () => {
     expect(document.documentElement.getAttribute('lang')).toBe('en');
     expect(document.title.length).toBeGreaterThan(5);
