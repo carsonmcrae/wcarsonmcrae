@@ -1,6 +1,6 @@
 /**
  * Purpose: A temporary HTTPS certificate for production-browser verification.
- * Scope: Loopback-only test key generation using the system OpenSSL and cleanup after the runner exits.
+ * Scope: Loopback/reserved-host SANs, OpenSSL test key generation, and process-exit cleanup.
  * Constraints: Never installs a trust root or changes the production CSP; the key stays in OS temp.
  * Does NOT belong: Production certificates, deployment secrets, or application behavior.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
@@ -35,7 +35,7 @@ export function localTls() {
       '-subj',
       '/CN=localhost',
       '-addext',
-      'subjectAltName=DNS:localhost,IP:127.0.0.1',
+      'subjectAltName=DNS:localhost,DNS:reactions.daysforth.test,IP:127.0.0.1',
     ],
     { stdio: 'ignore' },
   );

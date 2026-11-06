@@ -20,9 +20,11 @@ type Proxy = Awaited<ReturnType<typeof startReactionProxy>>;
 const cleanups: (() => Promise<void>)[] = [];
 const clients: Duplex[] = [];
 let certificate: { key: Buffer; cert: Buffer };
+let untrustedCA: Buffer;
 beforeAll(() => {
   const files = localTls();
   certificate = { key: readFileSync(files.key), cert: readFileSync(files.cert) };
+  untrustedCA = readFileSync(localTls().cert);
 });
 afterEach(async () => {
   for (const client of clients.splice(0)) client.destroy();
@@ -64,7 +66,7 @@ async function request(proxy: Proxy, method = 'GET', target = '/reactions', body
             tls.connect({
               socket,
               servername: 'reactions.daysforth.test',
-              rejectUnauthorized: false,
+              ca: certificate.cert,
             }),
         },
         (response) => {
@@ -98,6 +100,28 @@ it('serves an immutable zero-count snapshot through real TLS with native CORS he
   });
   expect(proxy.unexpected).toEqual([]);
   expect(proxy.blockedConnects).toBe(0);
+});
+
+it.each([
+  {
+    name: 'an untrusted certificate authority',
+    peer: () => ({ ca: untrustedCA, servername: 'reactions.daysforth.test' }),
+    code: 'DEPTH_ZERO_SELF_SIGNED_CERT',
+  },
+  {
+    name: 'a certificate with a different hostname',
+    peer: () => ({ ca: certificate.cert, servername: 'different.daysforth.test' }),
+    code: 'ERR_TLS_CERT_ALTNAME_INVALID',
+  },
+])('rejects $name through the real CONNECT tunnel', async ({ peer, code }) => {
+  const proxy = await fixture();
+  const { response, socket } = await tunnel(proxy);
+  expect(response.statusCode).toBe(200);
+  const connection = tls.connect({ socket, ...peer() });
+  clients.push(connection);
+  await expect(once(connection, 'secureConnect')).rejects.toMatchObject({ code });
+  expect(connection.authorized).toBe(false);
+  expect(proxy.unexpected).toEqual([]);
 });
 
 it.each(['/reactions', '/identity', '/reactions/born', '/reactions/a%2Fb'])(
