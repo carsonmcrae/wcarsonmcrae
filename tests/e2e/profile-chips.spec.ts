@@ -19,6 +19,9 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await expect(profile.locator('.profile-summary__handle')).toBeVisible();
     await expect(profile.locator('.profile-summary__location')).toHaveText('Nashville, TN');
     await expect(profile.locator('.profile-summary__location')).toBeVisible();
+    await expect(profile.locator('.profile-summary__headline')).toBeVisible();
+    await expect(profile.locator('.profile-summary__bio')).toBeVisible();
+    expect((await profile.locator('.profile-chip').first().boundingBox())!.height).toBeLessThan(28);
     for (const name of ['LinkedIn', 'GitHub', 'Product portfolio', 'Contact']) {
       const link = profile.getByRole('link', { name: new RegExp(name) });
       await expect(link).toBeVisible();
@@ -29,6 +32,17 @@ for (const colorScheme of ['light', 'dark'] as const) {
       expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     }
     expect(await horizontalOverflow(page)).toBe(0);
+    const dates = page.locator('.date-rail__short');
+    for (const [index, numeric] of ['11/99', '05/22', '10/26'].entries())
+      await expect(dates.nth(index)).toContainText(numeric);
+    for (const label of await page.locator('.date-rail__label').all()) {
+      expect(await label.evaluate((element) => getComputedStyle(element).position)).not.toBe(
+        'static',
+      );
+      expect(
+        await label.evaluate((element) => getComputedStyle(element, '::after').display),
+      ).not.toBe('none');
+    }
     await expectNoViolations(page);
   });
 

@@ -6,6 +6,7 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { isTimelineDate } from '../../src/lib/timeline-dates.ts';
+import approvedUpdates from '../../docs/governance/same-version-approvals.json' with { type: 'json' };
 
 interface Release {
   version: string;
@@ -21,9 +22,28 @@ interface ReleaseInput {
   releases: readonly Release[];
   tag?: string;
   baseVersion?: string;
+  baseCommit?: string;
   changes: { status: string; path: string }[];
 }
 const STABLE = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/;
+interface SameVersionApproval {
+  readonly version: string;
+  readonly reason: string;
+  readonly scope: string;
+  readonly modifiedProductPaths: readonly string[];
+}
+const approvals: Readonly<Record<string, SameVersionApproval>> = approvedUpdates;
+
+function approvedSameVersion(input: ReleaseInput, changes: ReleaseInput['changes']): boolean {
+  const approval = approvals[input.baseCommit ?? ''];
+  return (
+    approval !== undefined &&
+    approval.version === input.version &&
+    changes.every(
+      ({ status, path }) => status === 'M' && approval.modifiedProductPaths.includes(path),
+    )
+  );
+}
 
 function compare(left: string, right: string): number {
   const a = left.split('.').map(Number);
@@ -77,10 +97,10 @@ function checkComparison(input: ReleaseInput): string[] {
   const errors: string[] = [];
   const difference = compare(input.version, input.baseVersion);
   if (difference < 0) errors.push('The product version cannot move backwards.');
-  const productChanged = input.changes.some(({ path }) =>
+  const productChanges = input.changes.filter(({ path }) =>
     /^(?:src\/|public\/|workers\/|astro\.config\.mjs$|package(?:-lock)?\.json$)/.test(path),
   );
-  if (productChanged && difference === 0)
+  if (productChanges.length > 0 && difference === 0 && !approvedSameVersion(input, productChanges))
     errors.push('Product changes require a version increase and matching public release notes.');
   return errors;
 }

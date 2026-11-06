@@ -34,7 +34,9 @@ test('the rail labels only pinned dates and supports keyboard date jumps', async
   const labels = page.locator('.date-rail__label');
   await expect(labels).toHaveCount(3);
   await expect(labels.nth(0)).toHaveAccessibleName(/Go to Born, Nov(?:ember)? 1999/);
-  await expect(labels.nth(1)).toHaveAccessibleName('Go to Vanderbilt graduation, May 2022');
+  await expect(labels.nth(1)).toHaveAccessibleName(
+    /^Go to Vanderbilt graduation, May 2022(?: \(\s*05\/22\s*\))?$/,
+  );
   await expect(labels.nth(2)).toHaveAccessibleName(/Go to Married Nicole, Oct(?:ober)? 2026/);
   await expect(page.getByText('Drag to explore', { exact: true })).toHaveCount(0);
   const slider = page.getByRole('slider');

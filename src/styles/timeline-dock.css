@@ -72,14 +72,19 @@ section.timeline-feed {
     height: auto;
   }
   .timeline-dock .date-rail__label {
-    position: static;
+    position: relative;
+    inset: auto;
     transform: none;
     width: 100%;
     max-width: none;
     text-align: center;
   }
   .timeline-dock .date-rail__label::after {
-    display: none;
+    display: block;
+    top: auto;
+    bottom: 0;
+    left: 50%;
+    right: auto;
   }
 }
 @media (max-height: 40rem) {

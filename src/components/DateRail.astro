@@ -16,17 +16,24 @@ const oldest = pins[0]!;
 
 <div class="date-rail enhancement" data-date-rail>
   <div class="date-rail__labels">
-    {pins.map((post, index) => (
-      <button
-        type="button"
-        class={`date-rail__label date-rail__label--${index}`}
-        data-jump-date={post.date}
-      >
-        <span class="visually-hidden">Go to {post.title}, </span>
-        <span class="date-rail__long">{dateLabel(post.date)}</span>
-        <span class="date-rail__short">{dateLabel(post.date, true)}</span>
-      </button>
-    ))}
+    {pins.map((post, index) => {
+      const shortDate = `${post.date.slice(5, 7)}/${post.date.slice(2, 4)}`;
+      return (
+        <button
+          type="button"
+          class={`date-rail__label date-rail__label--${index}`}
+          data-jump-date={post.date}
+        >
+          <span class="visually-hidden">Go to {post.title}, </span>
+          <span class="date-rail__long">{dateLabel(post.date)}</span>
+          <span class="date-rail__short">
+            <span class="visually-hidden">{dateLabel(post.date)} (</span>
+            {shortDate}
+            <span class="visually-hidden">)</span>
+          </span>
+        </button>
+      );
+    })}
   </div>
   <label class="visually-hidden" for="timeline-range">
     Explore Carson’s timeline by date

@@ -29,6 +29,19 @@ number. After the comparison base contains `src/data/releases.ts`, a product cha
 `public/`, `workers/`, `astro.config.mjs`, or either package manifest requires a strictly higher version. Documentation-only
 changes can retain the version. Versions must never move backwards.
 
+Carson explicitly approved one same-version compact cosmetic update from the exact comparison base
+`5874a27997343690817a005be93f67301df14ca9`, retaining version 1.1.0 and its public notes. The internal
+[approval record](same-version-approvals.json) lists only nine existing presentation/content paths.
+The gate accepts that exception only with the exact full base SHA, matching version, and `M` status
+for every changed product path. Tests, scripts and documentation retain their existing treatment.
+Other bases, versions, paths, additions/deletions, manifests, routes and backend changes follow the
+normal bump requirement. Manifest/history/tag consistency and architecture checks still run.
+
+This record is not an environment bypass or a standing cosmetic exemption. It does not move or
+recreate a published tag. Review the actual diff against its stated scope: project URLs stay intact,
+the icon registry adds only the approved existing Phosphor dog glyph, and mobile dates retain full
+accessible labels. Path membership alone does not prove those semantic constraints.
+
 ## Checks and comparison context
 
 `npm run check:release` checks stable version syntax, lockfile agreement, current public notes,

@@ -37,8 +37,8 @@ export const projects = projectRecords({
     stack: ['React', 'TypeScript', 'Python', 'FastAPI', 'ONNX Runtime'],
     links: [
       ['ttsnative.com', 'https://ttsnative.com'],
-      ['the source on GitHub', 'https://github.com/carsonmcrae/ttsnative'],
-      ['the case study', 'https://carsonmcrae.github.io/ttsnative-case-study/'],
+      ['Source', 'https://github.com/carsonmcrae/ttsnative'],
+      ['Case study', 'https://carsonmcrae.github.io/ttsnative-case-study/'],
     ],
   },
   recalen: {
@@ -51,7 +51,7 @@ export const projects = projectRecords({
     stack: ['Next.js', 'TypeScript', 'React Native / Expo', 'PostgreSQL / Prisma'],
     links: [
       ['recalen.com', 'https://recalen.com'],
-      ['the case study', 'https://carsonmcrae.github.io/recalen/'],
+      ['Case study', 'https://carsonmcrae.github.io/recalen/'],
     ],
   },
   picpledge: {
@@ -64,7 +64,7 @@ export const projects = projectRecords({
     stack: ['React', 'TypeScript', 'Cloudflare Workers', 'Capacitor'],
     links: [
       ['picpledge.com', 'https://picpledge.com'],
-      ['the case study', 'https://carsonmcrae.github.io/picpledge/'],
+      ['Case study', 'https://carsonmcrae.github.io/picpledge/'],
     ],
   },
   daysforth: {
@@ -77,7 +77,7 @@ export const projects = projectRecords({
     stack: ['Astro', 'TypeScript', 'Cloudflare Workers', 'D1'],
     links: [
       ['Daysforth', 'https://wcarsonmcrae.com/'],
-      ['the source on GitHub', 'https://github.com/carsonmcrae/wcarsonmcrae'],
+      ['Source', 'https://github.com/carsonmcrae/wcarsonmcrae'],
     ],
   },
 });

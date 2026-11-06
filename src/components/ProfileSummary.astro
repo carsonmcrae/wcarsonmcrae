@@ -42,6 +42,9 @@ import Icon from './Icon.astro';
           <a href={social.href} target="_blank" rel="noopener noreferrer">
             <Icon name={social.id as 'linkedin' | 'github' | 'portfolio'} />
             {social.label}
+            <span class="profile-link__arrow" aria-hidden="true">
+              ↗
+            </span>
             <span class="visually-hidden"> (external site, opens in a new tab)</span>
           </a>
         </li>
@@ -50,6 +53,9 @@ import Icon from './Icon.astro';
         <a href={withBase('/contact/')}>
           <Icon name="contact" />
           Contact
+          <span class="profile-link__arrow" aria-hidden="true">
+            →
+          </span>
         </a>
       </li>
     </ul>

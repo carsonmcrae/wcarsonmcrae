@@ -1,7 +1,7 @@
 ---
 /**
  * Purpose: A photographic overview of Carson’s software projects.
- * Scope: Actual interface covers, app identities, statuses, details, and useful destination links.
+ * Scope: Actual interface covers, app identities, statuses, details, and paired compact destination controls.
  * Does NOT belong: Project facts or timeline post definitions.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -24,6 +24,7 @@ const { detailed = false } = Astro.props;
   {projects.map((project) => {
     const icon = getProjectImage(project.icon);
     const post = timelinePosts.find((moment) => moment.id === project.postId)!;
+    const primary = project.links[0]!;
     return (
       <li class="project" id={detailed ? project.id : undefined}>
         <PostMedia post={post} />
@@ -44,22 +45,38 @@ const { detailed = false } = Astro.props;
               <p class="small muted">Built with {joinList(project.stack)}.</p>
             </details>
           )}
-          <ul class="project__links" role="list">
-            {project.links.map((link) => (
-              <li>
-                <a
-                  class="destination-link"
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {link.label}
-                  <Icon name="arrowRight" />
-                  <span class="visually-hidden"> (external site, opens in a new tab)</span>
-                </a>
-              </li>
-            ))}
-          </ul>
+          <div class="project__actions">
+            <a
+              class="project__action"
+              href={primary.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              tabindex="0"
+            >
+              Visit app
+              <span class="visually-hidden">
+                {' '}
+                {project.name} (external site, opens in a new tab)
+              </span>
+            </a>
+            <details class="project__more" data-disclosure-menu>
+              <summary class="project__action" aria-label={`More links for ${project.name}`}>
+                More <Icon name="chevron" />
+              </summary>
+              <nav class="project__more-panel" aria-label={`More links for ${project.name}`}>
+                <ul role="list">
+                  {project.links.slice(1).map((link) => (
+                    <li>
+                      <a href={link.href} target="_blank" rel="noopener noreferrer" tabindex="0">
+                        {link.label}
+                        <span class="visually-hidden"> (external site, opens in a new tab)</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </details>
+          </div>
         </div>
       </li>
     );
@@ -142,30 +159,87 @@ const { detailed = false } = Astro.props;
     display: flex;
     align-items: center;
     min-height: 2.75rem;
-    color: var(--link);
+    color: var(--muted);
     font-weight: 600;
     cursor: pointer;
   }
   .project__details p {
     margin-top: 0.65rem;
   }
-  .project__links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.3rem 1rem;
+  .project__actions {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr));
+    grid-auto-rows: 1fr;
+    gap: 0.5rem;
+    width: min(100%, 15rem);
     margin-top: auto;
     padding-top: 0.5rem;
   }
-  .project__links li + li {
-    margin: 0;
-  }
-  .project__links a {
+  .project__action {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    justify-content: center;
+    gap: 0.35rem;
+    width: 100%;
+    height: 100%;
     min-height: 2.75rem;
+    padding: 0.45rem 0.5rem;
+    border: 1px solid var(--control);
+    border-radius: 9px;
+    background: var(--wash);
+    color: var(--link);
     font-size: 0.8125rem;
     font-weight: 550;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+  }
+  .project__more summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  .project__more summary::-webkit-details-marker {
+    display: none;
+  }
+  .project__more[open] > summary {
+    border-color: var(--link);
+    background: var(--selected);
+  }
+  .project__more-panel {
+    position: absolute;
+    inset-inline: 0;
+    bottom: calc(100% + 0.5rem);
+    z-index: 5;
+    max-height: min(16rem, 55dvh);
+    overflow-y: auto;
+    padding: 0.35rem;
+    border: 1px solid var(--control);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 0.5rem 1.5rem #09101d18;
+  }
+  .project__more-panel li + li {
+    margin: 0;
+  }
+  .project__more-panel a {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    text-decoration: none;
+  }
+  @media (hover: hover) {
+    .project__action:hover {
+      border-color: var(--link);
+      background: var(--selected);
+    }
+    .project__more-panel a:hover {
+      background: var(--wash);
+    }
   }
   @media (max-width: 40rem) {
     .projects {

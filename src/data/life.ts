@@ -151,6 +151,6 @@ export const now = {
       value: '[TTSNative](https://ttsnative.com), the open-source text-to-speech app',
     },
     { label: 'Recently', value: 'Got married (October 2026)' },
-    { label: 'Home base', value: 'Nashville, with Nicole, Margot, and Quinn' },
+    { label: 'Home base', value: 'Nashville: w/ Nicole, Margot, and Quinn' },
   ] satisfies NowItem[],
 };

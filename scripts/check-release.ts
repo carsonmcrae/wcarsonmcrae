@@ -40,7 +40,7 @@ const errors = checkReleasePolicy({
   releases,
   changes,
   ...(establishedBase
-    ? { baseVersion: JSON.parse(git('show', `${base}:package.json`)).version }
+    ? { baseVersion: JSON.parse(git('show', `${base}:package.json`)).version, baseCommit: base! }
     : {}),
   ...(tag ? { tag } : {}),
 });
