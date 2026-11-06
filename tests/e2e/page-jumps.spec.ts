@@ -7,7 +7,7 @@
  */
 import { expect, type Page } from '@playwright/test';
 import { test } from './fixtures';
-import { scrollPageByKey } from './helpers';
+import { resizePage, scrollPageByKey, scrollPageTo } from './helpers';
 
 test.use({ viewport: { width: 390, height: 664 } });
 
@@ -31,7 +31,7 @@ for (const route of ['work', 'life', 'about', 'contact']) {
       const { up, down } = await openSecondaryPage(page, `${route}/`);
       await expect(up).toBeHidden();
       await expect(down).toBeHidden();
-      await page.evaluate(() => scrollTo({ top: 120, behavior: 'instant' }));
+      await scrollPageTo(page, 120);
       await expect(up).toBeHidden();
       await expect(down).toBeHidden();
       await scrollPageByKey(page, 'PageDown');
@@ -83,11 +83,11 @@ test('short pages and viewport resizing never activate shortcuts by themselves',
   );
   for (const control of await controls.all()) await expect(control).toBeHidden();
   await page.keyboard.press('PageDown');
-  await page.setViewportSize({ width: 390, height: 664 });
+  await resizePage(page, { width: 390, height: 664 });
   for (const control of await controls.all()) await expect(control).toBeHidden();
   await scrollPageByKey(page, 'PageDown');
   await expect(page.getByRole('button', { name: 'Top of page', exact: true })).toBeVisible();
-  await page.setViewportSize({ width: 390, height: 5000 });
+  await resizePage(page, { width: 390, height: 5000 });
   for (const control of await controls.all()) await expect(control).toBeHidden();
 });
 
@@ -96,7 +96,7 @@ test('a short scrollable Contact page qualifies at its bottom without requiring 
 }) => {
   const { up, down } = await openSecondaryPage(page, 'contact/');
   const documentHeight = await page.evaluate(() => document.documentElement.scrollHeight);
-  await page.setViewportSize({ width: 390, height: documentHeight - 90 });
+  await resizePage(page, { width: 390, height: documentHeight - 90 });
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollHeight - innerHeight))
     .toBe(90);
