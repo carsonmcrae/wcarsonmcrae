@@ -130,6 +130,19 @@ function privacyFixture(
     notice: document.querySelector<HTMLElement>('aside')!,
   };
 }
+
+async function expectUnconfirmedErasure(fetcher: ReturnType<typeof privacyFixture>['fetcher']) {
+  const f = privacyFixture(consentingStorage({ 'daysforth.visitor': 'id' }), fetcher);
+  f.click('[data-forget-browser]');
+  await vi.waitFor(() =>
+    expect(document.querySelector('[data-storage-feedback]')!.textContent).toContain(
+      'removal could not be confirmed',
+    ),
+  );
+  expect(f.raw.getItem('daysforth.visitor')).toBeNull();
+  expect(consentChoice(f.raw)).toBe(false);
+}
+
 describe('privacy choices', () => {
   it('discloses default-off storage, accepts a deliberate choice, and lets visitors withdraw it', () => {
     const f = privacyFixture();
@@ -240,29 +253,14 @@ describe('privacy choices', () => {
       const fetcher = vi.fn<typeof fetch>();
       if (mode === 'offline') fetcher.mockRejectedValue(new Error('offline'));
       else fetcher.mockResolvedValue(new Response(null, { status: 503 }));
-      const f = privacyFixture(consentingStorage({ 'daysforth.visitor': 'id' }), fetcher);
-      f.click('[data-forget-browser]');
-      await vi.waitFor(() =>
-        expect(document.querySelector('[data-storage-feedback]')!.textContent).toContain(
-          'removal could not be confirmed',
-        ),
-      );
-      expect(f.raw.getItem('daysforth.visitor')).toBeNull();
+      await expectUnconfirmedErasure(fetcher);
     },
   );
   it.each(['null', 'true', '{}', '{"forgotten":false}', '{"forgotten":"true"}', 'not JSON', ''])(
     'requires a valid erasure acknowledgement instead of trusting a 200 body: %s',
     async (body) => {
       const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(body, { status: 200 }));
-      const f = privacyFixture(consentingStorage({ 'daysforth.visitor': 'id' }), fetcher);
-      f.click('[data-forget-browser]');
-      await vi.waitFor(() =>
-        expect(document.querySelector('[data-storage-feedback]')!.textContent).toContain(
-          'removal could not be confirmed',
-        ),
-      );
-      expect(f.raw.getItem('daysforth.visitor')).toBeNull();
-      expect(consentChoice(f.raw)).toBe(false);
+      await expectUnconfirmedErasure(fetcher);
     },
   );
   it('bounds erasure acknowledgement body parsing with the same five-second deadline', async () => {

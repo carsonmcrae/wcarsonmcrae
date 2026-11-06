@@ -91,8 +91,9 @@ the published commit. See [the 1.0.0 record](V1-RELEASE.md) for the current impl
 
 Verify all four domain/host variants over HTTP/HTTPS, deep paths and queries, direct post/secondary
 pages, custom 404, canonical tags, robots, sitemap, share images, security headers, both themes,
-keyboard controls, and the real brand ZIP. Verify shared totals and duplicate protection across
-browsers; remove exact test votes. Record actual outcomes in design-qa.md.
+keyboard controls, and the real brand ZIP. Compare real shared totals read-only across browsers;
+verify duplicate protection with isolated local fixtures. Do not add synthetic production votes:
+erasing identifiers does not remove their permanent totals. Record actual outcomes in design-qa.md.
 
 VoiceOver on macOS/iOS and native Safari download verification remain outstanding. Windows NVDA
 and automated WebKit do not establish conformance. Carson authorized publication with these
