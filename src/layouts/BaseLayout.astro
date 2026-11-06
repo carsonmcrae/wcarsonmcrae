@@ -36,6 +36,9 @@ const { page, noindex = false } = Astro.props;
       includeTimelineStyles={page.id === 'home'}
       includeMediaFrames={['home', 'work', 'life'].includes(page.id)}
     />
+    <script>
+      import '../scripts/site.ts';
+    </script>
     <slot name="head" />
   </head>
   <body data-page-id={page.id}>
@@ -50,9 +53,6 @@ const { page, noindex = false } = Astro.props;
     {['work', 'life', 'about', 'contact'].includes(page.id) && <PageJumps />}
     <PhotoViewer />
     <PrivacyControls />
-    <script>
-      import '../scripts/site.ts';
-    </script>
   </body>
 </html>
 

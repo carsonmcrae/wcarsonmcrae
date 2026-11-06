@@ -20,12 +20,17 @@ const { post, showCount = true } = Astro.props;
 const media = postMedia(post);
 ---
 
+<script>
+  import { startMediaAffordances } from '../scripts/media';
+  startMediaAffordances();
+</script>
+
 <div class:list={['post-media', `post-media--${media.kind}`]}>
   <div class="post-media__frame">
     {media.kind === 'project' ? (
       <MomentImage name={media.name} alt={media.alt} kind="project" />
     ) : (
-      <PhotoLink name={media.name} alt={media.alt} kind={media.kind} />
+      <PhotoLink name={media.name} alt={media.alt} kind={media.kind} sizes="auto, 95vw" />
     )}
     {post.project && (
       <span class="post-media__app" aria-hidden="true">

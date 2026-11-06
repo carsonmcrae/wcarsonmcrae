@@ -144,6 +144,13 @@ it('ignores layout/date jumps, qualifies actual scrolling, and suppresses useles
   expect(f.isHidden()).toBe(true);
 });
 
+it('hands a first genuine scroll to deferred shortcuts without requiring a second gesture', () => {
+  const f = timeline();
+  Object.assign(f.geometry, { top: 50, contentTop: 100 });
+  stops.push(initTimelineJumps(document, window, { user: true, delta: 300 }));
+  expect([f.up.hidden, f.down.hidden]).toEqual([false, false]);
+});
+
 it('distinguishes scroll keys and scrollbar intent from form/date controls or resize', () => {
   const f = timeline();
   Object.assign(f.geometry, { top: 50, contentTop: 260 });

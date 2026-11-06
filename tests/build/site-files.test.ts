@@ -10,12 +10,26 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { BASE, DIST, files, htmlPages, SITE, urlPathFor } from './dist';
+import { BASE, DIST, files, htmlPages, parse, SITE, urlPathFor } from './dist';
 import { postAliases } from '../../src/data/post-aliases';
+import { releaseVersion } from '../../src/lib/release-identity';
 
 const read = (file: string) => readFileSync(join(DIST, file), 'utf8');
 
 describe('site files', () => {
+  it('attributes every HTML document and the public build receipt to the same source', () => {
+    const build = {
+      version: releaseVersion,
+      source: process.env['SOURCE_COMMIT']?.toLowerCase() ?? 'local',
+    };
+    expect(JSON.parse(read('build.json'))).toEqual(build);
+    for (const page of htmlPages) {
+      expect(
+        parse(page).querySelector('meta[name="daysforth-build"]')?.getAttribute('content'),
+        page,
+      ).toBe(`${build.version}@${build.source}`);
+    }
+  });
   it('lists every public page in the sitemap at the published address', () => {
     expect(read('sitemap-index.xml')).toContain(`${SITE}${BASE}sitemap-0.xml`);
     const sitemap = read('sitemap-0.xml');

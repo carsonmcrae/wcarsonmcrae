@@ -20,6 +20,7 @@ export function attachPostActionEvents(
 ) {
   const { storage, changed, updateCounts } = state;
   const reactions = createReactionController(win, endpoint, storage);
+  state.useReactionChoices(reactions.hasReacted);
   let alive = true;
   const save = (button: HTMLButtonElement, id: string) => {
     const saved = button.getAttribute('aria-pressed') !== 'true';
@@ -48,9 +49,9 @@ export function attachPostActionEvents(
     try {
       if (!win.navigator.clipboard) throw new Error('Clipboard unavailable');
       await win.navigator.clipboard.writeText(url);
-      announce('Link copied.');
+      if (alive) announce('Link copied.');
     } catch {
-      announce(`Copy this link: ${url}`);
+      if (alive) announce(`Copy this link: ${url}`);
     }
   };
   const react = async (button: HTMLButtonElement, id: string) => {

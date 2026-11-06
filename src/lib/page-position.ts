@@ -1,16 +1,17 @@
 /**
- * Purpose: Return to the exact browser-history entry instead of reloading the timeline at its top.
- * Scope: Timeline-entry restoration ownership, pre-traversal snapshots, native back/forward, and direct-link fallback.
- * Does NOT belong: Persistent browser storage, server-side history, or service workers.
+ * Purpose: Keep browser-owned timeline positions stable across native history traversal.
+ * Scope: Timeline restoration ownership, pre-traversal snapshots, and validated entry coordinates.
+ * Does NOT belong: Post return-link behavior (post-navigation.ts), persistent storage, or server history.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
+import { clickedControl } from './click-intent';
 interface PositionNavigation extends EventTarget {
   currentEntry: { index: number; getState(): Record<string, unknown> | undefined } | null;
   entries(): { index: number; url: string | null }[];
   updateCurrentEntry(options: { state: Record<string, unknown> }): void;
 }
-type PositionWindow = Pick<Window, 'history' | 'location' | 'scrollY'> & {
+export type PositionWindow = Pick<Window, 'history' | 'location' | 'scrollY'> & {
   navigation?: PositionNavigation;
 };
 export function prepareTimelineRestore(
@@ -45,28 +46,7 @@ export function initPagePosition(doc: Document, win: PositionWindow) {
     win.history.scrollRestoration = 'manual';
   }
   const click = (event: MouseEvent) => {
-    if (
-      !(event.target instanceof Element) ||
-      event.button !== 0 ||
-      event.metaKey ||
-      event.ctrlKey ||
-      event.shiftKey ||
-      event.altKey
-    )
-      return;
-    if (event.target.closest('a[href],button[data-history]')) remember();
-    const link = event.target.closest<HTMLAnchorElement>('[data-return-timeline]');
-    if (!link || win.history.length < 2) return;
-    const index = win.navigation?.currentEntry?.index ?? 0;
-    const previousUrl =
-      win.navigation?.entries().find((entry) => entry.index === index - 1)?.url ?? doc.referrer;
-    if (!previousUrl) return;
-    const previous = new URL(previousUrl);
-    const destination = new URL(link.href);
-    if (previous.origin === win.location.origin && previous.pathname === destination.pathname) {
-      event.preventDefault();
-      win.history.back();
-    }
+    if (clickedControl(event, 'a[href],button[data-history]')) remember();
   };
   doc.addEventListener('click', click, true);
   return () => {

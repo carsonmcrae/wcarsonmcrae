@@ -17,7 +17,7 @@ import { postAliases } from '../../src/data/post-aliases';
 import { releases } from '../../src/data/releases';
 import { timelinePosts } from '../../src/data/timeline';
 import { readMomentCards } from '../../src/lib/timeline-render';
-import { visibleMoments } from '../../src/lib/timeline-model';
+import { groupMoments, visibleMoments } from '../../src/lib/timeline-model';
 
 const pages = htmlPages.map((file) => ({ file, document: parse(file) }));
 const meta = (document: Document, key: string) =>
@@ -25,6 +25,47 @@ const meta = (document: Document, key: string) =>
   '';
 
 describe('the build', () => {
+  it('renders native annual and enhanced monthly groups around one unchanged card sequence', () => {
+    const home = parse('index.html');
+    const years = Array.from(home.querySelectorAll('.timeline-groups > .moment-group--year'));
+    const expected = groupMoments(timelinePosts, 'years');
+    for (const group of home.querySelectorAll('.moment-group'))
+      expect(group.querySelectorAll(':scope > div')).toHaveLength(1);
+    expect(years.map((year) => year.querySelector(':scope > h2')!.textContent)).toEqual(
+      expected.map((group) => group.label),
+    );
+    for (const [index, year] of years.entries()) {
+      const months = Array.from(year.querySelectorAll(':scope > div > .moment-group'));
+      expect(
+        months.map((month) => ({
+          label: month.querySelector(':scope > h2')!.textContent,
+          ids: readMomentCards(month).map((card) => card.id),
+        })),
+      ).toEqual(
+        groupMoments(expected[index]!.items, 'months').map((month) => ({
+          label: month.label,
+          ids: month.items.map((post) => post.id),
+        })),
+      );
+    }
+    expect(readMomentCards(home).map((card) => card.id)).toEqual(
+      expected.flatMap((year) => year.items.map((post) => post.id)),
+    );
+  });
+
+  it('shares permanent card identities and semantic date precision with enhanced browsing', () => {
+    const cards = readMomentCards(parse('index.html'));
+    expect(new Map(cards.map((card) => [card.id, card.date]))).toEqual(
+      new Map(timelinePosts.map((post) => [post.id, post.date])),
+    );
+    for (const card of cards) {
+      expect(card.element.id).toBe(`moment-${card.id}`);
+      expect(card.element.querySelector('h3 a')?.getAttribute('href')).toBe(
+        `${BASE}posts/${card.id}/`,
+      );
+    }
+  });
+
   it('keeps optional milestone metadata readable by the client filter', () => {
     const home = parse('index.html');
     const cards = readMomentCards(home);

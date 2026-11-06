@@ -1,7 +1,7 @@
 ---
 /**
  * Purpose: Server-rendered chronological content and progressive timeline entry point.
- * Scope: A complete year-grouped no-JavaScript feed, controls, and accessible notices.
+ * Scope: Native annual reading groups, pre-rendered enhanced monthly groups, controls, and notices.
  * Does NOT belong: The date rail or browsing behavior (src/lib/timeline-controller.ts).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -14,6 +14,7 @@ import TimelineControls from './TimelineControls.astro';
 import ActionNotice from './ActionNotice.astro';
 import DateRail from './DateRail.astro';
 import MomentNavigator from './MomentNavigator.astro';
+import '../styles/timeline-initial.css';
 const groups = groupMoments(timelinePosts, 'years');
 ---
 
@@ -23,6 +24,7 @@ const groups = groupMoments(timelinePosts, 'years');
   aria-label="Carson’s timeline"
   data-timeline
   data-view="timeline"
+  data-detail="months"
 >
   <div class="timeline-dock enhancement">
     <DateRail />
@@ -42,17 +44,26 @@ const groups = groupMoments(timelinePosts, 'years');
   <div class="timeline-empty" data-timeline-empty hidden tabindex="-1"></div>
   <div class="timeline-groups" data-timeline-groups>
     {groups.map((group) => (
-      <section class="moment-group" data-period={group.key} data-period-date={group.date}>
+      <section class="moment-group moment-group--year">
         <h2 tabindex="-1">{group.label}</h2>
-        <div class="moment-group__cards">
-          {group.items.map((post) => (
-            <PostCard post={post} />
+        <div>
+          {groupMoments(group.items, 'months').map((month) => (
+            <section class="moment-group">
+              <h2 tabindex="-1">{month.label}</h2>
+              <div>
+                {month.items.map((post) => (
+                  <PostCard post={post} />
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       </section>
     ))}
   </div>
-  <p class="visually-hidden" role="status" aria-live="polite" data-timeline-status></p>
+  <p class="visually-hidden" role="status" aria-live="polite" data-timeline-status>
+    {timelinePosts.length} moments. Timeline view. All categories.
+  </p>
 </section>
 <ActionNotice />
 <MomentNavigator />
@@ -67,12 +78,9 @@ const groups = groupMoments(timelinePosts, 'years');
   </button>
 </div>
 <script>
-  import '../scripts/site';
-  import { prepareTimelineRestore } from '../lib/page-position';
-  import { initTimeline } from '../lib/timeline-controller';
-  const position = prepareTimelineRestore(window);
+  import { startPostActions } from '../scripts/actions';
+  import { initDeferredTimeline } from '../lib/timeline-loader';
+  startPostActions();
   await document.fonts.ready;
-  initTimeline(document, window);
-  if (position !== null) window.scrollTo({ top: position, behavior: 'instant' });
-  document.documentElement.removeAttribute('data-timeline-restore');
+  initDeferredTimeline(document, window);
 </script>

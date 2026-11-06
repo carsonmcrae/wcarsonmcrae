@@ -82,6 +82,34 @@ describe('optional storage', () => {
     });
     expect(() => data.setItem('key', 'value')).toThrow('Storage unavailable');
   });
+
+  it.each([true, false])(
+    'keeps page choices and fails closed when promotion fails (revocation writable %s)',
+    (writable) => {
+      const raw = memoryStorage();
+      const preferences = preferenceStorage({ localStorage: raw });
+      preferences.setItem('theme', 'dark');
+      preferences.setItem('daysforth.saved.born', 'true');
+      const write = raw.setItem.bind(raw);
+      vi.spyOn(raw, 'setItem').mockImplementation((key, value) => {
+        if (
+          key === 'daysforth.saved.born' ||
+          (!writable && key === CONSENT_KEY && JSON.parse(value).allowed === false)
+        )
+          throw new Error('storage full');
+        write(key, value);
+      });
+      expect(recordConsent(raw, true)).toBe(false);
+      expect(consentChoice(raw)).toBe(false);
+      expect(preferences.getItem('daysforth.saved.born')).toBe('true');
+      expect(preferences.getItem('theme')).toBe('dark');
+      expect(JSON.parse(raw.getItem(CONSENT_KEY)!).allowed).toBe(!writable);
+      clearPreferences(raw);
+      expect(preferences.getItem('daysforth.saved.born')).toBeNull();
+      expect(preferences.getItem('theme')).toBeNull();
+      expect(raw.getItem('theme')).toBeNull();
+    },
+  );
 });
 function privacyFixture(
   raw = memoryStorage(),
@@ -146,14 +174,34 @@ describe('privacy choices', () => {
       'could not remember',
     );
   });
+
+  it('reports a failed grant promotion as off while keeping the existing page bookmark usable', () => {
+    const f = privacyFixture();
+    const preferences = preferenceStorage({ localStorage: f.raw });
+    preferences.setItem('daysforth.saved.born', 'true');
+    const write = f.raw.setItem.bind(f.raw);
+    vi.spyOn(f.raw, 'setItem').mockImplementation((key, value) => {
+      if (key === 'daysforth.saved.born') throw new Error('storage full');
+      write(key, value);
+    });
+    f.click('[data-storage-choice="yes"]');
+    expect(consentChoice(f.raw)).toBe(false);
+    expect(document.querySelector('[data-storage-status]')!.textContent).toBe(
+      'Optional storage is off.',
+    );
+    expect(document.querySelector('[data-storage-feedback]')!.textContent).toContain(
+      'could not remember your choice',
+    );
+    expect(preferences.getItem('daysforth.saved.born')).toBe('true');
+  });
   it('forgets a browser identity without requesting any aggregate reaction deletion', async () => {
     const f = privacyFixture(
       consentingStorage({ 'daysforth.visitor': '12345678-1234-4234-8234-123456789abc' }),
     );
     f.click('[data-forget-browser]');
     await vi.waitFor(() =>
-      expect(document.querySelector('[data-storage-feedback]')!.textContent).toContain(
-        'data cleared',
+      expect(document.querySelector('[data-storage-feedback]')!.textContent).toBe(
+        'Saved browser data cleared. Reaction counts stay.',
       ),
     );
     expect(f.fetcher).toHaveBeenCalledWith(
@@ -196,12 +244,61 @@ describe('privacy choices', () => {
       f.click('[data-forget-browser]');
       await vi.waitFor(() =>
         expect(document.querySelector('[data-storage-feedback]')!.textContent).toContain(
-          'could not be removed',
+          'removal could not be confirmed',
         ),
       );
       expect(f.raw.getItem('daysforth.visitor')).toBeNull();
     },
   );
+  it.each(['null', 'true', '{}', '{"forgotten":false}', '{"forgotten":"true"}', 'not JSON', ''])(
+    'requires a valid erasure acknowledgement instead of trusting a 200 body: %s',
+    async (body) => {
+      const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(body, { status: 200 }));
+      const f = privacyFixture(consentingStorage({ 'daysforth.visitor': 'id' }), fetcher);
+      f.click('[data-forget-browser]');
+      await vi.waitFor(() =>
+        expect(document.querySelector('[data-storage-feedback]')!.textContent).toContain(
+          'removal could not be confirmed',
+        ),
+      );
+      expect(f.raw.getItem('daysforth.visitor')).toBeNull();
+      expect(consentChoice(f.raw)).toBe(false);
+    },
+  );
+  it('bounds erasure acknowledgement body parsing with the same five-second deadline', async () => {
+    vi.useFakeTimers();
+    let body!: ReadableStreamDefaultController<Uint8Array>;
+    const response = new Response(
+      new ReadableStream<Uint8Array>({
+        start: (stream) => {
+          body = stream;
+        },
+      }),
+    );
+    const read = vi.spyOn(response, 'json');
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(response);
+    const f = privacyFixture(consentingStorage({ 'daysforth.visitor': 'id' }), fetcher);
+    f.click('[data-forget-browser]');
+    expect(f.raw.getItem('daysforth.visitor')).toBeNull();
+    expect(consentChoice(f.raw)).toBe(false);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(read).toHaveBeenCalledOnce();
+    const signal = fetcher.mock.calls[0]![1]!.signal!;
+    const feedback = document.querySelector('[data-storage-feedback]')!;
+    await vi.advanceTimersByTimeAsync(4999);
+    expect(signal.aborted).toBe(false);
+    expect(feedback.textContent).toContain('Checking');
+    await vi.advanceTimersByTimeAsync(1);
+    expect(signal.aborted).toBe(true);
+    expect(feedback.textContent).toContain('removal could not be confirmed');
+    expect(vi.getTimerCount()).toBe(0);
+    const expired = feedback.textContent;
+    body.enqueue(new TextEncoder().encode('{"forgotten":true}'));
+    body.close();
+    await read.mock.results[0]!.value;
+    expect(feedback.textContent).toBe(expired);
+  });
   it('clears browser choices immediately and bounds an unresponsive erasure request', async () => {
     vi.useFakeTimers();
     const fetcher = vi.fn<typeof fetch>().mockReturnValue(new Promise(() => {}));
@@ -220,7 +317,7 @@ describe('privacy choices', () => {
     expect(signal.aborted).toBe(false);
     await vi.advanceTimersByTimeAsync(1);
     expect(signal.aborted).toBe(true);
-    expect(feedback.textContent).toContain('could not be removed');
+    expect(feedback.textContent).toContain('removal could not be confirmed');
   });
   it('aborts erasure on disposal without allowing its late response to change feedback', async () => {
     vi.useFakeTimers();
@@ -243,10 +340,21 @@ describe('privacy choices', () => {
     const empty = privacyFixture();
     empty.click('[data-forget-browser]');
     expect(empty.fetcher).not.toHaveBeenCalled();
+    await vi.waitFor(() =>
+      expect(document.querySelector('[data-storage-feedback]')!.textContent).toBe(
+        'Saved browser data cleared. Reaction counts stay.',
+      ),
+    );
     empty.stop();
     const local = privacyFixture(consentingStorage({ 'daysforth.visitor': 'id' }), vi.fn(), '');
     local.click('[data-forget-browser]');
     expect(local.fetcher).not.toHaveBeenCalled();
+    await vi.waitFor(() =>
+      expect(document.querySelector('[data-storage-feedback]')!.textContent).toContain(
+        'removal could not be confirmed',
+      ),
+    );
+    expect(local.raw.getItem('daysforth.visitor')).toBeNull();
   });
 });
 describe('large photos', () => {

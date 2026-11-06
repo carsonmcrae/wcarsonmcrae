@@ -6,6 +6,8 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import manifest from '../../package.json' with { type: 'json' };
+import type { AstroIntegration } from 'astro';
 
 const dependencies = vi.hoisted(() => ({
   defineConfig: vi.fn((config: unknown) => config),
@@ -42,6 +44,7 @@ describe('Astro deployment configuration', () => {
       base: '/',
       trailingSlash: 'always',
       build: { format: 'directory' },
+      vite: { define: { __DAYSFORTH_RELEASE__: JSON.stringify(manifest.version) } },
       devToolbar: { enabled: false },
       security: {
         csp: { directives: expect.arrayContaining(["default-src 'self'", "object-src 'none'"]) },
@@ -49,6 +52,35 @@ describe('Astro deployment configuration', () => {
     });
     expect(dependencies.localFont).toHaveBeenCalledTimes(2);
     expect(dependencies.readFileSync).not.toHaveBeenCalled();
+    const integration = config
+      .integrations!.flat()
+      .filter((entry): entry is AstroIntegration => !!entry && !Array.isArray(entry))
+      .find((entry) => entry.name === 'daysforth:deferred-modules');
+    const updateConfig = vi.fn();
+    const setup = integration!.hooks['astro:build:setup']!;
+    const logger: Parameters<typeof setup>[0]['logger'] = {
+      options: { level: 'silent', destination: { write: vi.fn() } },
+      label: 'configuration fixture',
+      fork: () => logger,
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+      flush: vi.fn(),
+      close: vi.fn(),
+    };
+    await setup({ updateConfig, vite: {}, pages: new Map(), target: 'client', logger });
+    expect(updateConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ build: { modulePreload: false } }),
+    );
+    const group =
+      updateConfig.mock.lastCall![0].environments.client.build.rolldownOptions.output.codeSplitting
+        .groups[0];
+    expect(group).toMatchObject({ name: 'shell', tags: ['$initial'], entriesAware: false });
+    expect(group.test.test('/repo/src/lib/consent.ts')).toBe(true);
+    expect(group.test.test('C:\\repo\\src\\lib\\page-position.ts')).toBe(true);
+    expect(group.test.test('/repo/src/lib/photo-viewer.ts')).toBe(false);
+    expect(group.test.test('/repo/src/scripts/site.ts')).toBe(false);
     const filter = dependencies.sitemap.mock.lastCall![0].filter;
     expect(filter('https://wcarsonmcrae.com/')).toBe(true);
     expect(filter('https://wcarsonmcrae.com/404/')).toBe(false);

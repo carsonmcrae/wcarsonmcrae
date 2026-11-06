@@ -23,6 +23,7 @@ function setup(storage = consentingStorage(), endpoint = 'https://api.test') {
 afterEach(() => {
   clearPreferences(null);
   vi.restoreAllMocks();
+  vi.useRealTimers();
 });
 
 describe('shared reaction controller', () => {
@@ -30,7 +31,10 @@ describe('shared reaction controller', () => {
     const { controller, fetcher } = setup();
     fetcher.mockResolvedValueOnce(Response.json({ born: 7, 'photo-margot-1': 3 }));
     expect(await controller.load()).toEqual({ born: 7, 'photo-margot-1': 3 });
-    expect(fetcher).toHaveBeenCalledWith('https://api.test/reactions', { cache: 'no-store' });
+    expect(fetcher).toHaveBeenCalledWith('https://api.test/reactions', {
+      cache: 'no-store',
+      signal: expect.any(AbortSignal),
+    });
     fetcher.mockResolvedValueOnce(Response.json({ 'photo-margot-1': -1 }));
     await expect(controller.load()).rejects.toThrow('Invalid reaction counts');
   });
@@ -93,6 +97,18 @@ describe('shared reaction controller', () => {
     });
     expect(f.randomUUID).toHaveBeenCalledTimes(1);
     expect(f.storage.getItem('daysforth.visitor')).toBe(identity);
+  });
+  it('releases a stalled vote at its deadline so another deliberate activation can retry', async () => {
+    vi.useFakeTimers();
+    const f = setup();
+    f.fetcher.mockReturnValueOnce(new Promise(() => {}));
+    const pending = f.controller.react('born', 'heart');
+    expect(await f.controller.react('born', 'heart')).toEqual({ status: 'duplicate' });
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(await pending).toEqual({ status: 'failed' });
+    expect(f.controller.hasReacted('born', 'heart')).toBe(false);
+    expect(await f.controller.react('born', 'heart')).toMatchObject({ status: 'added' });
+    expect(f.randomUUID).toHaveBeenCalledTimes(1);
   });
 
   it('does not submit without an endpoint or writable identity storage', async () => {

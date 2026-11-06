@@ -6,6 +6,8 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
+import { releaseVersion } from './release-identity';
+
 export interface ReactionStatement {
   bind(...values: (string | number)[]): ReactionStatement;
   first<T>(): Promise<T | null>;
@@ -26,9 +28,10 @@ interface ReactionResponse {
   json: JsonResponse;
 }
 interface ReactionRoute {
-  kind: 'totals' | 'identity' | 'reaction';
+  kind: 'totals' | 'identity' | 'reaction' | 'health';
   postId?: string;
 }
+class ReactionIntegrityError extends Error {}
 async function hashIdentity(value: string, salt: string): Promise<string> {
   const digest = await crypto.subtle.digest(
     'SHA-256',
@@ -94,6 +97,7 @@ function responseContext(request: Request, env: ReactionEnvironment) {
     'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
     'X-Frame-Options': 'DENY',
     'Referrer-Policy': 'no-referrer',
+    'X-Daysforth-Release': releaseVersion,
   };
   const json: JsonResponse = (data, status = 200) =>
     new Response(JSON.stringify(data), { status, headers });
@@ -107,6 +111,7 @@ function responseContext(request: Request, env: ReactionEnvironment) {
 }
 function resolveRoute(request: Request, postIds: string[]): ReactionRoute | null {
   const path = new URL(request.url).pathname.replace(/\/$/, '');
+  if (path === '/health') return { kind: 'health' };
   if (path === '/identity') return { kind: 'identity' };
   if (path === '/reactions') return { kind: 'totals' };
   const postId = /^\/reactions\/([a-z0-9-]+)$/.exec(path)?.[1];
@@ -122,6 +127,8 @@ function validateMethod(
     headers['Allow'] = 'GET, POST, DELETE, OPTIONS';
     return json({ error: 'Method not allowed' }, 405);
   }
+  if (route.kind === 'health')
+    return method === 'GET' ? null : json({ error: 'Method not allowed' }, 405);
   if (route.kind === 'identity')
     return method === 'DELETE' ? null : json({ error: 'Method not allowed' }, 405);
   if (method === 'DELETE') return json({ error: 'Method not allowed' }, 405);
@@ -137,6 +144,25 @@ async function readCounts(db: ReactionDatabase, postIds: string[]) {
   for (const row of rows.results)
     if (postIds.includes(row.post_id)) counts[row.post_id] = row.count;
   return counts;
+}
+async function readHealth(db: ReactionDatabase, env: ReactionEnvironment, json: JsonResponse) {
+  if (!env.RATE_LIMIT_SALT || env.RATE_LIMIT_SALT.length < 32)
+    return json({ error: 'Reactions are unavailable', code: 'REACTIONS_CONFIGURATION' }, 503);
+  const schema = await db
+    .prepare(
+      `SELECT count(*) AS required,
+        (SELECT count(*) FROM sqlite_master WHERE name = 'reaction_removed') AS retired
+        FROM sqlite_master WHERE
+        (type = 'table' AND name IN ('reactions', 'reaction_totals', 'reaction_limits')) OR
+        (type = 'trigger' AND name = 'reaction_added') OR
+        (type = 'index' AND name IN ('reactions_visitor_hash', 'reaction_limits_expiry'))`,
+    )
+    .first<{ required: number; retired: number }>();
+  if (!schema || schema.required !== 6 || schema.retired !== 0)
+    return json({ error: 'Reactions are unavailable', code: 'REACTIONS_SCHEMA' }, 503);
+  // Exercise the read contract without scanning totals or returning any stored data.
+  await db.prepare('SELECT post_id, count FROM reaction_totals LIMIT 1').all();
+  return json({ status: 'ok', release: releaseVersion });
 }
 async function readVisitor(request: Request, json: JsonResponse): Promise<string | Response> {
   if (request.headers.get('Content-Type')?.split(';')[0]?.trim() !== 'application/json')
@@ -198,7 +224,7 @@ async function applyMutation(
     .prepare('SELECT count FROM reaction_totals WHERE post_id = ?')
     .bind(route.postId!)
     .first<{ count: number }>();
-  if (!total) throw new Error('Missing reaction total');
+  if (!total) throw new ReactionIntegrityError('Missing reaction total');
   return json({ count: total.count });
 }
 async function handleMutation(
@@ -211,7 +237,8 @@ async function handleMutation(
 ) {
   const { json } = reply;
   const salt = env.RATE_LIMIT_SALT;
-  if (!salt || salt.length < 32) return json({ error: 'Reactions are unavailable' }, 503);
+  if (!salt || salt.length < 32)
+    return json({ error: 'Reactions are unavailable', code: 'REACTIONS_CONFIGURATION' }, 503);
   const visitor = await readVisitor(request, json);
   if (visitor instanceof Response) return visitor;
   return applyMutation(request, route, db, salt, visitor, now, reply);
@@ -231,16 +258,20 @@ export async function handleReactions(
   if (invalidMethod) return invalidMethod;
   if (request.method !== 'GET' && !origin) return json({ error: 'Origin required' }, 403);
   const db = env.DB;
-  if (!db) return json({ error: 'Reactions are unavailable' }, 503);
+  if (!db)
+    return json({ error: 'Reactions are unavailable', code: 'REACTIONS_CONFIGURATION' }, 503);
   try {
+    if (route.kind === 'health') return await readHealth(db, env, json);
     if (request.method === 'GET') {
       const counts = await readCounts(db, postIds);
       headers['Cache-Control'] = 'public, max-age=15';
       return json(counts);
     }
     return await handleMutation(request, route, env, db, now, reply);
-  } catch {
-    return json({ error: 'Reactions are unavailable' }, 503);
+  } catch (error) {
+    const code =
+      error instanceof ReactionIntegrityError ? 'REACTIONS_INTEGRITY' : 'REACTIONS_STORAGE';
+    return json({ error: 'Reactions are unavailable', code }, 503);
   }
 }
 export async function cleanupReactionLimits(db: ReactionDatabase, now: number): Promise<void> {

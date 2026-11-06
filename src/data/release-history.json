@@ -1,5 +1,31 @@
 [
   {
+    "version": "1.1.2",
+    "date": "2026-11-06",
+    "title": "Steadier browsing when things go wrong",
+    "summary": "Keep reading and navigating through failed optional downloads, load better-sized feed photographs, and get clearer feedback when browser storage is unavailable.",
+    "sections": [
+      {
+        "id": "reliability",
+        "title": "More dependable controls",
+        "items": [
+          "Keep ordinary photo links and navigation usable when an optional control cannot load.",
+          "Find the focused Skip to content link above the header.",
+          "Get an honest result when browser settings prevent preferences from being cleared.",
+          "Recover from stalled reaction requests without leaving the control waiting indefinitely."
+        ]
+      },
+      {
+        "id": "performance",
+        "title": "Lighter browsing",
+        "items": [
+          "Download feed images suited to their visible size in supporting browsers.",
+          "Browse with less repeated work in the desktop moment navigator and leaner page markup."
+        ]
+      }
+    ]
+  },
+  {
     "version": "1.1.1",
     "date": "2026-11-05",
     "title": "A clearer profile and easier page navigation",

@@ -14,7 +14,7 @@ afterEach(() => disposeDocument(stops));
 
 function fixture() {
   document.body.innerHTML =
-    '<header class="site-header"></header><section data-timeline data-view="timeline"><div class="timeline-dock"></div><div data-timeline-groups><article data-moment="one" data-date="2026-10"><h3><a>First October moment</a></h3></article><article data-moment="two" data-date="2026-10"><h3><a>Second October moment</a></h3></article><article data-moment="three" data-date="2022-05"><h3><a>Older moment</a></h3></article></div></section><nav data-moment-navigator hidden><button data-moment-rail aria-expanded="false"><span data-moment-ticks></span></button><div data-moment-previews hidden><ol data-moment-links></ol></div></nav><button id="outside">Outside</button>';
+    '<header class="site-header"></header><section data-timeline data-view="timeline"><div class="timeline-dock"></div><div data-timeline-groups><article class="post-card" id="moment-one"><time datetime="2026-10"></time><h3><a>First October moment</a></h3></article><article class="post-card" id="moment-two"><time datetime="2026-10"></time><h3><a>Second October moment</a></h3></article><article class="post-card" id="moment-three"><time datetime="2022-05"></time><h3><a>Older moment</a></h3></article></div></section><nav data-moment-navigator hidden><button data-moment-rail aria-expanded="false"><span data-moment-ticks></span></button><div data-moment-previews hidden><ol data-moment-links></ol></div></nav><button id="outside">Outside</button>';
   const root = document.querySelector<HTMLElement>('[data-timeline]')!;
   const groups = document.querySelector<HTMLElement>('[data-timeline-groups]')!;
   const widget = document.querySelector<HTMLElement>('[data-moment-navigator]')!;
@@ -39,12 +39,39 @@ function fixture() {
   vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(800);
   const desktop = fakeMediaQuery(true);
   vi.spyOn(window, 'matchMedia').mockReturnValue(desktop as unknown as MediaQueryList);
+  let pending: FrameRequestCallback | undefined;
+  const request = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+    pending = callback;
+    return 1;
+  });
+  const cancel = vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {
+    pending = undefined;
+  });
+  const flush = () => {
+    const callback = pending!;
+    pending = undefined;
+    callback(0);
+  };
   const stop = initMomentNavigator(document, window);
   stops.push(stop);
   const links = () => Array.from(widget.querySelectorAll<HTMLAnchorElement>('a'));
   const press = (key: string) =>
     widget.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
-  return { root, groups, widget, rail, panel, desktop, geometry, stop, links, press };
+  return {
+    root,
+    groups,
+    widget,
+    rail,
+    panel,
+    desktop,
+    geometry,
+    stop,
+    links,
+    press,
+    flush,
+    request,
+    cancel,
+  };
 }
 
 it('initializes harmlessly without the timeline or its optional rail', () => {
@@ -68,6 +95,7 @@ it('keeps each rendered same-month moment distinct and follows the visible card'
   expect(f.links()[0]!.getAttribute('aria-current')).toBe('true');
   f.geometry.cardBottoms[0] = 200;
   window.dispatchEvent(new Event('scroll'));
+  f.flush();
   expect(f.links()[1]!.getAttribute('aria-current')).toBe('true');
   expect(f.widget.querySelectorAll('[data-active="true"]')).toHaveLength(1);
   f.geometry.cardTops = [900, 920, 940];
@@ -75,6 +103,7 @@ it('keeps each rendered same-month moment distinct and follows the visible card'
   expect(f.widget.querySelectorAll('[aria-current="true"]')).toHaveLength(0);
   f.geometry.cardBottoms = [0, 0, 0];
   window.dispatchEvent(new Event('resize'));
+  f.flush();
   f.rail.click();
   expect(document.activeElement).toBe(f.links()[0]);
 });
@@ -164,7 +193,8 @@ it('rebuilds after filters and removes every observer/listener when disposed', a
   f.rail.dispatchEvent(new PointerEvent('pointermove'));
   f.press('ArrowDown');
   f.stop();
-  f.groups.innerHTML = '<article data-moment="new" data-date="2026-11"><h3>New</h3></article>';
+  f.groups.innerHTML =
+    '<article class="post-card" id="moment-new"><time datetime="2026-11"></time><h3>New</h3></article>';
   f.desktop.change(true);
   window.dispatchEvent(new Event('scroll'));
   expect(f.widget.hidden).toBe(true);
@@ -186,6 +216,41 @@ it('keeps preview nodes and focus when reaction text or card actions hydrate', a
   expect(document.activeElement).toBe(original);
 });
 
+it('coalesces native viewport events and mutates only a changed reading position', () => {
+  const f = fixture();
+  const measure = vi.spyOn(f.groups, 'getBoundingClientRect');
+  const links = f.links();
+  const writes = links.map((link) => vi.spyOn(link, 'setAttribute'));
+  const first = f.groups.firstElementChild!;
+  const cardMeasure = vi.spyOn(first, 'getBoundingClientRect');
+  measure.mockClear();
+  cardMeasure.mockClear();
+  for (let index = 0; index < 100; index++) {
+    window.dispatchEvent(new Event('scroll'));
+    window.dispatchEvent(new Event('resize'));
+  }
+  expect(f.request).toHaveBeenCalledOnce();
+  expect(measure).not.toHaveBeenCalled();
+  f.flush();
+  expect(measure).toHaveBeenCalledOnce();
+  expect(cardMeasure).toHaveBeenCalledOnce();
+  expect(writes.every((write) => write.mock.calls.length === 0)).toBe(true);
+  f.geometry.cardBottoms[0] = 200;
+  window.dispatchEvent(new Event('scroll'));
+  f.flush();
+  expect(writes[0]).toHaveBeenCalledExactlyOnceWith('aria-current', 'false');
+  expect(writes[1]).toHaveBeenCalledExactlyOnceWith('aria-current', 'true');
+  expect(writes[2]).not.toHaveBeenCalled();
+  f.desktop.change(false);
+  measure.mockClear();
+  window.dispatchEvent(new Event('scroll'));
+  f.flush();
+  expect(measure).not.toHaveBeenCalled();
+  window.dispatchEvent(new Event('scroll'));
+  f.stop();
+  expect(f.cancel).toHaveBeenCalledExactlyOnceWith(1);
+});
+
 it('previews top/middle/bottom ticks without changing the current item or scrolling the document', () => {
   const f = fixture();
   vi.spyOn(f.panel, 'clientHeight', 'get').mockReturnValue(70);
@@ -199,6 +264,10 @@ it('previews top/middle/bottom ticks without changing the current item or scroll
   expect(f.links()[2]!.dataset['preview']).toBe('true');
   expect(f.links()[0]!.getAttribute('aria-current')).toBe('true');
   expect(f.panel.scrollTop).toBe(110);
+  const measure = vi.spyOn(f.links()[2]!, 'offsetTop', 'get');
+  measure.mockClear();
+  move(399);
+  expect(measure).not.toHaveBeenCalled();
   move(250);
   expect(f.links()[1]!.dataset['preview']).toBe('true');
   expect(f.panel.scrollTop).toBe(60);

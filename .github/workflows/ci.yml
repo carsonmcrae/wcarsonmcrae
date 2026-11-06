@@ -59,6 +59,8 @@ jobs:
     name: Built site (root and project path)
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    env:
+      SOURCE_COMMIT: ${{ github.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/node-deps
@@ -72,6 +74,7 @@ jobs:
     timeout-minutes: 30
     env:
       PUBLIC_REACTIONS_URL: https://reactions.daysforth.test
+      SOURCE_COMMIT: ${{ github.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/node-deps

@@ -54,6 +54,12 @@ lockfiles, and images are exempt. `npm run check:repo` enforces the shape; revie
   traversing history. A readiness marker or completed click dispatch does not acknowledge a deferred
   mutation. Reuse the native-event helpers; retain real input and state/focus assertions rather than
   adding sleeps, synthetic intent events, or weaker expectations.
+- Built script budgets follow the complete emitted eager module graph, not only script-tag entry
+  stubs; deferred edges must also resolve. Verify actual initial and conditional request waterfalls
+  when changing loading boundaries. Framework configuration must be checked in emitted output.
+- Published image reaction IDs remain supported after presentation retires. Append to
+  `src/data/published-image-reactions.json`; `check:release` rejects removing reviewed base entries.
+  New targets still require a compatible Worker before site publication.
 
 ### Prevent recurring scan findings
 

@@ -10,6 +10,7 @@ import { preferenceStorage } from './consent';
 import { loadReactionCounts, submitReaction } from './reaction-api';
 import { reactionKey } from './reaction-keys';
 import { readItem, writeItem, type StorageLike } from './storage';
+import { hasStoredReaction } from './reaction-choice';
 
 interface ReactionWindow {
   localStorage: Storage;
@@ -35,7 +36,7 @@ export function createReactionController(
   const pending = new Set<string>();
   const successful = new Map<string, string>();
   const hasReacted = (id: string, kind: ReactionKind) =>
-    readItem(storage, `daysforth.reacted.${reactionKey(id, kind)}`) === 'true' ||
+    hasStoredReaction(storage, id, kind) ||
     successful.get(reactionKey(id, kind)) === readItem(storage, 'daysforth.visitor');
   return {
     storage,

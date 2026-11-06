@@ -98,7 +98,10 @@ it('composes thumbnail selection, announcements and photo-specific totals withou
   const thumbnails = [...f.dialog.querySelectorAll<HTMLButtonElement>('[data-photo-strip] button')];
   const total = f.dialog.querySelector('[data-photo-reaction-count]')!;
   await vi.waitFor(() => expect(total.textContent).toBe('4'));
-  expect(fetch).toHaveBeenCalledWith('https://api.test/reactions', { cache: 'no-store' });
+  expect(fetch).toHaveBeenCalledWith('https://api.test/reactions', {
+    cache: 'no-store',
+    signal: expect.any(AbortSignal),
+  });
   thumbnails[0]!.dispatchEvent(
     new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }),
   );

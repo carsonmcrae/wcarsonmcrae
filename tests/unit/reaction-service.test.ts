@@ -185,7 +185,9 @@ describe('abuse limits and resilience', () => {
       (await handleReactions(vote(), { ...env, RATE_LIMIT_SALT: 'short' }, ids, now)).status,
     ).toBe(503);
     database.sqlite.exec('DROP TRIGGER reaction_added');
-    expect((await handleReactions(vote(), env, ids, now)).status).toBe(503);
+    const integrity = await handleReactions(vote(), env, ids, now);
+    expect(integrity.status).toBe(503);
+    expect(await integrity.json()).toMatchObject({ code: 'REACTIONS_INTEGRITY' });
     vi.spyOn(database.db, 'prepare').mockImplementation(() => {
       throw new Error('offline');
     });

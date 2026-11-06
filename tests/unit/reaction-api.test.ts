@@ -5,13 +5,15 @@
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   loadReactionCounts,
   reactionEndpoint,
   reactionOrigin,
   submitReaction,
 } from '../../src/lib/reaction-api';
+
+afterEach(() => vi.useRealTimers());
 
 describe('reaction endpoint', () => {
   it('supports an unset endpoint, HTTPS, and loopback development', () => {
@@ -50,6 +52,7 @@ describe('count and vote contracts', () => {
     });
     expect(fetcher).toHaveBeenLastCalledWith('https://api.example.com/reactions', {
       cache: 'no-store',
+      signal: expect.any(AbortSignal),
     });
     expect(await submitReaction('https://api.example.com', 'a/b', 'visitor', fetcher)).toBe(4);
     expect(fetcher).toHaveBeenLastCalledWith(
@@ -88,5 +91,40 @@ describe('count and vote contracts', () => {
         vi.fn<typeof fetch>().mockResolvedValue(Response.json({})),
       ),
     ).rejects.toThrow(/Invalid/);
+  });
+  it('bounds stalled headers even when the transport ignores abort, then permits another attempt', async () => {
+    vi.useFakeTimers();
+    const fetcher = vi.fn<typeof fetch>().mockReturnValueOnce(new Promise(() => {}));
+    const pending = loadReactionCounts('https://api.example.com', fetcher);
+    const outcome = expect(pending).rejects.toMatchObject({ name: 'REACTIONS_DEADLINE' });
+    await vi.advanceTimersByTimeAsync(4999);
+    const signal = fetcher.mock.calls[0]![1]!.signal!;
+    expect(signal.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await outcome;
+    expect(signal.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+    fetcher.mockResolvedValueOnce(Response.json({ born: 4 }));
+    expect(await loadReactionCounts('https://api.example.com', fetcher)).toEqual({ born: 4 });
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it('includes stalled body consumption in the vote deadline and clears timers on rejection', async () => {
+    vi.useFakeTimers();
+    let close!: () => void;
+    const body = new ReadableStream({
+      start(controller) {
+        close = () => controller.close();
+      },
+    });
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValueOnce(new Response(body));
+    const pending = submitReaction('https://api.example.com', 'born', 'visitor', fetcher);
+    const outcome = expect(pending).rejects.toMatchObject({ name: 'REACTIONS_DEADLINE' });
+    await vi.advanceTimersByTimeAsync(5000);
+    await outcome;
+    close();
+    expect(vi.getTimerCount()).toBe(0);
+    fetcher.mockRejectedValueOnce(new Error('offline'));
+    await expect(loadReactionCounts('https://api.example.com', fetcher)).rejects.toThrow('offline');
+    expect(vi.getTimerCount()).toBe(0);
   });
 });

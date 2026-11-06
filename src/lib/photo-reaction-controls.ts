@@ -8,6 +8,7 @@
 import { createReactionController } from './reaction-controller';
 import { reactionKey } from './reaction-keys';
 import { reactions, type ReactionKind } from '../data/reactions';
+import { readItem } from './storage';
 
 export function initPhotoReactionControls(
   dialog: HTMLDialogElement,
@@ -68,13 +69,15 @@ export function initPhotoReactionControls(
     const key = reactionKey(id, kind);
     pending.add(key);
     paint();
-    const result = await controller.react(id, kind);
+    const vote = controller.react(id, kind);
+    const visitor = readItem(controller.storage, 'daysforth.visitor');
+    const result = await vote;
     pending.delete(key);
     if (!alive) return;
     if (result.status === 'added') {
       counts[key] = Math.max(counts[key] ?? 0, result.count);
     }
-    if (id === selected) {
+    if (id === selected && visitor === readItem(controller.storage, 'daysforth.visitor')) {
       const messages = {
         added: 'Reaction added. It stays with this photo.',
         duplicate: 'You’ve already added this reaction.',

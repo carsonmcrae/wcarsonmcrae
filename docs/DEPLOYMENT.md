@@ -100,6 +100,27 @@ limitations recorded.
 
 ## Rollback
 
+For prepared 1.1.2 output, each document's `daysforth-build` meta value and `/build.json` carry the
+package version and full `SOURCE_COMMIT`. The deployment workflow supplies its reviewed Git SHA;
+unattributed local builds explicitly say `local`. Fetch the receipt with cache revalidation and
+compare both the receipt and affected HTML when investigating stale documents. GitHub Pages owns
+HTTP caching and compression; an endpoint's generated Response headers cannot configure Pages.
+A successful build, source tag or receipt alone does not prove which release is currently live.
+
+The Worker adds an independent read-only schema health check and validated serving-artifact UUID.
+Keep its provider version/source receipt separate from the site's SHA. Follow the
+[reaction operations guide](../workers/reactions/OPERATIONS.md) for health limits, cron evidence,
+backups, synthetic restore rehearsal and compatible rollback. Request logging remains disabled.
+
+To diagnose a stale optional chunk, record the HTML build identity, component, stable local code
+and coarse status/timing. Follow the native fallback or reload the current page. Do not capture
+history URLs/query strings, preference values, visitor IDs or request bodies. Reproduce from the
+exact source with locked dependencies and deployment base/configuration. Source maps are not
+published by this change; minified/native stack symbolication remains limited. If reproduction
+proves insufficient, prepare hidden maps as an access-controlled build artifact keyed by exact SHA,
+with a short approved retention and no sourceMappingURL in delivered assets. Review that workflow
+before enabling it. Local console diagnostics are not remote error reporting or availability alerts.
+
 Revert the release commit on main or unpublish Pages. Restore prior records from the saved inventories
 if needed. Before moving authoritative DNS away from Cloudflare, remove the DS record at GoDaddy and
 wait for its cached delegation to expire, then change nameservers. Never disable signing while the

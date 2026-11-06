@@ -11,9 +11,10 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { resolveDeployConfig } from './src/lib/deploy-config.ts';
-import { reactionOrigin } from './src/lib/reaction-api.ts';
+import { reactionOrigin } from './src/lib/reaction-endpoint.ts';
 import { readFileSync } from 'node:fs';
 import { postAliases } from './src/data/post-aliases.ts';
+import manifest from './package.json' with { type: 'json' };
 
 const { site, base } = resolveDeployConfig(process.env);
 
@@ -23,8 +24,7 @@ export default defineConfig({
   trailingSlash: 'always',
   // Browser tests use HTTPS so WebKit can exercise the unchanged production CSP.
   vite: {
-    // Optional dialogs load on intent; avoid a preload runtime for those tiny chunks.
-    build: { modulePreload: false },
+    define: { __DAYSFORTH_RELEASE__: JSON.stringify(manifest.version) },
     preview: {
       strictPort: true,
       ...(process.env['E2E_TLS_KEY'] && process.env['E2E_TLS_CERT']
@@ -42,6 +42,37 @@ export default defineConfig({
     format: 'directory',
   },
   integrations: [
+    {
+      name: 'daysforth:deferred-modules',
+      hooks: {
+        // Apply after Astro assembles its managed Vite build configuration.
+        'astro:build:setup': ({ updateConfig }) => {
+          updateConfig({
+            build: { modulePreload: false },
+            environments: {
+              client: {
+                build: {
+                  rolldownOptions: {
+                    output: {
+                      codeSplitting: {
+                        groups: [
+                          {
+                            name: 'shell',
+                            tags: ['$initial'],
+                            test: /[\\/]src[\\/]lib[\\/](?:consent|storage|deferred-controls|click-intent|browser-diagnostics|release-identity|reaction-endpoint|page-position)\.ts$/,
+                            entriesAware: false,
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          });
+        },
+      },
+    },
     sitemap({
       filter: (page) =>
         !/\/404\/?$/.test(page) &&

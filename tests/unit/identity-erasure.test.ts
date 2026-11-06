@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { createHash, randomUUID } from 'node:crypto';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   cleanupReactionLimits,
   handleReactions,
@@ -26,7 +26,10 @@ beforeEach(() => {
     RATE_LIMIT_SALT: 'test-only-erasure-salt-at-least-32-characters',
   };
 });
-afterEach(() => database.sqlite.close());
+afterEach(() => {
+  database.sqlite.close();
+  vi.restoreAllMocks();
+});
 
 async function react(visitorId: string, time = now) {
   const request = new Request('https://reactions.example.com/reactions/born', {
@@ -97,5 +100,36 @@ describe('bounded identity erasure', () => {
     expect(
       database.sqlite.prepare('SELECT count FROM reaction_totals WHERE post_id = ?').get('born'),
     ).toMatchObject({ count: 21 });
+  });
+
+  it('documents a late accepted POST after DELETE without claiming atomic erasure', async () => {
+    const inserted = Promise.withResolvers<void>();
+    const release = Promise.withResolvers<void>();
+    const prepare = database.db.prepare.bind(database.db);
+    vi.spyOn(database.db, 'prepare').mockImplementation((sql) => {
+      const statement = prepare(sql);
+      if (!sql.startsWith('INSERT OR IGNORE INTO reactions')) return statement;
+      return {
+        ...statement,
+        async run() {
+          inserted.resolve();
+          await release.promise;
+          return statement.run();
+        },
+      };
+    });
+    const visitor = randomUUID();
+    const post = react(visitor);
+    await inserted.promise;
+    expect(await (await erase(visitor)).json()).toEqual({ forgotten: true });
+    expect(database.sqlite.prepare('SELECT * FROM reactions').all()).toHaveLength(0);
+    release.resolve();
+    expect((await post).status).toBe(200);
+    expect(database.sqlite.prepare('SELECT * FROM reactions').all()).toHaveLength(1);
+    await cleanupReactionLimits(database.db, now + 91 * 86400000);
+    expect(database.sqlite.prepare('SELECT * FROM reactions').all()).toHaveLength(0);
+    expect(database.sqlite.prepare('SELECT count FROM reaction_totals').get()).toMatchObject({
+      count: 1,
+    });
   });
 });

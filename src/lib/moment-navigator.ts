@@ -7,9 +7,15 @@
  */
 import { dateLabel } from './timeline-dates';
 import { readTimelineViewport } from './timeline-viewport';
+import { readMomentCards, type MomentCard } from './timeline-render';
 type NavigatorWindow = Pick<
   Window,
-  'innerHeight' | 'matchMedia' | 'addEventListener' | 'removeEventListener'
+  | 'innerHeight'
+  | 'matchMedia'
+  | 'addEventListener'
+  | 'removeEventListener'
+  | 'requestAnimationFrame'
+  | 'cancelAnimationFrame'
 >;
 
 function previewIndex(key: string, current: number, length: number): number | null {
@@ -37,22 +43,27 @@ export function initMomentNavigator(doc: Document, win: NavigatorWindow): () => 
   const tickList = widget.querySelector<HTMLElement>('[data-moment-ticks]')!;
   const groups = root.querySelector<HTMLElement>('[data-timeline-groups]')!;
   const desktop = win.matchMedia('(min-width: 70rem)');
-  let cards: HTMLElement[] = [];
+  let cards: MomentCard[] = [];
   let links: HTMLAnchorElement[] = [];
   let ticks: HTMLElement[] = [];
-  let active = 0;
+  let active = -1;
+  let preview = -1;
+  let frame: number | undefined;
   const clearPreview = () => {
-    for (const element of [...links, ...ticks]) delete element.dataset['preview'];
+    if (preview < 0) return;
+    delete links[preview]!.dataset['preview'];
+    delete ticks[preview]!.dataset['preview'];
+    preview = -1;
   };
   const close = () => {
-    panel.hidden = true;
-    rail.setAttribute('aria-expanded', 'false');
+    if (!panel.hidden) panel.hidden = true;
+    if (rail.getAttribute('aria-expanded') !== 'false') rail.setAttribute('aria-expanded', 'false');
     clearPreview();
   };
   const open = () => {
     if (widget.hidden) return;
-    panel.hidden = false;
-    rail.setAttribute('aria-expanded', 'true');
+    if (panel.hidden) panel.hidden = false;
+    if (rail.getAttribute('aria-expanded') !== 'true') rail.setAttribute('aria-expanded', 'true');
   };
   const focus = (index: number) => {
     open();
@@ -68,48 +79,64 @@ export function initMomentNavigator(doc: Document, win: NavigatorWindow): () => 
     else if (bottom > panel.scrollTop + panel.clientHeight)
       panel.scrollTop = bottom - panel.clientHeight;
   };
+  const setHidden = (hidden: boolean) => {
+    if (widget.hidden !== hidden) widget.hidden = hidden;
+    if (hidden) close();
+  };
+  const setCurrent = (index: number, current: boolean) => {
+    if (index < 0) return;
+    links[index]!.setAttribute('aria-current', String(current));
+    ticks[index]!.dataset['active'] = String(current);
+  };
   const update = () => {
-    const viewport = readTimelineViewport(root, win);
-    widget.hidden =
-      !desktop.matches ||
-      root.dataset['view'] !== 'timeline' ||
-      !viewport.inside ||
-      cards.length === 0;
-    if (widget.hidden) {
-      close();
+    if (!desktop.matches || root.dataset['view'] !== 'timeline' || cards.length === 0) {
+      setHidden(true);
       return;
     }
-    active = cards.findIndex((card) => {
-      const bounds = card.getBoundingClientRect();
+    const viewport = readTimelineViewport(root, win);
+    setHidden(!viewport.inside);
+    if (!viewport.inside) return;
+    const next = cards.findIndex((card) => {
+      const bounds = card.element.getBoundingClientRect();
       return bounds.bottom > viewport.readingTop && bounds.top < win.innerHeight;
     });
-    links.forEach((link, index) => link.setAttribute('aria-current', String(index === active)));
-    ticks.forEach((tick, index) => {
-      tick.dataset['active'] = String(index === active);
+    if (next === active) return;
+    setCurrent(active, false);
+    setCurrent(next, true);
+    active = next;
+  };
+  const schedule = () => {
+    frame ??= win.requestAnimationFrame(() => {
+      frame = undefined;
+      update();
     });
   };
   const rebuild = () => {
-    cards = Array.from(groups.querySelectorAll<HTMLElement>('[data-moment]'));
+    cards = readMomentCards(groups);
     links = [];
     ticks = [];
+    active = -1;
+    preview = -1;
     list.replaceChildren();
     tickList.replaceChildren();
     for (const card of cards) {
-      const id = card.dataset['moment']!;
+      const id = card.id;
       const link = doc.createElement('a');
       link.href = `#moment-${id}`;
-      link.dataset['jumpDate'] = card.dataset['date']!;
+      link.dataset['jumpDate'] = card.date;
       link.dataset['jumpMoment'] = id;
       link.tabIndex = 0;
+      link.setAttribute('aria-current', 'false');
       const title = doc.createElement('strong');
-      title.textContent = card.querySelector('h3')!.textContent.trim();
+      title.textContent = card.element.querySelector('h3')!.textContent.trim();
       const date = doc.createElement('span');
-      date.textContent = dateLabel(card.dataset['date']!);
+      date.textContent = dateLabel(card.date);
       link.append(title, date);
       const item = doc.createElement('li');
       item.append(link);
       list.append(item);
       const tick = doc.createElement('span');
+      tick.dataset['active'] = 'false';
       tickList.append(tick);
       links.push(link);
       ticks.push(tick);
@@ -130,12 +157,11 @@ export function initMomentNavigator(doc: Document, win: NavigatorWindow): () => 
     if (widget.hidden || links.length === 0) return;
     open();
     const index = pointerIndex(event);
-    links.forEach((link, item) => {
-      link.dataset['preview'] = String(item === index);
-    });
-    ticks.forEach((tick, item) => {
-      tick.dataset['preview'] = String(item === index);
-    });
+    if (index === preview) return;
+    clearPreview();
+    links[index]!.dataset['preview'] = 'true';
+    ticks[index]!.dataset['preview'] = 'true';
+    preview = index;
     revealRow(index);
   };
   const clickRail = (event: MouseEvent) => {
@@ -192,12 +218,13 @@ export function initMomentNavigator(doc: Document, win: NavigatorWindow): () => 
   doc.addEventListener('click', outside);
   doc.addEventListener('toggle', update, true);
   doc.addEventListener('daysforth:history', update);
-  win.addEventListener('scroll', update, { passive: true });
-  win.addEventListener('resize', update);
+  win.addEventListener('scroll', schedule, { passive: true });
+  win.addEventListener('resize', schedule);
   desktop.addEventListener('change', update);
   rebuild();
   return () => {
     observer.disconnect();
+    if (frame !== undefined) win.cancelAnimationFrame(frame);
     rail.removeEventListener('click', clickRail);
     rail.removeEventListener('pointermove', move);
     rail.removeEventListener('pointerleave', clearPreview);
@@ -210,8 +237,8 @@ export function initMomentNavigator(doc: Document, win: NavigatorWindow): () => 
     doc.removeEventListener('click', outside);
     doc.removeEventListener('toggle', update, true);
     doc.removeEventListener('daysforth:history', update);
-    win.removeEventListener('scroll', update);
-    win.removeEventListener('resize', update);
+    win.removeEventListener('scroll', schedule);
+    win.removeEventListener('resize', schedule);
     desktop.removeEventListener('change', update);
     widget.hidden = true;
     close();

@@ -35,19 +35,19 @@
 .photo-gallery--preview > li {
   position: relative;
 }
-.js .photo-gallery--preview > li:nth-child(n + 4) {
+.js:not([data-photo-fallback]) .photo-gallery--preview > li:nth-child(n + 4) {
   display: none;
 }
-.js .photo-gallery--after-cover > li:nth-child(4) {
+.js:not([data-photo-fallback]) .photo-gallery--after-cover > li:nth-child(4) {
   display: list-item;
 }
-.js .photo-gallery--after-cover > li:first-child {
+.js:not([data-photo-fallback]) .photo-gallery--after-cover > li:first-child {
   display: none;
 }
 .album-preview__remaining {
   display: none;
 }
-.js .album-preview__remaining {
+.js:not([data-photo-fallback]) .album-preview__remaining {
   display: block;
   position: absolute;
   right: 0.4rem;

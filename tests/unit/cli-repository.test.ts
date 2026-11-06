@@ -61,7 +61,12 @@ describe('release CLI', () => {
       return 'docs/architecture/new.md\n';
     });
     await import('../../scripts/check-release.ts');
-    expect(io.git.mock.calls.map((call) => call[1][0])).toEqual(['ls-tree', 'diff', 'ls-files']);
+    expect(io.git.mock.calls.map((call) => call[1][0])).toEqual([
+      'ls-tree',
+      'ls-tree',
+      'diff',
+      'ls-files',
+    ]);
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exitCode).toBeUndefined();
   });
@@ -110,6 +115,20 @@ describe('release CLI', () => {
     );
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exitCode).toBeUndefined();
+  });
+  it('rejects removing an image identity accepted by the reviewed base', async () => {
+    vi.stubEnv('RELEASE_BASE_SHA', 'reviewed-base');
+    io.read.mockReturnValue(lock());
+    io.git.mockImplementation((_command, args: string[]) => {
+      if (args[0] === 'ls-tree') return args[3];
+      if (args[0] === 'show' && args[1]?.endsWith('published-image-reactions.json'))
+        return JSON.stringify(['photo-retired-fixture']);
+      if (args[0] === 'show') return JSON.stringify({ version: '1.0.0' });
+      return '';
+    });
+    await import('../../scripts/check-release.ts');
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('photo-retired-fixture'));
+    expect(process.exitCode).toBe(1);
   });
 });
 

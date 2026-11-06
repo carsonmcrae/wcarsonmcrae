@@ -98,6 +98,46 @@ describe('THEME_BOOTSTRAP_SCRIPT', () => {
     expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
   });
 
+  it('restores the native shell for a failed initial module, but preserves unrelated enhancements after readiness', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    delete document.documentElement.dataset['siteReady'];
+    run();
+    const image = document.createElement('img');
+    const script = document.createElement('script');
+    script.type = 'module';
+    document.body.append(image, script);
+    image.dispatchEvent(new Event('error'));
+    expect(document.documentElement.classList.contains('js')).toBe(true);
+    document.documentElement.dataset['timelineRestore'] = '';
+    script.dispatchEvent(new Event('error'));
+    expect(document.documentElement.classList.contains('js')).toBe(false);
+    expect(document.documentElement.hasAttribute('data-timeline-restore')).toBe(false);
+    run();
+    document.documentElement.dataset['siteReady'] = 'true';
+    script.dispatchEvent(new Event('error'));
+    expect(document.documentElement.classList.contains('js')).toBe(true);
+    delete document.documentElement.dataset['siteReady'];
+    vi.restoreAllMocks();
+  });
+
+  it('falls back only the unready timeline when another initial module fails after shell readiness', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    document.body.innerHTML = '<section data-timeline></section><script type="module"></script>';
+    document.documentElement.dataset['siteReady'] = 'true';
+    delete document.documentElement.dataset['timelineReady'];
+    run();
+    document.querySelector('script')!.dispatchEvent(new Event('error'));
+    expect(document.documentElement.classList.contains('js')).toBe(true);
+    expect(document.documentElement.hasAttribute('data-timeline-fallback')).toBe(true);
+    delete document.documentElement.dataset['timelineFallback'];
+    document.documentElement.dataset['timelineReady'] = 'true';
+    document.querySelector('script')!.dispatchEvent(new Event('error'));
+    expect(document.documentElement.hasAttribute('data-timeline-fallback')).toBe(false);
+    delete document.documentElement.dataset['siteReady'];
+    delete document.documentElement.dataset['timelineReady'];
+    vi.restoreAllMocks();
+  });
+
   it('applies a saved theme before paint', () => {
     localStorage.setItem(
       CONSENT_KEY,

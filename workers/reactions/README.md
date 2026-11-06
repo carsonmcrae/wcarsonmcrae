@@ -4,9 +4,13 @@ A small Cloudflare Worker with D1 persistence. The site itself is a static GitHu
 Use the Workers Free plan and D1’s free allowance; do not enable a paid plan or automatic upgrades.
 An outage or quota limit leaves the feed, Save, and Copy link usable.
 
+Use the [operations and recovery runbook](OPERATIONS.md) for release attribution, safe failure codes,
+read-only health, scheduled cleanup verification, growth measurements and guarded recovery.
+
 ## Contract
 
 - `GET /reactions` returns a count for each approved moment/image reaction key.
+- `GET /health` probes schema/configuration/read readiness without writing reactions or returning data.
 - `POST /reactions/<id>` accepts `{ "visitorId": "<browser UUID>" }` and returns `{ "count": 1 }`.
 - Reactions are permanent. `DELETE /reactions/<id>` returns 405.
 - `DELETE /identity` accepts the same UUID and removes its deduplication records without changing
@@ -34,8 +38,9 @@ An outage or quota limit leaves the feed, Save, and Copy link usable.
 The implementation lives in `src/lib/reaction-service.ts`; the Worker entry only supplies bindings
 and the pure `src/data/reaction-targets.ts` allowlist. That registry derives image IDs from approved
 content rather than every file in the asset directory, and preserves published moment aliases.
-Published image stems are permanent identities: retain retired image IDs in the registry if their
-presentation is removed, and never repurpose an existing ID for a different photograph. Unit tests
+Published image stems are permanent identities: the append-only `published-image-reactions.json`
+registry retains published keys independently of presentation. Never repurpose an existing ID for a
+different photograph. Unit tests
 execute the real migrations and queries against in-memory SQLite.
 
 The browser's `reaction-controller.ts` shares identity, consent-gated choices, validated requests,

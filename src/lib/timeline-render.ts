@@ -1,6 +1,6 @@
 /**
  * Purpose: Reuses server-rendered cards when a visitor changes timeline presentation.
- * Scope: Reads trusted card metadata, groups visible cards, and exposes expandable period clusters.
+ * Scope: Reads permanent card IDs and semantic dates, groups visible cards, and exposes period clusters.
  * Does NOT belong: URL state, events, content, or social actions.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -11,10 +11,10 @@ export interface MomentCard extends Moment {
 }
 
 export function readMomentCards(root: ParentNode): MomentCard[] {
-  return Array.from(root.querySelectorAll<HTMLElement>('[data-moment]'), (element) => ({
+  return Array.from(root.querySelectorAll<HTMLElement>('.post-card[id^="moment-"]'), (element) => ({
     element,
-    id: element.dataset['moment']!,
-    date: element.dataset['date']!,
+    id: element.id.slice('moment-'.length),
+    date: element.querySelector('time')!.dateTime,
     category: element.dataset['category'] as Moment['category'],
     milestone: element.dataset['milestone'] === 'true',
     get saved() {
@@ -40,7 +40,6 @@ export function renderMomentGroups(
     heading.textContent = group.label;
     section.append(heading);
     const body = doc.createElement('div');
-    body.className = 'moment-group__cards';
     body.append(...group.items.map((post) => post.element));
     if (state.detail !== 'months' && group.items.length > 1) {
       const cluster = doc.createElement('details');

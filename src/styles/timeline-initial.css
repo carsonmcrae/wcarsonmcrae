@@ -1,0 +1,30 @@
+/**
+ * Purpose: Preserve native annual reading and the enhanced monthly feed from one set of cards.
+ * Scope: Server-rendered period wrappers, matching group spacing, and the failure fallback.
+ * Does NOT belong: Interactive grouping, date state, card layout, or alternate view presentation.
+ * Copyright (c) 2026 William Carson McRae. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
+ */
+html.js:not([data-timeline-fallback]) .moment-group--year,
+html.js:not([data-timeline-fallback]) .moment-group--year > div {
+  display: contents;
+}
+html.js:not([data-timeline-fallback]) .moment-group--year > h2,
+html.js:not([data-timeline-fallback]) .moment-group--year > div::before {
+  display: none;
+}
+html.js:not([data-timeline-fallback])
+  .moment-group--year
+  + .moment-group--year
+  > div
+  > .moment-group:first-child {
+  margin-top: 2.5rem;
+}
+:is(html:not(.js), html[data-timeline-fallback]) .moment-group--year .moment-group,
+:is(html:not(.js), html[data-timeline-fallback]) .moment-group--year .moment-group > div {
+  display: contents;
+}
+:is(html:not(.js), html[data-timeline-fallback]) .moment-group--year .moment-group > h2,
+:is(html:not(.js), html[data-timeline-fallback]) .moment-group--year .moment-group > div::before {
+  display: none;
+}

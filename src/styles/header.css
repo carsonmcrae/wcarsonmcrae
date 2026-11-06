@@ -232,10 +232,10 @@
   .site-header__desktop .theme-toggle {
     margin: 0.5rem;
   }
-  html.js .site-header__desktop {
+  html.js:not([data-menu-fallback]) .site-header__desktop {
     display: none;
   }
-  html.js .site-header__menu {
+  html.js:not([data-menu-fallback]) .site-header__menu {
     display: inline-flex;
   }
   .site-header__menu span {

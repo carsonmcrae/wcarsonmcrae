@@ -25,9 +25,9 @@ describe('timeline interaction', () => {
   it('delegates exact same-month card jumps without adding another history owner', () => {
     const { controller, history, change, scrolling } = setup();
     change('detail', 'years');
-    const target = document.querySelector<HTMLElement>('[data-moment="married-nicole"]')!;
+    const target = document.querySelector<HTMLElement>('#moment-married-nicole')!;
     const link = document.createElement('a');
-    link.dataset['jumpDate'] = target.dataset['date'];
+    link.dataset['jumpDate'] = target.querySelector('time')!.dateTime;
     link.dataset['jumpMoment'] = 'married-nicole';
     document.body.append(link);
     const before = history.pushState.mock.calls.length;
@@ -118,15 +118,15 @@ describe('timeline interaction', () => {
     save.setAttribute('aria-pressed', 'true');
     born.append(save);
     document.dispatchEvent(new CustomEvent('daysforth:saved'));
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(24);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(24);
     change('category', 'Saved');
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(1);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(1);
     expect(document.querySelector('[data-timeline-status]')!.textContent).toBe(
       '1 moment. Timeline view. Saved.',
     );
     save.setAttribute('aria-pressed', 'false');
     document.dispatchEvent(new CustomEvent('daysforth:saved'));
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(0);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(0);
     expect(document.querySelector('[data-timeline-empty]')!.textContent).toBe(
       'No saved moments in this browser yet.',
     );
@@ -139,11 +139,11 @@ describe('timeline interaction', () => {
     expect(history.replaceState).toHaveBeenCalled();
     save.setAttribute('aria-pressed', 'true');
     document.dispatchEvent(new CustomEvent('daysforth:saved'));
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(1);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(1);
     controller.destroy();
     save.setAttribute('aria-pressed', 'false');
     document.dispatchEvent(new CustomEvent('daysforth:saved'));
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(1);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(1);
   });
   it('leaves unrelated pages alone and progressively groups the full feed by month', () => {
     expect(initTimeline(document, window)).toBeNull();
@@ -154,7 +154,7 @@ describe('timeline interaction', () => {
       detail: 'months',
       date: '2026-11',
     });
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(24);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(24);
     expect(document.querySelector('[data-timeline-status]')!.textContent).toContain('24 moments');
     expect(
       document.querySelector('[data-period="2026-10"]')!.querySelectorAll('article'),
@@ -188,7 +188,7 @@ describe('timeline interaction', () => {
   it('filters categories, retains milestones, and exposes the requested month’s empty state', () => {
     const { controller, change } = setup();
     change('category', 'Work');
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(9);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(9);
     expect(document.querySelector('#moment-born')).not.toBeNull();
     expect(document.querySelector('[data-category-label]')!.textContent).toBe('Work');
     expect(document.querySelector('[data-timeline-empty]')!.textContent).toContain(
@@ -199,7 +199,7 @@ describe('timeline interaction', () => {
     expect(controller.getState().date).toBe('2026-10');
     expect(document.querySelector<HTMLElement>('[data-timeline-empty]')!.hidden).toBe(true);
     change('category', 'All');
-    expect(document.querySelectorAll('[data-moment]')).toHaveLength(24);
+    expect(document.querySelectorAll('.post-card')).toHaveLength(24);
   });
   it('opens a date’s period cluster and keeps native disclosure summaries usable', () => {
     const { controller, change } = setup();

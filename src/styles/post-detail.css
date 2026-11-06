@@ -71,7 +71,7 @@
   align-items: center;
   min-height: 2.75rem;
 }
-.post-detail > .post-actions {
+.post-detail > [data-post-actions] {
   margin-top: 1rem;
   padding-block: 0.5rem;
   border-block: 1px solid var(--rule);

@@ -25,37 +25,33 @@ describe('personal photo galleries', () => {
       expect(album.querySelectorAll('.photo-gallery [data-photo-alt]')).toHaveLength(0);
       expect(album.querySelectorAll('.photo-gallery [data-photo]')).toHaveLength(8);
       expect(
-        Array.from(album.querySelectorAll('img'), (image) =>
-          image.getAttribute('data-moment-image'),
+        Array.from(album.querySelectorAll('.photo-gallery [data-photo]'), (photo) =>
+          photo.getAttribute('data-photo'),
         ),
-      ).toEqual(gallery.photos.map((photo) => photo.name));
+      ).toEqual(gallery.photos.map((photo) => `photo-${photo.name}`));
     }
     expect(life.querySelector('.dog-album')).toBeNull();
     for (const dog of dogs) {
       expect(
-        life
-          .querySelector(`#dog-${dog.swatch} + .photo [data-moment-image]`)
-          ?.getAttribute('data-moment-image'),
-      ).toBe(dog.photo);
+        life.querySelector(`#dog-${dog.swatch} + .photo [data-photo]`)?.getAttribute('data-photo'),
+      ).toBe(`photo-${dog.photo}`);
     }
   });
 
   it('preserves the About portrait and enlarges every Carson gallery photo', () => {
-    expect(about.querySelector('.secondary-hero [data-moment-image="carson-solo"]')).not.toBeNull();
+    expect(about.querySelector('.secondary-hero [data-photo="photo-carson-solo"]')).not.toBeNull();
     expect(about.querySelectorAll('#photos .photo-gallery [data-photo]')).toHaveLength(
       carsonGallery.photos.length,
     );
     expect(about.querySelector('#facts')!.nextElementSibling?.id).toBe('photos');
     expect(about.querySelector('#photos .photo-gallery figcaption')).toBeNull();
     for (const photo of carsonGallery.photos) {
-      const image = about.querySelector(`#photos [data-moment-image="${photo.name}"]`)!;
+      const image = about.querySelector(`#photos [data-photo="photo-${photo.name}"] img`)!;
       expect(image.closest('a')?.hasAttribute('data-photo')).toBe(true);
       expect(image.closest('a')?.hasAttribute('data-photo-alt')).toBe(false);
       expect(image.getAttribute('alt')).toBe(photo.alt);
     }
-    expect(
-      life.querySelector('#photos [data-moment-image="first-watch-new-photo"]'),
-    ).not.toBeNull();
+    expect(life.querySelector('#photos [data-photo="photo-first-watch-new-photo"]')).not.toBeNull();
   });
 
   it('presents every household role and duty as visible text alongside decorative connectors', () => {

@@ -8,6 +8,7 @@
 import type { TimelinePost } from '../data/timeline';
 import { getPhoto, getProjectImage } from './images';
 import { postMedia } from './post-media';
+import { photoReactionId } from './photo-reaction-id';
 
 export function mediaFrameStyles(posts: readonly TimelinePost[]): string {
   return posts
@@ -17,7 +18,7 @@ export function mediaFrameStyles(posts: readonly TimelinePost[]): string {
       const source = media.kind === 'photo' ? getPhoto(media.name) : getProjectImage(media.name);
       if (!source) throw new Error(`Missing timeline cover: ${media.name}`);
       return [
-        `.post-media__frame:has([data-moment-image=${JSON.stringify(media.name)}]) { --media-ratio: ${source.width} / ${source.height}; }`,
+        `.post-media__frame:has([data-photo=${JSON.stringify(photoReactionId(media.name, media.kind))}]) { --media-ratio: ${source.width} / ${source.height}; }`,
       ];
     })
     .join('\n');

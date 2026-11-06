@@ -1,10 +1,32 @@
 /**
  * Purpose: Scrub between actual event permalinks without returning to the feed.
- * Scope: Proportional month positions, nearest-event previews, and keyboard traversal of same-month events.
- * Does NOT belong: Content, feed scrolling, or network calls.
+ * Scope: Proportional month positions, event previews, keyboard traversal, and native return to the feed.
+ * Does NOT belong: Content, entry snapshots (page-position.ts), feed rendering, or network calls.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
+import { clickedControl } from './click-intent';
+import type { PositionWindow } from './page-position';
+
+export function initPostReturn(doc: Document, win: PositionWindow) {
+  const click = (event: MouseEvent) => {
+    const link = clickedControl(event, '[data-return-timeline]') as HTMLAnchorElement | null;
+    if (!link || win.history.length < 2) return;
+    const index = win.navigation?.currentEntry?.index ?? 0;
+    const previousUrl =
+      win.navigation?.entries().find((entry) => entry.index === index - 1)?.url ?? doc.referrer;
+    if (!previousUrl) return;
+    const previous = new URL(previousUrl);
+    const destination = new URL(link.href);
+    if (previous.origin === win.location.origin && previous.pathname === destination.pathname) {
+      event.preventDefault();
+      win.history.back();
+    }
+  };
+  doc.addEventListener('click', click, true);
+  return () => doc.removeEventListener('click', click, true);
+}
+
 export function initPostNavigation(doc: Document, navigate: (href: string) => void) {
   const root = doc.querySelector<HTMLElement>('[data-post-browser]');
   if (!root) return null;

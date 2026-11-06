@@ -42,16 +42,16 @@ test('Saved is useful after refresh and updates immediately when the last item i
   await expect(save).toHaveAttribute('aria-pressed', 'true');
   await page.locator('.timeline-menu summary').nth(0).click();
   await page.getByRole('radio', { name: 'Saved', exact: true }).check();
-  await expect(page.locator('[data-moment]')).toHaveCount(1);
+  await expect(page.locator('.post-card')).toHaveCount(1);
   await page.reload();
-  await expect(page.locator('[data-moment]')).toHaveCount(1);
+  await expect(page.locator('.post-card')).toHaveCount(1);
   await save.click();
   await expect(page.locator('[data-timeline-empty]')).toHaveText(
     'No saved moments in this browser yet.',
   );
   await page.locator('.timeline-menu summary').nth(0).click();
   await page.getByRole('radio', { name: 'Milestones', exact: true }).check();
-  await expect(page.locator('[data-moment]')).toHaveCount(6);
+  await expect(page.locator('.post-card')).toHaveCount(6);
   await expect(page.locator('#moment-high-school-graduation')).toContainText(
     'High school salutatorian',
   );
@@ -79,7 +79,7 @@ for (const filterBeforeCompletion of [false, true]) {
         await expect(saved).toBeVisible();
         await saved.check();
       }
-      await expect(page.locator('[data-moment]')).toHaveCount(1);
+      await expect(page.locator('.post-card')).toHaveCount(1);
       await expect(page.locator('#moment-built-daysforth')).toBeVisible();
       await expect(pending.save).toHaveAttribute('aria-pressed', 'true');
       expect(
@@ -119,7 +119,7 @@ test('all covers open posts and app events show real interfaces with app icons',
   page,
 }) => {
   await page.goto('');
-  await expect(page.locator('[data-moment] .post-media')).toHaveCount(24);
+  await expect(page.locator('.post-card .post-media')).toHaveCount(24);
   for (const id of ['ttsnative-1', 'recalen-beta', 'picpledge-wedding', 'built-daysforth']) {
     const cover = page.locator(`#moment-${id} .post-media--screen`);
     await expect(cover.locator('.post-media__open')).toHaveAttribute(

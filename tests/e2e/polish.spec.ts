@@ -60,12 +60,12 @@ test('optional storage requires a choice and can be withdrawn', async ({ page })
   ).toHaveAttribute('aria-pressed', 'true');
   await page.locator('.timeline-menu summary').nth(0).click();
   await page.getByRole('radio', { name: 'Milestones', exact: true }).check();
-  await expect(page.locator('[data-moment]')).toHaveCount(6);
+  await expect(page.locator('.post-card')).toHaveCount(6);
   await page.locator('footer [data-storage-open]').click();
   await settings.getByRole('button', { name: 'Keep storage off', exact: true }).click();
   await page.locator('.timeline-menu summary').nth(0).click();
   await page.getByRole('radio', { name: 'All categories', exact: true }).check();
-  await expect(page.locator('[data-moment]')).toHaveCount(24);
+  await expect(page.locator('.post-card')).toHaveCount(24);
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual(['daysforth.consent.v1']);
   expect(await page.context().cookies()).toEqual([]);
 });
