@@ -7,23 +7,7 @@
  */
 import { expect } from '@playwright/test';
 import { test } from './fixtures';
-import { scrollPageTo } from './helpers';
-
-function imageSelection(element: HTMLImageElement) {
-  const candidates = element.srcset.split(',').map((entry) => {
-    const [url, width] = entry.trim().split(/\s+/);
-    return { url: new URL(url!, document.baseURI).href, width: Number.parseInt(width!) };
-  });
-  return {
-    url: element.currentSrc,
-    width: candidates.find((candidate) => candidate.url === element.currentSrc)?.width ?? null,
-    widths: candidates.map((candidate) => candidate.width),
-    visibleWidth: element.getBoundingClientRect().width,
-    viewer: element.closest('a')!.href,
-    complete: element.complete,
-    naturalWidth: element.naturalWidth,
-  };
-}
+import { imageSelection, scrollPageTo } from './helpers';
 
 for (const viewportWidth of [390, 1440]) {
   for (const deviceScaleFactor of [1, 2]) {

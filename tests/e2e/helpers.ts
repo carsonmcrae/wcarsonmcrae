@@ -2,7 +2,7 @@
  * Purpose: Shared page list and helpers for the browser tests.
  * Scope: The site's pages (paths relative to the base URL, so tests run at the root or under the
  *   GitHub Pages project path), themed home readiness, completed native scrolling and viewport changes,
- *   menu/shortcut fixtures, and overflow.
+ *   menu/shortcut fixtures, responsive image metadata, and overflow.
  * Does NOT belong: Test cases (the *.spec.ts files beside it).
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
@@ -12,6 +12,23 @@ import { expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { timelinePosts } from '../../src/data/timeline';
 import { releases } from '../../src/data/releases';
+
+/** Reads the current native resource and slot without changing lazy selection or decoding state. */
+export function imageSelection(element: HTMLImageElement) {
+  const candidates = element.srcset.split(',').map((entry) => {
+    const [url, width] = entry.trim().split(/\s+/);
+    return { url: new URL(url!, document.baseURI).href, width: Number.parseInt(width!) };
+  });
+  return {
+    url: element.currentSrc,
+    width: candidates.find((candidate) => candidate.url === element.currentSrc)?.width ?? null,
+    widths: candidates.map((candidate) => candidate.width),
+    visibleWidth: element.getBoundingClientRect().width,
+    viewer: element.closest('a')!.href,
+    complete: element.complete,
+    naturalWidth: element.naturalWidth,
+  };
+}
 
 export const CORE_PAGES = [
   { name: 'Home', path: '' },
