@@ -211,11 +211,12 @@ const corePosts: TimelinePost[] = [
     date: '2026-10-19',
     title: 'TTSNative 1.0 released',
     caption:
-      'Released as open source (MIT). A local text-to-speech reader for documents, with read-along highlighting and an optional, consent-based voice studio.',
+      'Released as open source (MIT). My first fully functional desktop app: a local text-to-speech reader with read-along highlighting and app updates after installation.',
     body: [
       'TTSNative is a free, open-source text-to-speech app that runs on your own computer. It reads PDFs, EPUBs, Word documents, and plain text aloud, with read-along highlighting to keep your place.',
       'The voice studio also supports optional voice cloning with consent. Your documents, voices, and generated audio stay on your machine.',
       'I designed and built the reader, voice studio, brand, and website end to end. Version 1.0.0 was released on October 19, 2026, under the MIT license.',
+      'This is my first product to ship as a fully functional desktop app. Once installed on your machine, TTSNative can receive app updates.',
     ],
     category: 'Projects',
     project: 'ttsnative',

@@ -22,7 +22,7 @@ describe('explanatory app posts', () => {
       'Putting capture and recall into practice.',
       ['thought', 'file', 'search', 'calendar'],
     ],
-    ['ttsnative', 3, 'Released as open source (MIT).', ['reader', 'voice', 'consent', 'local']],
+    ['ttsnative', 4, 'Released as open source (MIT).', ['reader', 'desktop', 'updates', 'local']],
     [
       'picpledge',
       2,
@@ -61,6 +61,16 @@ describe('explanatory app posts', () => {
       expect.objectContaining({ name: 'recalen-interface', imageKind: 'screen' }),
     ]);
     expect(post.imageAlt).toContain('Recalen');
+  });
+
+  it('explains the first shipped desktop product and updates after installation', () => {
+    const post = timelinePosts.find((entry) => entry.project === 'ttsnative')!;
+    expect(post.body.join(' ')).toContain(
+      'my first product to ship as a fully functional desktop app',
+    );
+    expect(post.body.join(' ')).toContain(
+      'Once installed on your machine, TTSNative can receive app updates',
+    );
   });
 });
 
