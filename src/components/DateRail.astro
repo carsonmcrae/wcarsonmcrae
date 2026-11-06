@@ -25,12 +25,8 @@ const oldest = pins[0]!;
           data-jump-date={post.date}
         >
           <span class="visually-hidden">Go to {post.title}, </span>
-          <span class="date-rail__long">{dateLabel(post.date)}</span>
-          <span class="date-rail__short">
-            <span class="visually-hidden">{dateLabel(post.date)} (</span>
-            {shortDate}
-            <span class="visually-hidden">)</span>
-          </span>
+          <span class="date-rail__long">{dateLabel(post.date)}</span>{' '}
+          <span class="date-rail__short">{shortDate}</span>
         </button>
       );
     })}
