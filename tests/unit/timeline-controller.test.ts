@@ -36,6 +36,38 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe('timeline interaction', () => {
+  it.each(['ttsnative-1', 'picpledge-wedding'])(
+    'honors a visible same-month native destination after date initialization: %s',
+    (id) => {
+      const { controller, scrolling, win } = setup(`?date=2026-10#moment-${id}`);
+      expect(controller.getState().date).toBe('2026-10');
+      expect(scrolling.mock.instances.at(-1)).toBe(document.getElementById(`moment-${id}`));
+      expect(win.location.hash).toBe(`#moment-${id}`);
+      expect(document.activeElement).toBe(document.body);
+    },
+  );
+  it.each(['?date=2022-05#moment-ttsnative-1', '?date=2022-05#moment-unknown'])(
+    'keeps the selected date authoritative for an unavailable native destination: %s',
+    (url) => {
+      const { controller, scrolling } = setup(url);
+      expect(controller.getState().date).toBe('2022-05');
+      expect(scrolling.mock.instances.at(-1)).toBe(
+        document.querySelector('[data-period="2022-05"] h2'),
+      );
+    },
+  );
+  it('does not use a matching-month native hash to reveal a filtered-out moment', () => {
+    const { controller, scrolling } = setup('?category=Work&date=2026-10#moment-ttsnative-1');
+    expect(document.getElementById('moment-ttsnative-1')).toBeNull();
+    expect(controller.getState()).toMatchObject({ category: 'Work', date: '2026-10' });
+    expect(scrolling.mock.instances.at(-1)).toBe(document.querySelector('[data-timeline]'));
+  });
+  it('leaves a hash-only entry at its native anchor without introducing a date jump', () => {
+    const { scrolling, win, history } = setup('#moment-ttsnative-1');
+    expect(scrolling).not.toHaveBeenCalled();
+    expect(history.replaceState).not.toHaveBeenCalled();
+    expect(win.location.href).toBe('https://daysforth.com/#moment-ttsnative-1');
+  });
   it('delegates exact same-month card jumps without adding another history owner', () => {
     const { controller, history, change, scrolling } = setup();
     change('detail', 'years');
@@ -105,7 +137,7 @@ describe('timeline interaction', () => {
   });
   it('restores captured history positions instead of replacing them with a date jump', () => {
     const { controller, events, win, history, scrolling } = timelineFixture(
-      '?date=2022-05',
+      '?date=2022-05#moment-vanderbilt-graduation',
       false,
       0,
     );
@@ -120,7 +152,9 @@ describe('timeline interaction', () => {
     expect(history.pushState).toHaveBeenLastCalledWith({}, '', expect.any(URL));
   });
   it('preserves a native entry snapshot during initialization and gives it priority on traversal', () => {
-    const { controller, win, history, scrolling, events } = timelineFixture('?date=2022-05');
+    const { controller, win, history, scrolling, events } = timelineFixture(
+      '?date=2022-05#moment-vanderbilt-graduation',
+    );
     controller.destroy();
     scrolling.mockClear();
     Object.defineProperty(win, 'navigation', {

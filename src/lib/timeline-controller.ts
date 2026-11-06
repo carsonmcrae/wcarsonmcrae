@@ -24,6 +24,14 @@ type TimelineWindow = Pick<
   'location' | 'history' | 'scrollTo' | 'innerHeight' | 'addEventListener' | 'removeEventListener'
 > & { IntersectionObserver?: typeof IntersectionObserver };
 export type TimelineCommandKind = 'click' | 'change' | 'input' | 'submit';
+
+function updateSummaryLabel(doc: Document, selector: string, value: string) {
+  const text = doc.querySelector(selector)!.firstChild;
+  if (!(text instanceof Text)) throw new Error('Timeline summary requires a Text node.');
+  // Replacing a pressed summary's text node cancels WebKit's native click activation.
+  if (text.data !== value) text.data = value;
+}
+
 export function initTimeline(
   doc: Document,
   win: TimelineWindow,
@@ -63,7 +71,7 @@ export function initTimeline(
     doc.dispatchEvent(new CustomEvent('daysforth:history'));
   };
   const syncDate = () => {
-    doc.querySelector<HTMLElement>('[data-current-date]')!.textContent = dateLabel(state.date);
+    updateSummaryLabel(doc, '[data-current-date]', dateLabel(state.date));
     slider.value = String(monthIndex(state.date));
     slider.setAttribute('aria-valuetext', dateLabel(monthAt(Number(slider.value))));
     month.value = state.date.slice(5, 7);
@@ -78,8 +86,11 @@ export function initTimeline(
       visible = renderMomentGroups(doc, container, cards, state);
       periods = Array.from(container.children) as HTMLElement[];
     }
-    doc.querySelector<HTMLElement>('[data-category-label]')!.textContent =
-      state.category === 'All' ? 'All categories' : state.category;
+    updateSummaryLabel(
+      doc,
+      '[data-category-label]',
+      state.category === 'All' ? 'All categories' : state.category,
+    );
     for (const button of root.querySelectorAll<HTMLButtonElement>('[data-view]'))
       button.setAttribute('aria-pressed', String(button.dataset['view'] === state.view));
     for (const input of root.querySelectorAll<HTMLInputElement>(
@@ -274,7 +285,13 @@ export function initTimeline(
     new URLSearchParams(win.location.search).has('date') &&
     prepareTimelineRestore(win) === null
   )
-    goToDate(state.date, false, 'replace');
+    // The date owns the month; dateDestination only refines it to a visible matching hash.
+    goToDate(
+      state.date,
+      false,
+      'replace',
+      visible.find((card) => win.location.hash === `#moment-${card.id}`)?.id,
+    );
   return {
     getState: () => ({ ...state }),
     goToDate,

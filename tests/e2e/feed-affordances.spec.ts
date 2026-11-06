@@ -220,26 +220,43 @@ test('a modified desktop navigator click opens its native destination without ch
   await page.goto('?date=2022-05');
   const rail = page.getByRole('button', { name: 'Browse timeline moments', exact: true });
   await expect(rail).toBeVisible();
-  await rail.focus();
-  await page.keyboard.press('Enter');
-  await page.keyboard.press('End');
-  const link = page.locator('[data-moment-links] [data-jump-moment="born"]');
-  await expect(link).toBeFocused();
-  await expect(link).toBeInViewport();
   const before = { url: page.url(), date: await page.locator('[data-current-date]').textContent() };
-  const destination = new URL((await link.getAttribute('href'))!, before.url).href;
-  const [opened] = await Promise.all([
-    page.context().waitForEvent('page'),
-    link.click({ modifiers: ['ControlOrMeta'] }),
-  ]);
-  try {
-    await expect(opened).toHaveURL(destination);
-    await expect(opened.locator('html')).toHaveAttribute('data-timeline-ready', 'true');
-    await expect(opened.locator('#moment-born')).toBeInViewport();
-    await expect(opened.locator('[data-current-date]')).toHaveText('November 1999');
-    await expect(page).toHaveURL(before.url);
-    await expect(page.locator('[data-current-date]')).toHaveText(before.date!);
-  } finally {
-    await opened.close();
+  for (const [id, date] of [
+    ['born', 'November 1999'],
+    ['ttsnative-1', 'October 2026'],
+    ['picpledge-wedding', 'October 2026'],
+  ]) {
+    await rail.focus();
+    await page.keyboard.press('Enter');
+    const link = page.locator(`[data-moment-links] [data-jump-moment="${id}"]`);
+    await link.focus();
+    await expect(link).toBeFocused();
+    await expect(link).toBeInViewport();
+    const destination = new URL((await link.getAttribute('href'))!, before.url).href;
+    const [opened] = await Promise.all([
+      page.context().waitForEvent('page'),
+      link.click({ modifiers: ['ControlOrMeta'] }),
+    ]);
+    try {
+      await expect(opened).toHaveURL(destination);
+      await expect(opened.locator('html')).toHaveAttribute('data-timeline-ready', 'true');
+      await expect(opened.locator(`#moment-${id} h3 a`)).toBeInViewport();
+      await expect(opened.locator('[data-current-date]')).toHaveText(date!);
+      await expect(page).toHaveURL(before.url);
+      await expect(page.locator('[data-current-date]')).toHaveText(before.date!);
+    } finally {
+      await opened.close();
+    }
   }
+});
+
+test('a native same-month moment entry keeps its title visible at narrow widths', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('?date=2026-10#moment-ttsnative-1');
+  await expect(page.locator('html')).toHaveAttribute('data-timeline-ready', 'true');
+  await expect(page.locator('[data-current-date]')).toHaveText('October 2026');
+  await expect(page.locator('#moment-ttsnative-1 h3 a')).toBeInViewport();
 });

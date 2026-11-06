@@ -47,13 +47,22 @@ Further confirmed lifecycle cases were corrected during integration:
   Native navigator/nearest URLs also carry the target month rather than the previous query date;
   a real new-page fixture confirmed the old conflicting URL left Born 5,220 pixels offscreen.
   Focused event-boundary cases preserve ordinary nested-control activation, and a native popup
-  regression checks the actual destination's visibility as well as its URL.
+  regression checks the actual destination's visibility as well as its URL. Date-only startup also
+  left later same-month cards below the viewport. Fresh explicit-date initialization now reuses
+  exact-card navigation for a visible matching hash, with date/filter/history precedence intact;
+  popup and 390-pixel native-entry cases check those later cards' titles.
 - `timeline-controller.ts`, first deferred default mount: the Windows trace showed cards moved
   between `h3.focus()` and the next assertion, leaving focus on the body. Initial mounting now
   adopts the existing monthly groups in place and derives runtime period metadata from semantic
   dates. The same period list owns observation, reading-date inference and first-group jumps.
   No card or focused descendant moves until a visitor actually changes grouping/filter/view.
   Two unit regressions failed before the fix; a held-module real-browser case protects the handoff.
+- `timeline-controller.ts`, category/date label updates: controlled WebKit presses at 200% text
+  established that replacing a summary's text node during `mousedown`/`mouseup` canceled its native
+  click. Hydrating before the press opened the menu; hydrating during it left the menu closed with
+  identical scroll position and rectangles. Updating the existing `Text.data` preserved activation
+  for both summaries, with unchanged and changed labels. The correction preserves text-node identity
+  and validates that text-only contract; native held-module and label-identity cases protect it.
 - `consent.ts`, `recordConsent`: a saved grant followed by failed memory-key promotion switched
   reads to missing persistent values. Promotion now fails closed, attempts to persist denial and
   retains the page's existing memory choices. Tests cover both writable and denied revocation.
