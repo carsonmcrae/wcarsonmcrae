@@ -62,7 +62,17 @@ it('observes adopted months and retains the normal explicit command rendering li
   }
   const reading = months.find((month) => month.dataset['period'] === '2022-05')!;
   notify(
-    [{ target: reading, isIntersecting: true } as IntersectionObserverEntry],
+    [
+      {
+        target: reading,
+        isIntersecting: true,
+        boundingClientRect: reading.getBoundingClientRect(),
+        intersectionRatio: 1,
+        intersectionRect: reading.getBoundingClientRect(),
+        rootBounds: null,
+        time: 0,
+      },
+    ],
     {} as IntersectionObserver,
   );
   expect(controller.getState().date).toBe('2022-05');
