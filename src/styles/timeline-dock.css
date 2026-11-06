@@ -62,29 +62,55 @@ section.timeline-feed {
 }
 @media (max-width: 64rem) {
   .timeline-dock .date-rail {
-    padding-top: 0;
+    padding-top: 2.75rem;
     padding-bottom: 0;
   }
   .timeline-dock .date-rail__labels {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    position: static;
-    height: auto;
+    position: absolute;
+    height: 2.75rem;
   }
   .timeline-dock .date-rail__label {
-    position: relative;
-    inset: auto;
-    transform: none;
-    width: 100%;
+    position: absolute;
+    top: 0;
+    transform: translateX(-100%);
+    width: max-content;
+    min-width: 44px;
     max-width: none;
-    text-align: center;
+    text-align: right;
+    font-size: 0.75rem;
   }
   .timeline-dock .date-rail__label::after {
     display: block;
     top: auto;
     bottom: 0;
-    left: 50%;
+    left: auto;
+    right: 0;
+  }
+  .timeline-dock .date-rail__label--0 {
+    transform: translateX(-12px);
+    text-align: left;
+  }
+  .timeline-dock .date-rail__label--0::after {
+    left: 12px;
     right: auto;
+  }
+  .timeline-dock .date-rail__label--2 {
+    transform: translateX(calc(-100% + 12px));
+  }
+  .timeline-dock .date-rail__label--2::after {
+    right: 12px;
+  }
+}
+@container timeline (max-width: 19em) {
+  .timeline-dock .date-rail {
+    padding-bottom: 2.75rem;
+  }
+  .timeline-dock .date-rail__label--1 {
+    top: 5.5rem;
+  }
+  .timeline-dock .date-rail__label--1::after {
+    top: -10px;
+    bottom: auto;
   }
 }
 @media (max-height: 40rem) {

@@ -23,7 +23,7 @@ test('a date jump stays on its selected moment as lazy images decode', async ({ 
     await route.continue();
   });
   await page
-    .getByRole('button', { name: 'Go to Vanderbilt graduation, May 2022', exact: true })
+    .getByRole('button', { name: /^Go to Vanderbilt graduation, May 2022(?:\s+05\/22)?$/ })
     .click();
   const moment = page.locator('#moment-vanderbilt-graduation');
   await expect(moment).toBeInViewport();

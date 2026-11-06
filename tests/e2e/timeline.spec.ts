@@ -128,7 +128,7 @@ test('captures the approved states for visual review', async ({ page }, testInfo
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Timeline', exact: true }).click();
   await page
-    .getByRole('button', { name: 'Go to Married Nicole, October 2026', exact: true })
+    .getByRole('button', { name: /^Go to Married Nicole, October 2026(?:\s+10\/26)?$/ })
     .click();
   await page.screenshot({ path: 'screenshots/daysforth-october-timeline.png' });
   await page.getByRole('button', { name: 'Posts', exact: true }).click();
