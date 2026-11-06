@@ -157,7 +157,9 @@ focused link's actual hit-test visibility in both themes before activating the m
 - **Security/privacy:** SQL remains fixed and parameterized; real uniqueness/triggers preserve
   idempotency and permanent totals. Origins/CORS remain browser controls, not authentication.
   No visitor data, raw exceptions, private configuration or persistent correlation IDs enter new
-  diagnostics. Secret/provider settings, actual retention and free-plan usage remain unverified.
+  diagnostics. The initial source review did not verify provider settings, actual retention or
+  free-plan usage; subsequent observations belong to the
+  [operational closeout](../qa/1.1.2-operations.md).
 
 ## Operational completeness and visibility limits
 
