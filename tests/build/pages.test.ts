@@ -165,6 +165,7 @@ describe.each(pages)('$file', ({ file, document }) => {
     });
     expect(document.querySelector('header')).not.toBeNull();
     expect(document.querySelector('main#main')).not.toBeNull();
+    expect(document.querySelector('main#main')!.hasAttribute('inert')).toBe(false);
     expect(document.querySelector('footer')).not.toBeNull();
     const skip = document.querySelector('body a');
     expect(skip?.getAttribute('href')).toBe('#main');

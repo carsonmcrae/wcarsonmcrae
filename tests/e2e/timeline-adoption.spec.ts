@@ -10,15 +10,54 @@ import type { Page } from '@playwright/test';
 import { test } from './fixtures';
 import { scrollPageByKey, scrollPageTo } from './helpers';
 
-async function holdTimelineModule(page: Page) {
+async function holdTimelineModule(page: Page, reject = false) {
   const requested = Promise.withResolvers<void>();
   const release = Promise.withResolvers<void>();
   await page.route('**/timeline-mount.*.js', async (route) => {
     requested.resolve();
     await release.promise;
-    await route.continue();
+    if (reject) await route.abort('failed');
+    else await route.continue();
   });
   return { requested: requested.promise, release: release.resolve };
+}
+
+for (const reject of [false, true]) {
+  test(`a restoring timeline blocks hidden focus until its module ${reject ? 'fails' : 'loads'}`, async ({
+    page,
+  }) => {
+    const module = await holdTimelineModule(page, reject);
+    try {
+      await page.goto('?date=2022-05&detail=years');
+      await module.requested;
+      const main = page.locator('main');
+      await expect(main).toHaveJSProperty('inert', true);
+      await expect(main).toHaveCSS('visibility', 'visible');
+      await expect(main).toHaveCSS('opacity', '0');
+      const header = page.locator('.site-header');
+      const link = header.locator('a').first();
+      await link.focus();
+      await expect(link).toBeFocused();
+      await main.focus();
+      await expect(link).toBeFocused();
+      await page.keyboard.press('Tab');
+      expect(await page.evaluate(() => document.activeElement!.closest('main') === null)).toBe(
+        true,
+      );
+      module.release();
+      await expect(page.locator('html')).not.toHaveAttribute('data-timeline-restore');
+      await expect(main).toHaveJSProperty('inert', false);
+      await expect(main).toHaveCSS('opacity', '1');
+      await expect(page.locator('html')).toHaveAttribute(
+        `data-timeline-${reject ? 'fallback' : 'ready'}`,
+        reject ? '' : 'true',
+      );
+      await main.focus();
+      await expect(main).toBeFocused();
+    } finally {
+      module.release();
+    }
+  });
 }
 
 test('adopts a focused static card after delayed module delivery without moving its original nodes', async ({

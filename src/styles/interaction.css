@@ -168,6 +168,10 @@ html:has(dialog[open]) :is(.timeline-jumps, .page-jumps) {
 html[data-timeline-restore] main {
   visibility: hidden;
 }
+html[data-timeline-restore] main[inert] {
+  visibility: visible;
+  opacity: 0;
+}
 @media (max-width: 40rem) {
   .storage-notice {
     display: block;

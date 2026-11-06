@@ -12,7 +12,7 @@ import { initThemeToggle } from '../lib/theme';
 import { initHistoryControls } from '../lib/history-controls';
 import { reactionEndpoint } from '../lib/reaction-endpoint';
 import { initDisclosures } from '../lib/disclosures';
-import { initPagePosition } from '../lib/page-position';
+import { initPagePosition, releaseTimelineRestore } from '../lib/page-position';
 import { deferControl } from '../lib/deferred-controls';
 import { consentChoice } from '../lib/consent';
 import { safeStorage } from '../lib/storage';
@@ -88,8 +88,7 @@ const start = () => {
   });
   document.documentElement.classList.add('js');
   document.documentElement.dataset['siteReady'] = 'true';
-  if (!document.querySelector('[data-timeline]'))
-    delete document.documentElement.dataset['timelineRestore'];
+  if (!document.querySelector('[data-timeline]')) releaseTimelineRestore(document);
   return () => {
     for (const stop of stops) stop();
   };

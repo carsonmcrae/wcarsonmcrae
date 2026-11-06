@@ -73,6 +73,17 @@ Further confirmed lifecycle cases were corrected during integration:
   9/9 unchanged native destinations. Desktop validation now uses that full browser channel, with
   all gestures, result assertions, deadlines and zero retries retained. This corrects the test
   backend for native-window behavior; no application workaround or new dependency was introduced.
+- `interaction.css`, temporary restore hold: full Chromium on Windows left card-copy descendants
+  with computed `visibility:hidden` after main became visible, so later native navigator commands
+  could not focus their titles. Handler ordering, animation-frame focus and forced layout controls
+  did not resolve it. An opacity-only control passed 9/9 focus assertions but exposed invisible
+  controls. The integrated hold instead applies native `inert` before main's children parse and
+  uses opacity only while inert. This retains blocked focus and accessibility-tree exclusion;
+  native unsupported browsers keep the original visibility fallback. A CSP-hashed inline script
+  owns acquisition; shared ready/fallback release and the early module-error handler clear it.
+  A controlled 3-context run passed all nine original native title-focus assertions and checked
+  native Chromium AX exclusion/release. Held-load success/failure regressions passed in both
+  Chromium presentations and WebKit, retaining existing deadlines and real keyboard input.
 - `consent.ts`, `recordConsent`: a saved grant followed by failed memory-key promotion switched
   reads to missing persistent values. Promotion now fails closed, attempts to persist denial and
   retains the page's existing memory choices. Tests cover both writable and denied revocation.

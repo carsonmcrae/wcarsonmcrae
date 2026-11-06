@@ -69,6 +69,7 @@ async function mountPage() {
 }
 
 it('hydrates a page, loads each real enhancement on intent, and detaches them on disposal', async () => {
+  document.body.insertAdjacentHTML('afterbegin', '<main inert></main>');
   localStorage.setItem(
     CONSENT_KEY,
     JSON.stringify({ allowed: true, expires: Number.MAX_SAFE_INTEGER }),
@@ -91,6 +92,7 @@ it('hydrates a page, loads each real enhancement on intent, and detaches them on
   expect(button('[data-save]')).toBe(save);
   expect(document.documentElement.dataset['siteReady']).toBe('true');
   expect(document.documentElement.dataset['timelineRestore']).toBeUndefined();
+  expect(document.querySelector('main')!.inert).toBe(false);
   expect(document.querySelector<HTMLElement>('[data-storage-notice]')!.hidden).toBe(true);
   await vi.waitFor(() =>
     expect(document.querySelector('[data-reaction-count]')!.textContent).toBe('3'),

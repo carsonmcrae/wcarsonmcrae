@@ -216,6 +216,31 @@ it.each(['?date=2022-05', '?view=posts', '?category=Work', '?detail=years'])(
   },
 );
 
+it.each(['resolve', 'reject'] as const)(
+  'releases the inert restore hold when loading can %s',
+  async (outcome) => {
+    const f = fixture('?date=2022-05');
+    const main = document.createElement('main');
+    main.inert = true;
+    main.append(...document.body.childNodes);
+    document.body.append(main);
+    document.documentElement.dataset['timelineRestore'] = '';
+    const task = Promise.withResolvers<Controller>();
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    stops.push(initDeferredTimeline(document, f.win, () => task.promise));
+    expect(main.inert).toBe(true);
+    if (outcome === 'resolve') task.resolve(f.controller);
+    else task.reject(new Error('unavailable module'));
+    await vi.waitFor(() => expect(main.inert).toBe(false));
+    expect(document.documentElement.hasAttribute('data-timeline-restore')).toBe(false);
+    expect(
+      document.documentElement.hasAttribute(
+        `data-timeline-${outcome === 'resolve' ? 'ready' : 'fallback'}`,
+      ),
+    ).toBe(true);
+  },
+);
+
 it.each([0, 740])(
   'loads a valid history restoration position %s without a date query',
   async (position) => {

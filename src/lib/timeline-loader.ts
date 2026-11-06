@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { clickedControl } from './click-intent';
-import { prepareTimelineRestore } from './page-position';
+import { prepareTimelineRestore, releaseTimelineRestore } from './page-position';
 import { reportBrowserFailure, runBrowserCommand } from './browser-diagnostics';
 import type { TimelineCommandKind } from './timeline-controller';
 import { observeUserScroll, type ScrollChange } from './scroll-intent';
@@ -31,7 +31,7 @@ export function initDeferredTimeline(
     if (disposed) return;
     reportBrowserFailure(doc, 'timeline', 'load');
     doc.documentElement.dataset['timelineFallback'] = '';
-    delete doc.documentElement.dataset['timelineRestore'];
+    releaseTimelineRestore(doc);
   };
   const commands: (() => void)[] = [];
   let pending: Promise<void> | undefined;
@@ -40,7 +40,7 @@ export function initDeferredTimeline(
   const ready = () => {
     doc.documentElement.dataset['timelineReady'] = 'true';
     delete doc.documentElement.dataset['timelineFallback'];
-    delete doc.documentElement.dataset['timelineRestore'];
+    releaseTimelineRestore(doc);
   };
   const detach = () => {
     for (const kind of ['click', 'input', 'change', 'submit', 'focusin'])

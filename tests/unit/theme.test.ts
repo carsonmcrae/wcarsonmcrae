@@ -105,13 +105,16 @@ describe('THEME_BOOTSTRAP_SCRIPT', () => {
     const image = document.createElement('img');
     const script = document.createElement('script');
     script.type = 'module';
-    document.body.append(image, script);
+    const main = document.createElement('main');
+    main.inert = true;
+    document.body.append(main, image, script);
     image.dispatchEvent(new Event('error'));
     expect(document.documentElement.classList.contains('js')).toBe(true);
     document.documentElement.dataset['timelineRestore'] = '';
     script.dispatchEvent(new Event('error'));
     expect(document.documentElement.classList.contains('js')).toBe(false);
     expect(document.documentElement.hasAttribute('data-timeline-restore')).toBe(false);
+    expect(main.inert).toBe(false);
     run();
     document.documentElement.dataset['siteReady'] = 'true';
     script.dispatchEvent(new Event('error'));

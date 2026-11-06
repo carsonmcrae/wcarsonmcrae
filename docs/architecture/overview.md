@@ -121,6 +121,11 @@ the current position through `updateCurrentEntry`; the restorer prefers `current
 and uses classic history state when that value is absent. Using the entry-state API during navigation
 preserves native entry identity. The early bootstrap marks a valid native-position return for layout
 restoration even without a date query; timeline initialization uses the same position accessor.
+Before main's children parse, a hash-authorized classic script makes a restoring main natively
+`inert` where supported. The hold uses opacity instead of inherited hidden visibility there:
+Chromium otherwise cached hidden title descendants inside closed disclosures after restoration.
+Success, native fallback and initial-module failure release both inert and the restore marker.
+Browsers without inert keep the original visibility hold; no-JavaScript HTML never carries inert.
 Classic `replaceState` remains only in the existing explicit-click
 snapshot path, outside that callback. Ordinary post pages retain native automatic restoration.
 Browsers without the Navigation API retain the last explicit link/history-button snapshot; a newer

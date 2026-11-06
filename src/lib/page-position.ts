@@ -1,11 +1,21 @@
 /**
  * Purpose: Keep browser-owned timeline positions stable across native history traversal.
- * Scope: Timeline restoration ownership, pre-traversal snapshots, and validated entry coordinates.
+ * Scope: Timeline restoration ownership and pre-paint hold, snapshots, and validated entry coordinates.
  * Does NOT belong: Post return-link behavior (post-navigation.ts), persistent storage, or server history.
  * Copyright (c) 2026 William Carson McRae. All rights reserved.
  * SPDX-License-Identifier: LicenseRef-Daysforth-Restricted
  */
 import { clickedControl } from './click-intent';
+
+// Runs inside main before its children are parsed. Native inert avoids inherited hidden styles
+// getting stuck inside closed details; unsupported browsers retain the CSS visibility fallback.
+export const TIMELINE_HOLD_SCRIPT = `if(document.documentElement.hasAttribute('data-timeline-restore')&&'inert'in document.currentScript.parentElement)document.currentScript.parentElement.inert=true;`;
+
+export function releaseTimelineRestore(doc: Document): void {
+  doc.querySelector('main[inert]')?.removeAttribute('inert');
+  delete doc.documentElement.dataset['timelineRestore'];
+}
+
 interface PositionNavigation extends EventTarget {
   currentEntry: { index: number; getState(): Record<string, unknown> | undefined } | null;
   entries(): { index: number; url: string | null }[];
