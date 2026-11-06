@@ -67,6 +67,12 @@ Further confirmed lifecycle cases were corrected during integration:
   The implementation now uses the explicit `nodeValue` text channel, retaining identity and a
   regression proving markup-like values create no elements. No finding was dismissed or suppressed;
   verification checks the CodeQL result context and alert state, not only the successful analysis job.
+- `playwright.config.ts`, native desktop tab validation: isolated Linux reduced-headless-shell
+  runs opened and loaded the real tab but omitted its protocol navigation event. Foreground and
+  normal-profile controls remained unreliable; full Chromium from the same pinned release passed
+  9/9 unchanged native destinations. Desktop validation now uses that full browser channel, with
+  all gestures, result assertions, deadlines and zero retries retained. This corrects the test
+  backend for native-window behavior; no application workaround or new dependency was introduced.
 - `consent.ts`, `recordConsent`: a saved grant followed by failed memory-key promotion switched
   reads to missing persistent values. Promotion now fails closed, attempts to persist denial and
   retains the page's existing memory choices. Tests cover both writable and denied revocation.

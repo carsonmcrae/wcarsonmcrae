@@ -31,7 +31,12 @@ export default defineConfig({
   projects: [
     {
       name: 'desktop-chromium',
-      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+      // Linux headless shell can omit native-tab navigation events in this pinned browser release.
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: 'chromium',
+        viewport: { width: 1440, height: 900 },
+      },
     },
     { name: 'mobile-chromium', use: { ...devices['Pixel 7'] } },
     // WebKit is installed in CI; locally, run `npx playwright install webkit` and set PW_WEBKIT=1.
